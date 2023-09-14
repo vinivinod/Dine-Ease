@@ -1,0 +1,242 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Basic -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <!-- Site Metas -->
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <link rel="shortcut icon" href="images/favicon.png" type="">
+
+    <title> DineEase </title>
+
+    <!-- bootstrap core css -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}" />
+
+    <!-- owl slider stylesheet -->
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
+    <!-- nice select  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css" integrity="sha512-CruCP+TD3yXzlvvijET8wV5WxxEh5H8P4cmz0RFbKK6FlZ2sYl3AEsKlLPHbniXKSrDdFewhbmBK5skbdsASbQ==" crossorigin="anonymous" />
+    <!-- font awesome style -->
+    <link href="{% static 'css/font-awesome.min.css' %}" rel="stylesheet" />
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet" />
+    <!-- responsive style -->
+    <link href="{% static 'css/responsive.css' %}" rel="stylesheet" />
+
+    <title>Booking Details</title>
+    <style>
+        /* Global styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+    
+        /* Navigation bar styles */
+        .navbar {
+            background-color: #000; /* Black background color */
+            width: 100%; /* Full width */
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+        }
+    
+        .navbar-brand {
+            font-weight: bold;
+            margin-left:30px;
+            font-size:30px;
+            color: #fff !important; /* White text color */
+        }
+    
+        .navbar-nav {
+            margin-left: auto; /* Move the navigation to the right side */
+            padding-right: 20px; /* Add some right padding to the right-aligned items */
+        }
+    
+        .nav-item {
+            margin-left: 20px; /* Add some spacing between the items */
+        }
+    
+        .nav-link {
+            color: #fff !important; /* White text color */
+            font-size: 20px; /* Increase text size */
+        }
+    
+        /* Container styles */
+        .container {
+            background-color: #fff;
+            max-width: 800px;
+            width: 100%;
+            margin-top: 60px; /* Adjust the margin to create space below the navbar */
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+    
+        h2 {
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+    
+        /* Booking card styles */
+        .booking-card {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 0 0 20px 0;
+            box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.1);
+        }
+    
+        .booking-details {
+            margin-top: 10px;
+        }
+    
+        .booking-card strong {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+    
+        /* Button styles */
+        .btn-primary {
+            display: inline-block;
+            padding: 7px 20px;
+            background-color: white;
+            color: Black;
+            text-decoration: none;
+            border-color: #007fff;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-right: 10px;
+        }
+        .btn-primary2 {
+            display: inline-block;
+            padding: 7px 20px;
+            background-color: #007fff;
+            color: white;
+            text-decoration: none;
+            border-color: grey;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-right: 10px;
+        }
+        .btn-danger{
+            background-color: white;
+            color: Black;
+            border-color:red;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-right: 10px;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+    
+        /* Footer styles */
+        p {
+            margin-top: 20px;
+        }
+    </style>        
+    
+</head>
+<body>
+    <!-- Navigation bar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+      {% comment %} <div class="container"> {% endcomment %}
+          <a class="navbar-brand" href="{% url '' %}">DineEase</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse ml-auto" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url '' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'menu' %}">Menu</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'about' %}">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'add_reservation' %}">Book a Table</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'booking_confirm' %}">Bookings</a>
+                </li>
+                <li class="nav-item">
+                    {% if user.is_authenticated %}
+                        <a class="nav-link" href="{% url 'loggout' %}">Logout</a>
+                    {% else %}
+                        <a class="nav-link" href="{% url 'loginn' %}">Login</a>
+                    {% endif %}
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Welcome, {{ user.name }}</a>
+                </li>
+            </ul>
+        </div>        
+  </nav>
+  
+        </div>
+      </header>
+    
+    
+    
+
+    <div class="container">
+        <h2>Booking Details</h2>
+
+        <!-- Display all bookings of the logged-in user -->
+    {% if bookings %}
+        <!-- Display all bookings of the logged-in user -->
+        {% for booking in bookings %}
+        {% if booking.is_active %}
+        <div class="booking-card">
+            <div class="booking-details">
+                <strong>Name:</strong> {{ booking.name }}<br>
+                <strong>Email:</strong> {{ booking.email }}<br>
+                <strong>Phone:</strong> {{ booking.phone }}<br>
+                <strong>Reservation Date:</strong> {{ booking.reservation_date }}<br>
+                <strong>Number of Persons:</strong> {{ booking.num_of_persons }}<br>
+                <strong>Table Number:</strong> {{ booking.table_id }}<br>
+            </div><br>
+            <div class="btn-group" role="group">
+                <a href="{% url 'edit_reservation' booking.reservation_id %}" class="btn btn-primary">Edit</a>
+                <form method="post" action="{% url 'cancel_reservation' booking.reservation_id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="reservation_id" value="{{ booking.reservation_id }}">
+                    <button type="submit" class="btn btn-danger">Cancel Booking</button>
+                </form>
+            </div>
+        {% endif %}
+        {% endfor %}
+        <p>Thank you for choosing our restaurant. We look forward to serving you!</p>
+        {% else %}
+        <!-- If there are no bookings, display "No booking yet" -->
+        <p>No booking yet</p>
+        <p>Please click the button to Book Your Table</p>
+    {% endif %}
+        <!-- Button to go back to the booking page -->
+        <a href="{% url 'add_reservation' %}" class="btn-primary2">Book Table</a>
+
+        <!-- Button to move to the payment page -->
+        <a href="{% url 'payment' %}" class="btn-primary2">Proceed to Payment</a>
+    </div>
+        
+</body>
+</html>
