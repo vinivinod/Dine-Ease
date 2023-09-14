@@ -272,109 +272,164 @@
           Our Menu
         </h2>
       </div>
-        <ul class="filters_menu" style="margin-top: 20px; background-color:wheat ">
-          <li class="active" data-filter="*">All</li>
-          <li class="has-submenu">Kerala
-            <div class="submenu">
-              <div class="submenu-item">Breads
-                <div class="sub-submenu">
-                  <div class="sub-submenu-item">Veg</div>
-                  <div class="sub-submenu-item">Non-Veg</div>
-                </div>
+      <ul class="filters_menu" style="margin-top: 20px; background-color:wheat ">
+        <li class="active" data-filter="*">All</li>
+        <li class="has-submenu">Kerala
+          <div class="submenu">
+            <div class="submenu-item">Breads
+              <div class="sub-submenu">
+                <div class="sub-submenu-item">
+                  <a href="{% url 'filtered_menus' 'kerala' 'Breads' 'Vegetarian' %}" style="color: black;">Veg</a>
               </div>
-              <div class="submenu-item">Curries
-                <div class="sub-submenu">
-                  <div class="sub-submenu-item">Veg</div>
-                  <div class="sub-submenu-item">Non-Veg</div>
-                </div>
+              
+                <div class="sub-submenu-item">
+                  <a href="{% url 'filtered_menus' 'kerala' 'Breads' 'Non-Vegetarian' %}" style="color: black;">Non-Veg</a>
               </div>
-              <div class="submenu-item">Rice Dishes
-                <div class="sub-submenu">
-                  <div class="sub-submenu-item">Veg</div>
-                  <div class="sub-submenu-item">Non-Veg</div>
+                
+              </div>
+            </div>
+            <div class="submenu-item">Curries
+              <div class="sub-submenu">
+                <div class="sub-submenu-item">
+                  <a href="{% url 'filtered_menus' 'kerala' 'Curries' 'Vegetarian' %}" style="color: black;">Veg</a>
+                </div>
+                <div class="sub-submenu-item">
+                  <a href="{% url 'filtered_menus' 'kerala' 'Curries' 'Non-Vegetarian' %}" style="color: black;">Non-Veg</a>
                 </div>
               </div>
             </div>
-          </li>
-          <li class="has-submenu">Chinese
-            <div class="submenu">
-              <div class="submenu-item">Appetizers
-                <div class="sub-submenu">
-                  <div class="sub-submenu-item">Veg</div>
-                  <div class="sub-submenu-item">Non-Veg</div>
+            <div class="submenu-item">Rice Dishes
+              <div class="sub-submenu">
+                <div class="sub-submenu-item">
+                  <a href="{% url 'filtered_menus' 'kerala' 'Rice Dishes' 'Vegetarian' %}" style="color: black;">Veg</a>
                 </div>
-              </div>
-              <div class="submenu-item">Main Courses
-                <div class="sub-submenu">
-                  <div class="sub-submenu-item">Veg</div>
-                  <div class="sub-submenu-item">Non-Veg</div>
-                </div>
-              </div>  
-            </div>
-          </li>
-          <li class="has-submenu">North Indian
-            <div class="submenu">
-              <div class="submenu-item">Breads Accompaniments
-                <div class="sub-submenu">
-                  <div class="sub-submenu-item">Veg</div>
-                  <div class="sub-submenu-item">Non-Veg</div>
-                </div>
-              </div>
-              <div class="submenu-item">Curries
-                <div class="sub-submenu">
-                  <div class="sub-submenu-item">Veg</div>
-                  <div class="sub-submenu-item">Non-Veg</div>
-                </div>
-              </div>
-              <div class="submenu-item">Rice Dishes
-                <div class="sub-submenu">
-                  <div class="sub-submenu-item">Veg</div>
-                  <div class="sub-submenu-item">Non-Veg</div>
+                <div class="sub-submenu-item">
+                  <a href="{% url 'filtered_menus' 'kerala' 'Rice Dishes' 'Non-Vegetarian' %}" style="color: black;">Non-Veg</a>
                 </div>
               </div>
             </div>
-          </li>
-          <li class="has-submenu">Arabian
-            <div class="submenu">
-              <div class="submenu-item">Appetizers
-                <div class="sub-submenu">
-                  <div class="sub-submenu-item">Veg</div>
-                  <div class="sub-submenu-item">Non-Veg</div>
+          </div>
+        </li>
+        <li class="has-submenu">Chinese
+          <div class="submenu">
+            <div class="submenu-item">Appetizers
+              <div class="sub-submenu">
+                <div class="sub-submenu-item">
+                  <a href="{% url 'filtered_menus' 'chineese' 'Appetizers' 'Vegetarian' %}" style="color: black;">Veg</a>
                 </div>
-              </div>
-              <div class="submenu-item">Rolls & Grills
-                <div class="sub-submenu">
-                  <div class="sub-submenu-item">Veg</div>
-                  <div class="sub-submenu-item">Non-Veg</div>
-                </div>
-              </div>
-              <div class="submenu-item">Main Course
-                <div class="sub-submenu">
-                  <div class="sub-submenu-item">Veg</div>
-                  <div class="sub-submenu-item">Non-Veg</div>
+                <div class="sub-submenu-item">
+                  <a href="{% url 'filtered_menus' 'chineese' 'Appetizers' 'Non-Vegetarian' %}" style="color: black;">Non-Veg</a>
                 </div>
               </div>
             </div>
-          </li>
-          {% comment %} <li class="has-submenu">Deserts</li> {% endcomment %}
-          <li class="has-submenu">Beverages
-            <div class="submenu">
-              <div class="submenu-item">Hot beverages
-                <div class="sub-submenu">
-                  <div class="sub-submenu-item">Milk-based</div>
-                  <div class="sub-submenu-item">Water-based</div>
+            <div class="submenu-item">Main Courses
+              <div class="sub-submenu">
+                <div class="sub-submenu-item">
+                  <a href="{% url 'filtered_menus' 'chineese' 'Main Course' 'Vegetarian' %}" style="color: black;">Veg</a>
+                </div>
+                <div class="sub-submenu-item">
+                  <a href="{% url 'filtered_menus' 'chineese' 'Main Course' 'Non-Vegetarian' %}" style="color: black;">Non-Veg</a>
                 </div>
               </div>
-              <div class="submenu-item">Cold beverages
-                <div class="sub-submenu">
-                  <div class="sub-submenu-item">Milk-based</div>
-                  <div class="sub-submenu-item">Water-based</div>
+            </div>  
+          </div>
+        </li>
+        <li class="has-submenu">North Indian
+          <div class="submenu">
+            <div class="submenu-item">Breads Accompaniments
+              <div class="sub-submenu">
+                <div class="sub-submenu-item">
+                  <a href="{% url 'filtered_menus' 'north indian' 'Breads Accompaniments' 'Vegetarian' %}" style="color: black;">Veg</a>
+                </div>
+                <div class="sub-submenu-item">
+                  <a href="{% url 'filtered_menus' 'north indian' 'Breads Accompaniments' 'Non-Vegetarian' %}" style="color: black;">Non-Veg</a>
                 </div>
               </div>
             </div>
-          </li>
-        </ul><br>
-      </div>
+            <div class="submenu-item">Curries
+              <div class="sub-submenu">
+                <div class="sub-submenu-item">
+                  <a href="{% url 'filtered_menus' 'north indian' 'Curries' 'Vegetarian' %}" style="color: black;">Veg</a>
+                </div>
+                <div class="sub-submenu-item">
+                  <a href="{% url 'filtered_menus' 'north indian' 'Curries' 'Non-Vegetarian' %}" style="color: black;">Non-Veg</a>
+                </div>
+              </div>
+            </div>
+            <div class="submenu-item">Rice Dishes
+              <div class="sub-submenu">
+                <div class="sub-submenu-item">
+                  <a href="{% url 'filtered_menus' 'north indian' 'Rice Dishes' 'Vegetarian' %}" style="color: black;">Veg</a>
+
+                </div>
+                <div class="sub-submenu-item">
+                  <a href="{% url 'filtered_menus' 'north indian' 'Rice Dishes' 'Non-Vegetarian' %}" style="color: black;">Non-Veg</a>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li class="has-submenu">Arabian
+          <div class="submenu">
+            <div class="submenu-item">Appetizers
+              <div class="sub-submenu">
+                <div class="sub-submenu-item">
+                  <a href="{% url 'filtered_menus' 'Arabian' 'Appetizers' 'Vegetarian' %}" style="color: black;">Veg</a>
+                </div>
+                <div class="sub-submenu-item">
+                  <a href="{% url 'filtered_menus' 'Arabian' 'Appetizers' 'Non-Vegetarian' %}" style="color: black;">Non-Veg</a>
+                </div>
+              </div>
+            </div>
+            <div class="submenu-item">Rolls & Grills
+              <div class="sub-submenu">
+                <div class="sub-submenu-item">
+                  <a href="{% url 'filtered_menus' 'Arabian' 'rollsNgrills' 'Vegetarian' %}" style="color: black;">Veg</a>
+                </div>
+                <div class="sub-submenu-item">
+                  <a href="{% url 'filtered_menus' 'Arabian' 'rollsNgrills' 'Non-Vegetarian' %}" style="color: black;">Non-Veg</a>
+                </div>
+              </div>
+            </div>
+            <div class="submenu-item">Main Course
+              <div class="sub-submenu">
+                <div class="sub-submenu-item"><a href="{% url 'filtered_menus' 'Arabian' 'Main Course' 'Vegetarian' %}" style="color: black;">Veg</a>
+                </div>
+                <div class="sub-submenu-item">
+                  <div class="sub-submenu-item"><a href="{% url 'filtered_menus' 'Arabian' 'Main Course' 'Non-Vegetarian' %}" style="color: black;">Non-Veg</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+        {% comment %} <li class="has-submenu">Deserts</li> {% endcomment %}
+        <li class="has-submenu">Beverages
+          <div class="submenu">
+            <div class="submenu-item">Hot beverages
+              <div class="sub-submenu">
+                <div class="sub-submenu-item">
+                  <a href="{% url 'filtered_menus' 'beverages' 'Hot Beverages' 'Milk-based' %}" style="color: black;">Milk-based</a>
+                </div>
+                <div class="sub-submenu-item">
+                  <a href="{% url 'filtered_menus' 'beverages' 'Hot Beverages' 'Water-based' %}" style="color: black;">Water-based</a>
+                </div>
+              </div>
+            </div>
+            <div class="submenu-item">Cold beverages
+              <div class="sub-submenu">
+                <div class="sub-submenu-item">
+                  <a href="{% url 'filtered_menus' 'beverages' 'Cold Beverages' 'Milk-based' %}" style="color: black;">Milk-based</a>
+                </div>
+                <div class="sub-submenu-item">
+                  <a href="{% url 'filtered_menus' 'beverages' 'Cold Beverages' 'Water-based' %}" style="color: black;">Water-based</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul><br>
+    </div>
 
       
 
@@ -463,7 +518,9 @@
     {% endfor %}
     </div>
       </div>
-    
+      <div class="container">
+        {% block content %}{% endblock %}
+    </div>
       {% comment %} <div class="btn-box">
         <a href="{% url 'menumore' %}">
           View More

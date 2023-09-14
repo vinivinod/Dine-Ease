@@ -397,6 +397,43 @@ def add_menu(request):
     return render(request, 'admin_dashboard/product-add.html')
 
 from django.shortcuts import render
+from .models import menus
+
+def products_by_category(request, category_name):
+    # Filter products by the provided category name
+    products = menus.objects.filter(category=category_name)
+
+    context = {
+        'category_name': category_name,
+        'products': products,
+    }
+
+    return render(request, 'products_by_category.html', context)
+
+from django.shortcuts import render
+from .models import menus
+
+def filtered_menus(request, category=None, submenu=None, sub_submenu=None):
+    # Filter menus based on the selected choices
+    filtered_menus = menus.objects.all()
+
+    if category:
+        filtered_menus = filtered_menus.filter(category=category)
+
+    if submenu:
+        filtered_menus = filtered_menus.filter(submenu=submenu)
+
+    if sub_submenu:
+        filtered_menus = filtered_menus.filter(sub_submenu=sub_submenu)
+
+    context = {
+        'filtered_menus': filtered_menus,
+    }
+
+    return render(request, 'filtered_menus.html', context)
+
+
+from django.shortcuts import render
 from .models import menus  # Import your Menu model
 
 def menu_list(request):
