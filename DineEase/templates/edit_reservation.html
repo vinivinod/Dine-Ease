@@ -118,5 +118,39 @@
         </form>
     </div>
     
+    <script>
+        // Get a reference to the date input field by its ID
+        var reservationDateInput = document.getElementById('reservation_date');
+    
+        // Get today's date
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1; // January is 0
+        var yyyy = today.getFullYear();
+    
+        // Format today's date as "YYYY-MM-DD"
+        if (dd < 10) {
+            dd = '0' + dd;
+        }
+    
+        if (mm < 10) {
+            mm = '0' + mm;
+        }
+    
+        today = yyyy + '-' + mm + '-' + dd;
+    
+        // Set the minimum date attribute to today
+        reservationDateInput.min = today;
+    
+        // Add an event listener for date input changes
+        reservationDateInput.addEventListener('change', function () {
+            var selectedDate = new Date(this.value);
+            if (selectedDate < today) {
+                alert('Please select a date from today onwards.');
+                this.value = today; // Reset the input value to today's date
+            }
+        });
+    </script>
+    
 </body>
 </html>

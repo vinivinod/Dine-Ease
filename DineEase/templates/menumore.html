@@ -273,7 +273,8 @@
         </h2>
       </div>
       <ul class="filters_menu" style="margin-top: 20px; background-color:wheat ">
-        <li class="active" data-filter="*">All</li>
+        <li class="" data-filter="*"><a href="{% url 'menu' %}" style="color:#393b3a;" >All</a></li>
+
         <li class="has-submenu">Kerala
           <div class="submenu">
             <div class="submenu-item">Breads
@@ -339,10 +340,10 @@
             <div class="submenu-item">Breads Accompaniments
               <div class="sub-submenu">
                 <div class="sub-submenu-item">
-                  <a href="{% url 'filtered_menus' 'north indian' 'Breads Accompaniments' 'Vegetarian' %}" style="color: black;">Veg</a>
+                  <a href="{% url 'filtered_menus' 'north indian' 'Breads and Accompaniments' 'Vegetarian' %}" style="color: black;">Veg</a>
                 </div>
                 <div class="sub-submenu-item">
-                  <a href="{% url 'filtered_menus' 'north indian' 'Breads Accompaniments' 'Non-Vegetarian' %}" style="color: black;">Non-Veg</a>
+                  <a href="{% url 'filtered_menus' 'north indian' 'Breads and Accompaniments' 'Non-Vegetarian' %}" style="color: black;">Non-Veg</a>
                 </div>
               </div>
             </div>
