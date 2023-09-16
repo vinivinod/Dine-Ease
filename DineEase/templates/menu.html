@@ -142,6 +142,20 @@
 .box{
   height: 420px;
 }
+.button-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Adjust the spacing between buttons if needed */
+.add-to-cart-button {
+  margin-right: 5px;
+}
+
+.add-to-table-button {
+  margin-left: 5px;
+}
 </style>
 
 </head>
@@ -457,6 +471,14 @@
                   <h6>
                   Rs. {{ menu_item.price }}
                   </h6>
+                  <div class="button-container">
+                    <a href="{% url 'booking_confirm' %}" class="btn btn-primary add-to-table-button">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-table" viewBox="0 0 16 16">
+                          <path d="M0 6.5A.5.5 0 0 1 .5 6H4v7a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V6h9.5a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5H14a2 2 0 0 1-2-2v-6a2 2 0 0 1-2-2V1a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v5a2 2 0 0 1-2 2z"/>
+                          <path d="M1.293 2.293a1 1 0 0 0 0 1.414L3 6l-1.293 1.293a1 1 0 0 0 1.414 1.414L4 7.414V14a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V7.414l.293.293a1 1 0 0 0 1.414-1.414L5 6l1.293-1.293a1 1 0 0 0-1.414-1.414L4 4.586V1a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v3.586L.293 3.293a1 1 0 0 0 0 1.414z"/>
+                      </svg> 
+                  </a>
+                   &ensp;
                   <a href="">
                       <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 456.029 456.029" style="enable-background:new 0 0 456.029 456.029;" xml:space="preserve">
                       <g>
@@ -511,6 +533,7 @@
                       </g>
                       </svg>
                   </a>
+                </div> 
               </div>
           </div>
         </div>

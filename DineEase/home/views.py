@@ -298,36 +298,44 @@ def book_table(request):
     return render(request, 'book.html', {'form': form})
 
 
-from django.shortcuts import render
-from .models import Reservation
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404
+from .models import menus, Reservation
 
-@login_required  # Require login to access this view
-def booking_confirm(request):
-    # Retrieve all bookings of the logged-in user
-    bookings = Reservation.objects.filter(email=request.user.email)
-    return render(request, 'booking_confirm.html', {'bookings': bookings})
+@login_required
+def booking_confirm(request, menu_id=None):
+    if menu_id is not None:
+        # Retrieve the menu item based on the menu_id parameter
+        menu_item = get_object_or_404(menus, id=menu_id)
 
-from django.shortcuts import render, redirect
-from .models import Reservation
+        # Pass the menu item to the 'booking_confirm' HTML template
+        context = {'menu_item': menu_item}
+    else:
+        # Retrieve all bookings of the logged-in user
+        bookings = Reservation.objects.filter(email=request.user.email)
+        context = {'bookings': bookings}
 
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Reservation
+    return render(request, 'booking_confirm.html', context)
 
 # views.py
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from home.models import Reservation
 
+from django.shortcuts import get_object_or_404, render
+from django.http import HttpResponseRedirect
+
 def cancel_reservation(request, reservation_id):
     booking = get_object_or_404(Reservation, reservation_id=reservation_id)
     
-    if booking.is_active:
+    if request.method == "POST" and booking.is_active:
         # Update the is_active status to False
         booking.is_active = False
         booking.save()
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))  # Redirect back to the previous page
-    else:
-        return HttpResponse('Booking is already canceled')
+    
+    return render(request, 'booking_confirm.html', {'booking': booking})
+
 
 
 from django.shortcuts import render, get_object_or_404, redirect

@@ -49,6 +49,7 @@ urlpatterns = [
     path('add_table/', add_table, name='add_table'),
     path('add_reservation/', add_reservation, name='add_reservation'),
     path('booking_confirm/',booking_confirm, name='booking_confirm'),
+    path('booking_confirm/<int:menu_id>/',booking_confirm, name='booking_confirm'),
     path('cancel_reservation/<str:reservation_id>/', cancel_reservation, name='cancel_reservation'),
     path('edit_reservation/<str:reservation_id>/', edit_reservation, name='edit_reservation'),
  

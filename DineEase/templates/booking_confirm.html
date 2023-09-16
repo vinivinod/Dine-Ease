@@ -213,14 +213,21 @@
                 <strong>Phone:</strong> {{ booking.phone }}<br>
                 <strong>Reservation Date:</strong> {{ booking.reservation_date }}<br>
                 <strong>Number of Persons:</strong> {{ booking.num_of_persons }}<br>
-                <strong>Table Number:</strong> {{ booking.table_id }}<br>
+                <strong>Table Number:</strong> {{ booking.table_id }}<br><br>
+                {% if booking.menu_item %}
+                            <h2>Menu Item Details</h2><br>
+                            <h3>Name: {{ booking.menu_item.name }}</h3><br>
+                            {% comment %} <p>Description: {{ booking.menu_item.desc }}</p><br> {% endcomment %}
+                            <p>Price: Rs. {{ booking.menu_item.price }}</p><br>
+                {% endif %}
+                
             </div><br>
             <div class="btn-group" role="group">
                 <a href="{% url 'edit_reservation' booking.reservation_id %}" class="btn btn-primary">Edit</a>
                 <form method="post" action="{% url 'cancel_reservation' booking.reservation_id %}">
                     {% csrf_token %}
                     <input type="hidden" name="reservation_id" value="{{ booking.reservation_id }}">
-                    <button type="submit" class="btn btn-danger">Cancel Booking</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmCancellation()">Cancel Booking</button>
                 </form>
             </div>
         {% endif %}
@@ -237,6 +244,16 @@
         <!-- Button to move to the payment page -->
         <a href="{% url 'payment' %}" class="btn-primary2">Proceed to Payment</a>
     </div>
-      
+    <script>
+        function confirmCancellation() {
+            if (confirm("Are you sure you want to cancel this booking?")) {
+                // User confirmed, submit the form
+                document.querySelector('form').submit();
+            } else {
+                // User canceled, do nothing
+            }
+        }
+        </script>        
+        
 </body>
 </html>

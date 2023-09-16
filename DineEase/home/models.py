@@ -146,9 +146,13 @@ class Reservation(models.Model):
     phone = models.CharField(max_length=15)
     email = models.EmailField()
     num_of_persons = models.PositiveIntegerField()
-    table_id = models.ForeignKey('home.tables', on_delete=models.CASCADE,default=None)  # Use string reference
+    table_id = models.ForeignKey('home.tables', on_delete=models.CASCADE,null=True)  # Use string reference
     reservation_date = models.DateField()
     is_active = models.BooleanField(default=True)
+
+    menu_name = models.CharField(max_length=100, null=True, blank=True)
+    menu_price = models.FloatField(null=True, blank=True)
+
 
     def __str__(self):
         return self.reservation_id
