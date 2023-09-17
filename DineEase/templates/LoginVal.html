@@ -52,17 +52,19 @@
               <input type="password" class="form-control"  name="password" required>
               <small  class="form-text text-danger"></small>
             </div>
+            
+            <button type="submit" class="btn btn-primary btn-block">Login</button>
+            <button type="button" id="login" class="btn btn-danger btn-block mt-3" onclick="signInWithGoogle()">Login with Google</button>
 
-            <button type="submit" class="btn btn-primary btn-block">Login</button><br>
             {% comment %} <div class="text-center mt-3">
               <a href="forgot-password.html">Forgot Password?</a>
             </div> {% endcomment %}
             {% comment %} <button class="btn btn-danger btn-block mt-3" onclick="signInWithGoogle()"></button> {% endcomment %}
             {% comment %} <a href="{% provider_login_url 'google' %}?next=/"> {% endcomment %}
-               <span class="align-middle">
+               {% comment %} <span class="align-middle">
                 <img src="https://lh5.googleusercontent.com/proxy/IGWMSvJWdIuu_VVsDb8ZQLhoky-AYRdRDAAu3ZNswi0TO6itSA9ZlVvvMkcQjuFKQToFFddpAd9we9iXZffsyE6P49rURNurGlqiCMn5opaITsvCMGmsaltXnLF47SPR8APPfDKL7duegmk9osSbmiVLr4qrQphNozHF-dIp_L0-oG05JI29HhO0_yoNIlmAlCFq7d3W_43ku4XebWpOn6luu5fnZim0N8qgR4ds9vlPr_Ij4b5Yt-NVrA" alt="Google Icon" width="24" height="24">
               </span>
-              <span class="align-middle ml-2">Login in with Google</span>
+              <span class="align-middle ml-2">Login in with Google</span> {% endcomment %}
             </a>
           </form>
           <div class="text-center mt-3">
@@ -147,6 +149,38 @@
       // Implement the Google sign-in functionality here
       // You can redirect the user to Google's OAuth sign-in page or perform other actions
     }
+  </script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBRtXVHEB_ip7extEIWCon92h3tY3z29Zg",
+      authDomain: "miniproject-4ce21.firebaseapp.com",
+      projectId: "miniproject-4ce21",
+      storageBucket: "miniproject-4ce21.appspot.com",
+      messagingSenderId: "83259191038",
+      appId: "1:83259191038:web:3cbd77f440e76b75f4bfaf"
+    };
+  
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+    const provider=new GoogleAuthProvider();
+    provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+
+    $("#login").on("click",function(){
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          const user = result.user;
+          $('#name').html(user.displayName)
+          $('#email').html(user.email)
+          $('#img').attr('src',user.photoURL)
+        }).catch((error) => {
+          console.log(error);
+        });
+    })
   </script>
 </body>
 </html>
