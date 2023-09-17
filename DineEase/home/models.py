@@ -181,4 +181,15 @@ class tables(models.Model):
     def __str__(self):
         return self.tab_id
 
+from django.db import models
 
+class TimeSlot(models.Model):
+    slot_id = models.AutoField(primary_key=True)
+    slot_time = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.slot_time
+
+    class Meta:
+        verbose_name = "Time Slot"
+        verbose_name_plural = "Time Slots"

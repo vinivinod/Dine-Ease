@@ -280,7 +280,8 @@ def add_reservation(request):
         'phone': user.phone,
     }
 
-    return render(request, 'book.html', {'table_numbers': table_numbers, 'user_data': user_data})
+    initial_time_slot = None
+    return render(request, 'book.html', {'table_numbers': table_numbers, 'user_data': user_data, 'initial_time_slot': initial_time_slot})
 
 
 
@@ -339,12 +340,17 @@ def cancel_reservation(request, reservation_id):
 
 
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Reservation
+from .models import Reservation,TimeSlot
 
 def edit_reservation(request, reservation_id):
     booking = get_object_or_404(Reservation, reservation_id=reservation_id)
     table_numbers = tables.objects.values_list('tab_id', flat=True)
-    
+
+    # Fetch all available time slots from the database
+    all_time_slots = TimeSlot.objects.values_list('slot_time', flat=True)
+     # Set the initial_time_slot to the currently booked time slot
+    initial_time_slot = booking.time_slot
+
     if request.method == 'POST':
         # Handle form submission for updating reservation details
         booking.name = request.POST['name']
@@ -353,12 +359,16 @@ def edit_reservation(request, reservation_id):
         booking.num_of_persons = request.POST['num_of_persons']
         booking.table_id = tables.objects.get(tab_id=request.POST['table_id'])
         booking.reservation_date = request.POST['reservation_date']
-        booking.save()
         
+        # Update the time slot by querying the TimeSlot model
+        booking.time_slot = TimeSlot.objects.get(slot_time=request.POST['time_slot'])
+        booking.save()
+
         # Redirect back to the booking confirmation page or any other desired page
         return redirect('booking_confirm')
 
-    return render(request, 'edit_reservation.html', {'booking': booking, 'table_numbers': table_numbers})
+    return render(request, 'edit_reservation.html', {'booking': booking, 'table_numbers': table_numbers, 'all_time_slots': all_time_slots, 'initial_time_slot': initial_time_slot})
+
 
 
 def admin_login(request):
