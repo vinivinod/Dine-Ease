@@ -118,7 +118,21 @@ class menus(models.Model):
 
     def __str__(self):
         return self.name
-    
+
+from django.db import models
+
+class Cart(models.Model):
+    item_number = models.AutoField(primary_key=True)
+    item_name = models.CharField(max_length=255)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    quantity = models.PositiveIntegerField()
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return self.item_name
+
+
+
 class hmenus(models.Model):
     name=models.CharField(max_length=100)
     desc=models.CharField(max_length=300)
@@ -146,6 +160,7 @@ class Reservation(models.Model):
     phone = models.CharField(max_length=15)
     email = models.EmailField()
     num_of_persons = models.PositiveIntegerField()
+    time_slot = models.CharField(max_length=20, null=True, blank=True)  # Add the time_slot field
     table_id = models.ForeignKey('home.tables', on_delete=models.CASCADE,null=True)  # Use string reference
     reservation_date = models.DateField()
     is_active = models.BooleanField(default=True)

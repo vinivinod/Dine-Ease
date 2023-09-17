@@ -212,6 +212,7 @@
                 <strong>Email:</strong> {{ booking.email }}<br>
                 <strong>Phone:</strong> {{ booking.phone }}<br>
                 <strong>Reservation Date:</strong> {{ booking.reservation_date }}<br>
+                <strong>Time Slot:</strong> {{ booking.time_slot }}<br>
                 <strong>Number of Persons:</strong> {{ booking.num_of_persons }}<br>
                 <strong>Table Number:</strong> {{ booking.table_id }}<br><br>
                 {% if booking.menu_item %}
@@ -229,20 +230,22 @@
                     <input type="hidden" name="reservation_id" value="{{ booking.reservation_id }}">
                     <button type="button" class="btn btn-danger" onclick="confirmCancellation()">Cancel Booking</button>
                 </form>
+                <!-- Button to move to the payment page -->
+                <a href="{% url 'payment' %}" class="btn-primary2">Pay Now</a>
             </div>
+        </div>
         {% endif %}
         {% endfor %}
         <p>Thank you for choosing our restaurant. We look forward to serving you!</p>
+                <!-- Button to go back to the booking page -->
+                <a href="{% url 'add_reservation' %}" class="btn-primary2">Book Table</a>
+
+                
         {% else %}
         <!-- If there are no bookings, display "No booking yet" -->
         <p>No booking yet</p>
         <p>Please click the button to Book Your Table</p>
     {% endif %}
-        <!-- Button to go back to the booking page -->
-        <a href="{% url 'add_reservation' %}" class="btn-primary2">Book Table</a>
-
-        <!-- Button to move to the payment page -->
-        <a href="{% url 'payment' %}" class="btn-primary2">Proceed to Payment</a>
     </div>
     <script>
         function confirmCancellation() {

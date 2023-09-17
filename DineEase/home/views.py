@@ -42,8 +42,7 @@ def menumore(request):
     return render(request,'menumore.html',{'Menus': Menus})
 
 
-def cart(request):
-    return render(request,'cart.html')
+
 
 # def loginn(request):
 #     if request.method=="POST":
@@ -232,6 +231,8 @@ from django.contrib import messages
 from .models import Reservation, tables
 import uuid
 
+from django.db import transaction
+
 def add_reservation(request):
     table_numbers = tables.objects.values_list('tab_id', flat=True)
     selected_table = None  # Initialize selected_table outside the if statement
@@ -243,35 +244,34 @@ def add_reservation(request):
         reservation_date = request.POST.get('reservation_date')
         num_of_persons = request.POST.get('num_of_persons')
         table_id = request.POST.get('table_id')
+        time_slot = request.POST.get('time_slot')  # Assuming you have added the time_slot field
 
-        existing_reservation = Reservation.objects.filter(
-            table_id=table_id,
-            reservation_date=reservation_date
-        ).first()
+        with transaction.atomic():
+            # Use select_for_update to lock the selected table row
+            selected_table = tables.objects.select_for_update().get(tab_id=table_id)
 
-        if existing_reservation:
-            messages.error(request, 'Table already reserved for the selected date.')
-        else:
-            try:
-                selected_table = tables.objects.get(tab_id=table_id)
-            except tables.DoesNotExist:
-                selected_table = None
-
-        if selected_table:
-            reservation = Reservation(
-                reservation_id=str(uuid.uuid4()),
-                name=name,
-                email=email,
-                phone=phone,
+            existing_reservation = Reservation.objects.filter(
+                table_id=table_id,
                 reservation_date=reservation_date,
-                num_of_persons=num_of_persons,
-                table_id=selected_table,
-            )
-            reservation.save()
-            messages.success(request, 'Reservation added successfully!')
-            return redirect('booking_confirm')
-        else:
-            messages.error(request, 'Invalid table selected.')
+                time_slot=time_slot  # Check for the same time slot as well
+            ).first()
+
+            if existing_reservation:
+                messages.error(request, 'Table already reserved for the selected date and time slot.')
+            else:
+                reservation = Reservation(
+                    reservation_id=str(uuid.uuid4()),
+                    name=name,
+                    email=email,
+                    phone=phone,
+                    reservation_date=reservation_date,
+                    num_of_persons=num_of_persons,
+                    table_id=selected_table,
+                    time_slot=time_slot  # Save the selected time slot
+                )
+                reservation.save()
+                messages.success(request, 'Reservation added successfully!')
+                return redirect('booking_confirm')
 
     user = request.user
     user_data = {
@@ -496,6 +496,39 @@ def delete_menu_item(request, menu_id):
 
     # Redirect to the menu list page or update the menu_items queryset accordingly
     return redirect('menu_list')
+
+# views.py
+
+from django.http import JsonResponse
+from .models import menus
+
+def cart(request):
+    if request.method == 'POST':
+        item_name = request.POST.get('item_name')
+        item_price = request.POST.get('item_price')
+        
+        # Check if the item already exists in the cart
+        existing_item = menus.objects.filter(name=item_name).first()
+
+        if existing_item:
+            # If item exists, update its quantity and total price
+            existing_item.quantity += 1
+            existing_item.total_price = existing_item.quantity * existing_item.price
+            existing_item.save()
+        else:
+            # If item doesn't exist, create a new cart item
+            new_item = menus(
+                name=item_name,
+                price=item_price,
+                quantity=1,  # Set the initial quantity to 1
+                total_price=item_price,  # Set the initial total price
+            )
+            new_item.save()
+
+        return JsonResponse({'message': 'Item added to cart successfully'})
+
+    return JsonResponse({'message': 'Invalid request'}, status=400)
+
 
 def emp_index(request):
     return render(request,'employee/emp_index.html')
