@@ -555,7 +555,11 @@
 												{% if menu_item.active %}
 												<tr>
 													<td>#{{ menu_item.id }}</td> 
+													{% if menu_item.img %}
 													<td><img class="tbl-thumb" src="{{ menu_item.img.url }}" alt="Product Image" /></td>
+													{% else %}
+													<p>No image available</p>
+													{% endif %}
 													<td>{{ menu_item.name }}</td>
 													<td>{{ menu_item.category }}</td>
 													<td>{{ menu_item.submenu }}</td>

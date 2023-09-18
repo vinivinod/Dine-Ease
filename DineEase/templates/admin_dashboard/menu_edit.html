@@ -342,32 +342,42 @@
 													{% csrf_token %}
 													<div class="col-md-6">
 														<label for="Mname" class="form-label">Item name</label>
-														<input type="text" value="{{ menu_items.name}}"  class="form-control slug-title" placeholder="Menu Item name" name="Mname" id="Mname">
+														<input type="text" value="{{ menu_items.name }}" class="form-control slug-title" placeholder="Menu Item name" name="Mname" id="Mname" oninput="validateItemName(this)">
+														<span id="item-name-error" style="color: red;"></span> <!-- Display error message here -->
 													</div>
+													
 													<div class="col-md-6">
 														<label for="Mcategory" class="form-label">Category</label>
-                                                        <input type="text" value="{{ menu_items.category}}"  class="form-control slug-title" placeholder="Menu Item name" name="Mcategory" id="Mcategory"> 
-														{% comment %} <select class="form-control" name="Mcategory" id="Mcategory" value="{{ menu_items.category}}" >
+														<input type="text" value="{{ menu_items.category }}" class="form-control slug-title" placeholder="Menu Item name" name="Mcategory" id="Mcategory" oninput="validateCategory(this)">
+														<span id="category-error" style="color: red;"></span> <!-- Display error message here -->
+													</div>
+													{% comment %} <select class="form-control" name="Mcategory" id="Mcategory" value="{{ menu_items.category}}" >
 															<option value="">Select a category</option>
 															<option value="kerala">Kerala</option>
 															<option value="chineese">Chineese</option>
 															<option value="north indian">North indian</option>
 															<option value="soft drinks">Soft drinks</option>
 														</select>  {% endcomment %}
-													</div>
-													<div class="col-md-6">
-														<label for="Msubcategory" class="form-label">SubCategory</label>
-                                                        <input type="text" value="{{ menu_items.submenu}}"  class="form-control slug-title" placeholder="Menu Item name" name="Msubcategory" id="Msubcategory"> 
-													</div>
-													<div class="col-md-6">
-														<label for="Msubsubcategory" class="form-label">Sub-SubCategory</label>
-                                                        <input type="text" value="{{ menu_items.sub_submenu}}"  class="form-control slug-title" placeholder="Menu Item name" name="Msubsubcategory" id="Msubsubcategory"> 
-													</div>
+					
+														<div class="col-md-6">
+															<label for="Msubcategory" class="form-label">SubCategory</label>
+															<input type="text" value="{{ menu_items.submenu }}" class="form-control slug-title" placeholder="Menu Item name" name="Msubcategory" id="Msubcategory" oninput="validateSubCategory(this)">
+															<span id="subcategory-error" style="color: red;"></span> <!-- Display error message here -->
+														</div>
+														
+														<div class="col-md-6">
+															<label for="Msubsubcategory" class="form-label">Sub-SubCategory</label>
+															<input type="text" value="{{ menu_items.sub_submenu }}" class="form-control slug-title" placeholder="Menu Item name" name="Msubsubcategory" id="Msubsubcategory" oninput="validateSubSubCategory(this)">
+															<span id="subsubcategory-error" style="color: red;"></span> <!-- Display error message here -->
+														</div>
+														
 
 													<div class="col-md-6">
 														<label for="Mprice" class="form-label">Item price</label>
-														<input type="text" value="{{menu_items.price}}" class="form-control" placeholder="Item price" name="Mprice" id="Mprice">
+														<input type="text" value="{{ menu_items.price }}" class="form-control" placeholder="Item price" name="Mprice" id="Mprice" oninput="validateItemPrice(this)">
+														<span id="item-price-error" style="color: red;"></span> <!-- Display error message here -->
 													</div>
+													
 													<div class="col-md-12">
 														<label class="form-label">Description</label>
 														<input type="text" value="{{ menu_items.desc}}" class="form-control" name="Mdesc" rows="4" id="Mdesc">
@@ -428,6 +438,84 @@
 
 	<!-- custom js -->
 	<script src="{% static 'assets/js/custom.js' %}"></script>
+
+	<script>
+		function validateItemName(input) {
+			var itemName = input.value;
+			var itemnameRegex = /^[a-zA-Z\s]+$/; // Regular expression for alphabets and spaces only
+	
+			if (!itemnameRegex.test(itemName)) {
+				document.getElementById('item-name-error').innerText = "Item name should contain only alphabets and spaces.";
+				input.setCustomValidity("Invalid input");
+			} else {
+				document.getElementById('item-name-error').innerText = "";
+				input.setCustomValidity("");
+			}
+		}
+
+		function validateItemPrice(input) {
+			var itemPrice = input.value;
+			var itemPriceRegex = /^\d+$/; // Regular expression for numbers only
+	
+			if (!itemPriceRegex.test(itemPrice)) {
+				document.getElementById('item-price-error').innerText = "Item price should contain only numbers.";
+				input.setCustomValidity("Invalid input");
+			} else {
+				document.getElementById('item-price-error').innerText = "";
+				input.setCustomValidity("");
+			}
+		}
+
+		var availableCategories = [
+        'kerala', 'chineese', 'north indian', 'Arabian', 'beverages'
+    ];
+
+    function validateCategory(input) {
+        var userCategory = input.value.trim();
+        
+        if (!availableCategories.includes(userCategory)) {
+            document.getElementById('category-error').innerText = "Invalid category. Choose from available categories.";
+            input.setCustomValidity("Invalid input");
+        } else {
+            document.getElementById('category-error').innerText = "";
+            input.setCustomValidity("");
+        }
+    }
+
+	var availableSubcategories = [
+        'Breads', 'Curries', 'Rice Dishes', 'Appetizers', 'Main Course',
+        'Breads and Accompaniments', 'rollsNgrills', 'Hot Beverages', 'Cold Beverages'
+    ];
+
+    function validateSubCategory(input) {
+        var userSubCategory = input.value.trim();
+
+        if (!availableSubcategories.includes(userSubCategory)) {
+            document.getElementById('subcategory-error').innerText = "Invalid subcategory. Choose from available subcategories.";
+            input.setCustomValidity("Invalid input");
+        } else {
+            document.getElementById('subcategory-error').innerText = "";
+            input.setCustomValidity("");
+        }
+    }
+
+	var availableSubSubcategories = [
+        'Vegetarian', 'Non-Vegetarian', 'Water-based', 'Milk-based'
+    ];
+
+    function validateSubSubCategory(input) {
+        var userSubSubCategory = input.value.trim();
+
+        if (!availableSubSubcategories.includes(userSubSubCategory)) {
+            document.getElementById('subsubcategory-error').innerText = "Invalid sub-subcategory. Choose from available sub-subcategories.";
+            input.setCustomValidity("Invalid input");
+        } else {
+            document.getElementById('subsubcategory-error').innerText = "";
+            input.setCustomValidity("");
+        }
+    }
+	</script>
+	
 </body>
 
 

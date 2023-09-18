@@ -828,11 +828,11 @@
 			if (regex.test(itemPrice)) {
 				// Clear the error message if the input is valid
 				itemPriceError.textContent = "";
-				itemNameError.style.color = "";
+				itemNameError.style.color = "red";
 			} else {
 				// Display an error message if the input is not valid
 				itemPriceError.textContent = "Item price should contain only numbers.";
-				itemNameError.style.color = "red";
+				itemPriceError.style.color = "red";
 			}
 		}
 		function validateForm() {

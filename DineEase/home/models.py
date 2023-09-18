@@ -82,7 +82,6 @@ class menus(models.Model):
         ('Chineese', 'Chineese'),
         ('North Indian', 'North Indian'),
         ('Arabian', 'Arabian'),
-        ('Deserts', 'Deserts'),
         ('Beverages', 'Beverages'),
     )
 
@@ -90,12 +89,9 @@ class menus(models.Model):
         ('Breads', 'Breads'),
         ('Curries', 'Curries'),
         ('Rice Dishes','Rice Dishes'),
-        ('Seafoods','Seafoods'),
-        ('Deserts','Deserts'),
         ('Appetizers','Appetizers'),
         ('Main Course','Main Course'),
-        ('Tandoori delights','Tandoori delights'),
-        ('Chaats','Chaats'),
+        ('Breads & Accompaniments', 'Breads & Accompaniments'),
         ('Rolls & Grills','Rolls & Grills'),
         ('Hot Beverage','Hot Beverage'),
         ('Cold Beverage','Cold Beverage'),
@@ -104,7 +100,8 @@ class menus(models.Model):
     SUB_SUBMENU_CHOICES = (
         ('Vegetarian', 'Vegetarian'),
         ('Non-Vegetarian', 'Non-Vegetarian'),
-       
+        ('Water-based','Water-based'),
+        ('Milk-based','Milk-based')
     )
 
     name = models.CharField(max_length=100)
