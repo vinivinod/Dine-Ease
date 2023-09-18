@@ -327,6 +327,10 @@
 					<!-- navbar right -->
 					<div class="navbar-right">
 						<ul class="nav navbar-nav">
+							<form method="post" action="{% url 'admin_login' %}">
+								{% csrf_token %}
+								<button type="submit" class="btn btn-primary" style="margin-left: 850px;">Logout</button>
+							</form>
 							<!-- User Account -->
 							<!-- <li class="dropdown user-menu">
 								<button class="dropdown-toggle nav-link ec-drop" data-bs-toggle="dropdown"
@@ -519,7 +523,7 @@
 				<div class="content">
 					<!-- Top Statistics -->
 					<div class="row">
-						<div class="col-xl-3 col-sm-6 p-b-15 lbl-card">
+						{% comment %} <div class="col-xl-3 col-sm-6 p-b-15 lbl-card">
 							<div class="card card-mini dash-card card-1">
 								<div class="card-body">
 									<h2 class="mb-1">1,503</h2>
@@ -527,7 +531,7 @@
 									<span class="mdi mdi-account-arrow-left"></span>
 								</div>
 							</div>
-						</div>
+						</div> {% endcomment %}
 						{% comment %} <div class="col-xl-3 col-sm-6 p-b-15 lbl-card">
 							<div class="card card-mini dash-card card-2">
 								<div class="card-body">
