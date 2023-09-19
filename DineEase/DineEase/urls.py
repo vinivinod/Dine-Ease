@@ -18,10 +18,10 @@ from django.contrib import admin
 from django.urls import path,include
 from home.views import userlogin,register,loggout,login_page
 
-from home.views import index,menu,about,menumore,add_table,add_reservation,booking_confirm,cancel_reservation,edit_reservation
+from home.views import index,menu,about,menumore,add_table,add_reservation,booking_confirm,cancel_reservation,edit_reservation,res_list
 from home.views import payment,book_table,cart
 from home.views import admin_login,admin_index,add_menu,user_list,ad_MenuList,menu_list,menu_edit,delete_menu_item
-from home.views import emp_leave,emp_index,emp_about,emp_menu,emp_menumore,products_by_category,filtered_menus
+from home.views import emp_leave,emp_index,emp_add,emp_menu,emp_list,products_by_category,filtered_menus,emp_registration
 from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
 from django.conf import settings
@@ -52,7 +52,7 @@ urlpatterns = [
     path('booking_confirm/<int:menu_id>/',booking_confirm, name='booking_confirm'),
     path('cancel_reservation/<str:reservation_id>/', cancel_reservation, name='cancel_reservation'),
     path('edit_reservation/<str:reservation_id>/', edit_reservation, name='edit_reservation'),
- 
+    path('res_list/',res_list,name='res_list'),
     path('payment/',payment, name='payment'),
     path('book_table/', book_table, name='book_table'),
     path('cart/',cart, name='cart'),
@@ -70,11 +70,12 @@ urlpatterns = [
     path('menu_edit/<int:menu_id>/', menu_edit, name='menu_edit'),
     path('delete_menu_item/<int:menu_id>/',delete_menu_item,name='delete_menu_item'),
 
+    path('emp_registration',emp_registration,name='emp_registration'),
     path('emp_index/',emp_index, name='emp_index'),
-    path('emp_about/',emp_about, name='emp_about'),
-    path('emp_menu/',emp_menu, name='emp_menu'),
-    path('emp_menumore/',emp_menumore, name='emp_menumore'),
-    path('emp_leave/',emp_leave, name='emp_leave'),
+    path('emp_add/',emp_add, name='emp_add'),
+    # path('emp_menu/',emp_menu, name='emp_menu'),
+    path('emp_list/',emp_list, name='emp_list'),
+    # path('emp_leave/',emp_leave, name='emp_leave'),
 
     path('products/<str:category_name>/', products_by_category, name='products_by_category'),
     path('filtered-menus/<str:category>/<str:submenu>/<str:sub_submenu>/', filtered_menus, name='filtered_menus'),

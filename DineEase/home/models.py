@@ -37,8 +37,8 @@ class CustomUser(AbstractUser):
     
 
     ROLE_CHOICE = (
-        (CUSTOMER, 'Customer'),
-        (EMPLOYEE, 'Employee'),
+        (CUSTOMER, 'CUSTOMER'),
+        (EMPLOYEE, 'EMPLOYEE'),
     )
 
     username=None
@@ -49,7 +49,7 @@ class CustomUser(AbstractUser):
     email = models.EmailField(max_length=100, unique=True)
     phone = models.CharField(max_length=12, blank=True)
     password = models.CharField(max_length=128)
-    role = models.PositiveSmallIntegerField(choices=ROLE_CHOICE, blank=True, null=True,default='1')
+    role = models.IntegerField(choices=ROLE_CHOICE, blank=True, null=True,default='1')
 
     # date_joined = models.DateTimeField(auto_now_add=True)
     # last_login = models.DateTimeField(auto_now_add=True)
@@ -74,6 +74,23 @@ class CustomUser(AbstractUser):
     def has_module_perms(self, app_label):
         return True
 
+    def set_employee_role(self):
+        self.role=CustomUser.EMPLOYEE
+        self.save()
+
+from django.db import models
+
+class Employee(models.Model):
+    position = models.CharField(max_length=100)  # Field for the employee's position
+    years_of_experience = models.PositiveIntegerField()  # Field for years of experience
+    user=models.OneToOneField(CustomUser,on_delete=models.CASCADE)
+    # name = models.CharField(max_length=50)
+    # email = models.EmailField(max_length=100, unique=True)
+    # phone = models.CharField(max_length=12, blank=True)
+    # password = models.CharField(max_length=128)
+
+    def __str__(self):
+        return self.position
 
 
 class menus(models.Model):
@@ -190,3 +207,11 @@ class TimeSlot(models.Model):
     class Meta:
         verbose_name = "Time Slot"
         verbose_name_plural = "Time Slots"
+
+# from django.db import models
+# from django.contrib.auth.models import CustomUser
+# from home import menus  # Import your Menu model
+
+# class Fav(models.Model):
+#     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+#     items = models.ManyToManyField(menus)  # Assuming Menu is the model for products

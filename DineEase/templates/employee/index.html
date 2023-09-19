@@ -61,24 +61,24 @@
 						</li>
 
 						<!-- Vendors -->
-						<li class="has-sub">
+						{% comment %} <li class="has-sub">
 							<a class="sidenav-item-link" href="javascript:void(0)">
 								<i class="mdi mdi-briefcase-outline"></i>
-								<span class="nav-text">Reservation</span> <b class="caret"></b>
+								<span class="nav-text">Table Booking</span> <b class="caret"></b>
 							</a>
 							<div class="collapse">
-								<ul class="sub-menu" id="vendors" data-parent="#sidebar-menu">
+								<ul class="sub-menu" id="vendors" data-parent="#sidebar-menu"> {% endcomment %}
 									{% comment %} <li class="">
 										<a class="sidenav-item-link" href="vendor-card.html">
 											<span class="nav-text">Vendor Grid</span>
 										</a>
 									</li> {% endcomment %}
 
-									<li class="">
-										<a class="sidenav-item-link" href="{% url 'res_list' %}">
+									{% comment %} <li class="">
+										<a class="sidenav-item-link" href="tbl_booking_list.html">
 											<span class="nav-text">Reservation List</span>
 										</a>
-									</li>
+									</li> {% endcomment %}
 									{% comment %} <li class="">
 										<a class="sidenav-item-link" href="vendor-profile.html">
 											<span class="nav-text">Vendors Profile</span>
@@ -89,38 +89,38 @@
 											<span class="nav-text">Add Vendors</span>
 										</a>
 									</li> {% endcomment %}
-								</ul>
+								{% comment %} </ul>
 							</div>
-						</li>
+						</li> {% endcomment %}
 
 						<!-- Users -->
-						<li class="has-sub">
+						{% comment %} <li class="has-sub">
 							<a class="sidenav-item-link" href="javascript:void(0)">
 								<i class="mdi mdi-account-multiple-outline"></i>
 								<span class="nav-text">Customers</span> <b class="caret"></b>
 							</a>
 							<div class="collapse">
-								<ul class="sub-menu" id="users" data-parent="#sidebar-menu">
-									{% comment %} <li>
+								<ul class="sub-menu" id="users" data-parent="#sidebar-menu"> 
+									 <li>
 										<a class="sidenav-item-link" href="user-card.html">
 											<span class="nav-text">User Grid</span>
 										</a>
-									</li>  {% endcomment %}
+									</li>  
 
 									<li class="">
 										<a class="sidenav-item-link" href="{% url 'user_list' %}">
 											<span class="nav-text">User List</span>
 										</a>
-									</li>
-									{% comment %} <li class="">
+									</li> 
+									 <li class="">
 										<a class="sidenav-item-link" href="user-profile.html">
 											<span class="nav-text">Users Profile</span>
 										</a>
-									</li> {% endcomment %}
+									</li> 
 								</ul>
 							</div>
 							<hr>
-						</li> 
+						</li>  {% endcomment %}
 
 						<!-- Category -->
 						<!-- <li class="has-sub">
@@ -145,24 +145,24 @@
 						</li> -->
 
 						<!-- Products -->
-						<li class="has-sub">
+						{% comment %} <li class="has-sub">
 							<a class="sidenav-item-link" href="javascript:void(0)">
 								<!-- <i class="mdi mdi-palette-advanced"></i> -->
 								<i class="mdi mdi-package-variant-closed"></i>
-								<span class="nav-text">Menu</span> <b class="caret"></b>
+								<span class="nav-text">Employee</span> <b class="caret"></b>
 							</a>
 							<div class="collapse">
 								<ul class="sub-menu" id="products" data-parent="#sidebar-menu">
 									<li class="">
-										<a class="sidenav-item-link" href="{% url 'add_menu' %}">
-											<span class="nav-text">Add Menu</span>
+										<a class="sidenav-item-link" href="{% url 'emp_add' %}">
+											<span class="nav-text">Add Employee</span>
 										</a>
 									</li>
 									<li class="">
 										<a class="sidenav-item-link" href="{% url 'menu_list' %}">
-											<span class="nav-text">List Menu</span>
+											<span class="nav-text">Employee Menu</span>
 										</a>
-									</li>
+									</li> {% endcomment %}
 									<!-- <li class="">
 										<a class="sidenav-item-link" href="product-grid.html">
 											<span class="nav-text">Grid Product</span>
@@ -177,28 +177,28 @@
 							</div>
 						</li>
 
-						<!-- Employees-->
-						<li class="has-sub">
+						<!-- Orders -->
+						<!-- <li class="has-sub">
 							<a class="sidenav-item-link" href="javascript:void(0)">
-								<i class="mdi mdi-account-multiple-outline"></i>
-								<span class="nav-text">Employees</span> <b class="caret"></b>
+								<i class="mdi mdi-cart-outline"></i>
+								<span class="nav-text">Orders</span> <b class="caret"></b>
 							</a>
 							<div class="collapse">
 								<ul class="sub-menu" id="orders" data-parent="#sidebar-menu">
 									<li class="">
-										<a class="sidenav-item-link" href="{% url 'emp_add' %}">
-											<span class="nav-text">Add Employee </span>
+										<a class="sidenav-item-link" href="new-order.html">
+											<span class="nav-text">Order list</span>
 										</a>
 									</li>
 									<li class="">
-										<a class="sidenav-item-link" href="{% url 'emp_list' %}">
-											<span class="nav-text">Employee List</span>
+										<a class="sidenav-item-link" href="order-detail.html">
+											<span class="nav-text">Order Detail</span>
 										</a>
-									</li> 
+									</li>
 									
 								</ul>
 							</div>
-						</li>
+						</li> -->
 
 						<!-- Invoice -->
 						<!-- <li class="has-sub">
@@ -327,7 +327,7 @@
 					<!-- navbar right -->
 					<div class="navbar-right">
 						<ul class="nav navbar-nav">
-							<form method="post" action="{% url 'admin_login' %}">
+							<form method="post" action="{% url 'login-submit' %}">
 								{% csrf_token %}
 								<button type="submit" class="btn btn-primary" style="margin-left: 850px;">Logout</button>
 							</form>
@@ -523,7 +523,7 @@
 				<div class="content">
 					<!-- Top Statistics -->
 					<div class="row">
-						<h style="text-align: center; font-weight: bold; font-size:24px; ">Admin-Dashboard</h>
+						<h style="text-align: center; font-weight: bold; font-size:24px; ">Employee-Dashboard</h>
 						{% comment %} <div class="col-xl-3 col-sm-6 p-b-15 lbl-card">
 							<div class="card card-mini dash-card card-1">
 								<div class="card-body">

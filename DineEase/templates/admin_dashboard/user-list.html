@@ -62,25 +62,25 @@
 						</li>
 
 						<!-- Vendors -->
-						{% comment %} <li class="has-sub">
+						<li class="has-sub">
 							<a class="sidenav-item-link" href="javascript:void(0)">
 								<i class="mdi mdi-briefcase-outline"></i>
-								<span class="nav-text">Vendors</span> <b class="caret"></b>
+								<span class="nav-text">Reservation</span> <b class="caret"></b>
 							</a>
 							<div class="collapse">
 								<ul class="sub-menu" id="vendors" data-parent="#sidebar-menu">
-									<li class="">
+									{% comment %} <li class="">
 										<a class="sidenav-item-link" href="{% url 'vendor-card.html' %}">
 											<span class="nav-text">Vendor Grid</span>
 										</a>
-									</li>
+									</li> {% endcomment %}
 
 									<li class="">
-										<a class="sidenav-item-link" href="{% url 'vendor-list.html' %}">
-											<span class="nav-text">Vendor List</span>
+										<a class="sidenav-item-link" href="{% url 'res_list' %}">
+											<span class="nav-text">Reservation List</span>
 										</a>
 									</li>
-									<li class="">
+									{% comment %} <li class="">
 										<a class="sidenav-item-link" href="{% url 'vendor-profile.html' %}">
 											<span class="nav-text">Vendors Profile</span>
 										</a>
@@ -89,10 +89,10 @@
 										<a class="sidenav-item-link" href="{% url 'add-vendor.html' %}">
 											<span class="nav-text">Add Vendors</span>
 										</a>
-									</li>
+									</li> {% endcomment %}
 								</ul>
 							</div>
-						</li> {% endcomment %}
+						</li> 
 
 						<!-- Users -->
 						<li class="has-sub active">
@@ -178,28 +178,28 @@
 							</div>
 						</li>
 
-						<!-- Orders -->
-						{% comment %} <li class="has-sub">
+						<!-- Employees-->
+						<li class="has-sub">
 							<a class="sidenav-item-link" href="javascript:void(0)">
-								<i class="mdi mdi-cart-outline"></i>
-								<span class="nav-text">Orders</span> <b class="caret"></b>
+								<i class="mdi mdi-account-multiple-outline"></i>
+								<span class="nav-text">Employees</span> <b class="caret"></b>
 							</a>
 							<div class="collapse">
 								<ul class="sub-menu" id="orders" data-parent="#sidebar-menu">
 									<li class="">
-										<a class="sidenav-item-link" href="new-order.html">
-											<span class="nav-text">Order list</span>
+										<a class="sidenav-item-link" href="{% url 'emp_add' %}">
+											<span class="nav-text">Add Employee </span>
 										</a>
 									</li>
 									<li class="">
-										<a class="sidenav-item-link" href="{% url 'order-detail.html' %}">
-											<span class="nav-text">Order Detail</span>
+										<a class="sidenav-item-link" href="{% url 'emp_list' %}">
+											<span class="nav-text">Employee List</span>
 										</a>
-									</li>
+									</li> 
 									
 								</ul>
 							</div>
-						</li> {% endcomment %}
+						</li>
 
 						<!-- Invoice -->
 						{% comment %} <li class="has-sub">

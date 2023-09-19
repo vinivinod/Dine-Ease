@@ -156,6 +156,18 @@
 .add-to-table-button {
   margin-left: 5px;
 }
+/* Increase the size of the heart icon */
+.wishlist-icon i {
+    font-size: 24px; /* Adjust the size as needed */
+    color: #ccc; /* Default color */
+    transition: color 0.2s; /* Add a smooth color transition effect */
+}
+
+/* Change the color to red when the icon is clicked */
+.wishlist-icon.active i {
+    color: red;
+}
+
 </style>
 
 </head>
@@ -192,17 +204,22 @@
                 <a class="nav-link" href="{% url 'about' %}">About</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'add_reservation' %}">Book Table</a>
-              </li>
-              <li class="nav-item">
                 {% if user.is_authenticated %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'add_reservation' %}">Book Table</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'booking_confirm'  %}">Bookings </a>
+                </li>
+                <li class="nav-item">
                   <a class="nav-link" href="{% url 'loggout' %}">Logout</a>
+                   </li>
+                   <a href="#" class="nav-item nav-link" style="color: white; font-weight: bold;">Welcome, {{user.name}}
                 {% else %}
                   <a class="nav-link" href="{% url 'login' %}">Login</a>
                 {% endif %}
               </li>
-              <a href="#" class="nav-item nav-link" style="color: white; font-weight: bold;">Welcome, {{user.name}}
-            </ul>
+              </ul>
             <div class="user_option">
               {% comment %} <a href="" class="user_link">
                 <i class="fa fa-user" aria-hidden="true"></i>
@@ -472,6 +489,11 @@
                   Rs. {{ menu_item.price }}
                   </h6>
                   <div class="button-container">
+                    {% comment %} <span class="wishlist-icon" data-item-id="{{ menu_item.id }}">
+                      <i class="fa fa-heart"></i>
+                    </span> {% endcomment %}
+                  &ensp;
+                  
                     <a href="{% url 'booking_confirm' %}" class="btn btn-primary add-to-table-button">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-table" viewBox="0 0 16 16">
                           <path d="M0 6.5A.5.5 0 0 1 .5 6H4v7a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V6h9.5a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5H14a2 2 0 0 1-2-2v-6a2 2 0 0 1-2-2V1a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v5a2 2 0 0 1-2 2z"/>
@@ -689,7 +711,27 @@
           });
       });
   </script>
-  
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".wishlist-icon").on("click", function () {
+            var icon = $(this).find("i");
+
+            // Toggle the color style to change the icon color to red
+            if (icon.hasClass("red-heart")) {
+                icon.removeClass("red-heart");
+            } else {
+                icon.addClass("red-heart");
+            }
+
+            // Rest of your code for AJAX and handling wishlist functionality
+            var itemID = $(this).data("item-id");
+            // ... (continue with your AJAX code)
+        });
+    });
+</script>
+
+
 
 </body>
 

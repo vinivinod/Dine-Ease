@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages,auth
 from django.http import HttpResponse
-from .models import menus,hmenus,tables,Reservation,CustomUser
+from .models import Employee, menus,hmenus,tables,Reservation,CustomUser
 from .forms import  YourForm
 from django.contrib.auth import get_user_model
 
@@ -87,22 +87,40 @@ def userlogin(request):
         password = request.POST.get('password')
         print(email)  # Print the email for debugging
         print(password)  # Print the password for debugging
-        if email and password:
-            user = authenticate(request, email=email, password=password)
-            print("Authenticated user:", user)  # Print the user for debugging
-            if user is not None:
-                login(request, user)
-                print("User authenticated:", user.email, user.role)
-                return redirect('http://127.0.0.1:8000/')
+
+        user = authenticate(email=email, password=password)
+        
+        if user is not None:
+            login(request, user)
+            if user.role == CustomUser.EMPLOYEE:
+                return redirect('emp_index')
             else:
-                error_message = "Invalid login credentials."
-                return render(request, 'LoginVal.html', {'error_message': error_message})
+                return redirect('')  # Redirect to the custom dashboard for non-admin users
         else:
-            error_message = "Please fill out all fields."
-            return render(request, 'LoginVal.html', {'error_message': error_message})
+            messages.error(request, "Invalid Login")
+            return redirect('login-submit')
+    else:
+        return render(request, 'LoginVal.html')
+        
+       #.............     
+        # if email and password:
+        #     user = authenticate(request, email=email, password=password)
+        #     print("Authenticated user:", user)  # Print the user for debugging
+        #     if user is not None:
+        #         login(request, user)
+        #         print("User authenticated:", user.email, user.role)
+        #         return redirect('http://127.0.0.1:8000/')
+        #     else:
+        #         error_message = "Invalid login credentials."
+        #         return render(request, 'LoginVal.html', {'error_message': error_message})
+        # else:
+        #     error_message = "Please fill out all fields."
+        #     return render(request, 'LoginVal.html', {'error_message': error_message})
 
     # If the request method is not POST (GET request)
-    
+    #...............
+
+
 
 def register(request):
     if request.method == 'POST':
@@ -369,6 +387,9 @@ def edit_reservation(request, reservation_id):
 
     return render(request, 'edit_reservation.html', {'booking': booking, 'table_numbers': table_numbers, 'all_time_slots': all_time_slots, 'initial_time_slot': initial_time_slot})
 
+def res_list(request):
+    res_lists = Reservation.objects.all()  # Retrieve all menu items from the database
+    return render(request,'admin_dashboard/tbl_booking_list.html',{'res_lists':res_lists})
 
 
 def admin_login(request):
@@ -541,12 +562,39 @@ def cart(request):
 
 
 def emp_index(request):
-    return render(request,'employee/emp_index.html')
-def emp_about(request):
-    return render(request,'employee/emp_about.html')
-def emp_menumore(request):
-    return render(request,'employee/emp_menumore.html')
+    return render(request,'employee/index.html')
+def emp_add(request):
+    return render(request,'admin_dashboard/emp-add.html')
+
+
+def emp_list(request):
+    emp_lists = Employee.objects.all()  # Retrieve all menu items from the database
+    return render(request,'admin_dashboard/emp-list.html',{'emp_lists':emp_lists})
+
 def emp_menu(request):
     return render(request,'employee/emp_menu.html')
 def emp_leave(request):
     return render(request,'employee/emp_leave.html')
+
+
+def emp_registration(request):
+    if request.method=='POST':
+        name=request.POST.get('name')
+        email=request.POST.get('email')
+        phone=request.POST.get('phone')
+        password=request.POST.get('password')
+        position=request.POST.get('position')
+        years_of_experience=request.POST.get('years_of_experience')
+    
+        role=CustomUser.EMPLOYEE
+        if CustomUser.objects.filter(email=email,role=CustomUser.EMPLOYEE).exists():
+            return render(request,'employee/emp_reg.html')
+        else:
+            user=CustomUser.objects.create_user(name=name,email=email,phone=phone,password=password)
+            user.role = CustomUser.EMPLOYEE
+            user.save()
+            empRegister = Employee(user=user,position=position,years_of_experience=years_of_experience)
+            empRegister.save()
+            return redirect('menu_list')
+    else:
+        return render(request,'employee/emp-add.html')
