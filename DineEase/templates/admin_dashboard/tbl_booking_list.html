@@ -291,12 +291,12 @@
 						</li> {% endcomment %}
 
 						<!-- Error page -->
-						<li class="">
+						{% comment %} <li class="">
 							<a class="sidenav-item-link" href="404.html">
 								<i class="mdi mdi-alert-circle-outline"></i>
 								<span class="nav-text">Error page</span>
 							</a>
-						</li>
+						</li> {% endcomment %}
 					</ul>
 				</div>
 			</div>
@@ -331,10 +331,10 @@
 						<ul class="nav navbar-nav">
 							<!-- User Account -->
 							<li class="dropdown user-menu">
-								<button class="dropdown-toggle nav-link ec-drop" data-bs-toggle="dropdown"
+								{% comment %} <button class="dropdown-toggle nav-link ec-drop" data-bs-toggle="dropdown"
 									aria-expanded="false">
 									<img src="assets/img/user/user-1.png" class="user-image" alt="User Image" />
-								</button>
+								</button> {% endcomment %}
 								<ul class="dropdown-menu dropdown-menu-right ec-dropdown-menu">
 									<!-- User image -->
 									<li class="dropdown-header">
@@ -354,9 +354,9 @@
 								</ul>
 							</li>
 							<li class="dropdown notifications-menu custom-dropdown">
-								<button class="dropdown-toggle notify-toggler custom-dropdown-toggler">
+								{% comment %} <button class="dropdown-toggle notify-toggler custom-dropdown-toggler">
 									<i class="mdi mdi-bell-ring-outline"></i>
-								</button>
+								</button> {% endcomment %}
 
 								<div class="card card-default dropdown-notify dropdown-menu-right mb-0">
 									<div class="card-header card-header-border-bottom px-3">
@@ -561,7 +561,7 @@
 														<td>{{ resv_lists.reservation_date }}</td>
 														{% comment %} <td><span class="badge badge-success">Active</span></td> {% endcomment %}
 														<td>
-															<div class="btn-group">
+															{% comment %} <div class="btn-group">
 																<button type="button" class="btn btn-outline-success">Info</button>
 																<button type="button" class="btn btn-outline-success dropdown-toggle dropdown-toggle-split"
 																	data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
@@ -571,7 +571,7 @@
 																	<a class="dropdown-item" href="#">Edit</a>
 																	<a class="dropdown-item" href="#">Delete</a>
 																</div>
-															</div>
+															</div> {% endcomment %}
 														</td>
 													</tr>
 													{% endif %}

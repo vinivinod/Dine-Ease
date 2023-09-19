@@ -28,6 +28,11 @@
 	<!-- FAVICON -->
 	<link href="{% static 'assets/img/favicon.png' %}" rel="shortcut icon" />
 
+	<style>
+		#itemNameError {
+			color: red; /* Set the text color to red for the error message */
+		}
+	</style>
 </head>
 
 <body class="ec-header-fixed ec-sidebar-fixed ec-sidebar-dark ec-header-light" id="body">
@@ -74,7 +79,7 @@
 									</li> {% endcomment %}
 
 									<li class="">
-										<a class="sidenav-item-link" href="tbl_booking_list.html">
+										<a class="sidenav-item-link" href="{% url 'res_list' %}">
 											<span class="nav-text">Reservation List</span>
 										</a>
 									</li>
@@ -542,7 +547,7 @@
 													{% csrf_token %}
 													<div class="col-md-6">
 														<label for="Ename" class="form-label">Employee name</label>
-														<input type="text" class="form-control slug-title" placeholder="Employee name" name="name" id="Ename" >
+														<input type="text" class="form-control slug-title" placeholder="Employee name" name="name" id="Ename">
 														<small class="text-danger" id="itemNameError"></small>
 													</div><br>
 													
@@ -598,25 +603,32 @@
 													
 													<div class="col-md-6">
 														<label for="Eemail" class="form-label">Email</label>
-														<input type="text" class="form-control" placeholder="Employee email" name="email" id="Eemail" >
+														<input type="text" class="form-control" placeholder="Employee email" name="email" id="Eemail">
 														<small id="itemPriceError" class="text-danger"></small>
 													</div>
 													<div class="col-md-6">
 														<label class="form-label">Phone Number</label>
-														<input type="text" class="form-control" placeholder="Employee phone" name="phone" id="Ephn" >
+														<input type="text" class="form-control" placeholder="Employee phone" name="phone" id="Ephn">
+														<small id="phoneNumberError" class="text-danger"></small>
 													</div>
 													<div class="col-md-6">
 														<label class="form-label">Password</label>
-														<input type="text" class="form-control" placeholder="Employee pswrd" name="password" id="Epswrd" >
+														<input type="password" class="form-control" placeholder="Employee password" name="password" id="Epswrd">
+														<small id="passwordError" class="text-danger"></small>
 													</div>
+													
+													
 													<div class="col-md-6">
 														<label class="form-label">Position</label>
-														<input type="text" class="form-control" placeholder="Employee position" name="position" id="Epsn" >
+														<input type="text" class="form-control" placeholder="Employee position" name="position" id="Epsn">
+														<small id="positionError" class="text-danger"></small>
 													</div>
 													<div class="col-md-6">
 														<label class="form-label">Year-of-Experience</label>
-														<input type="text" class="form-control" placeholder="Employee yoe" name="years_of_experience" id="Eyoe" >
+														<input type="text" class="form-control" placeholder="Employee yoe" name="years_of_experience" id="Eyoe">
+														<small id="yoeError" class="text-danger"></small>
 													</div>
+													
 													{% comment %} <div class="col-md-6">
 														<label for="Mimg" class="form-label">Upload Image</label>
 														<input type="file" class="form-control" name="Mimg" id="Mimg">
@@ -674,211 +686,113 @@
 	<!-- custom js -->
 	<script src="{% static 'assets/js/custom.js' %}"></script>
 	<script>
-		// Add JavaScript to dynamically update subcategories based on the selected category
-		document.getElementById("Mcategory").addEventListener("change", updateSubcategories);
-		document.getElementById("Msubcategory").addEventListener("change", updateSubSubcategories);
-
-		function updateSubcategories() {
-			var category = document.getElementById("Mcategory").value;
-			var subcategoryDropdown = document.getElementById("Msubcategory");
-			var subsubcategoryDropdown = document.getElementById("Msubsubcategory");
-
-			// Clear existing options in the subcategory and sub-subcategory dropdowns
-			subcategoryDropdown.innerHTML = '<option value="">Select a subcategory</option>';
-			subsubcategoryDropdown.innerHTML = '<option value="">Select a sub-subcategory</option>';
-			
-			if (category === "kerala") {
-				// Add subcategories specific to Kerala
-				var keralaSubcategories = ["Breads", "Curries", "Rice Dishes"];
-				keralaSubcategories.forEach(function (subcategory) {
-					var option = document.createElement("option");
-					option.value = subcategory;
-					option.text = subcategory;
-					subcategoryDropdown.appendChild(option);
-				});
-			} else if (category === "chineese") {
-				// Add subcategories specific to Chineese
-				var chineeseSubcategories = ["Appentizers", "Main Course"];
-				chineeseSubcategories.forEach(function (subcategory) {
-					var option = document.createElement("option");
-					option.value = subcategory;
-					option.text = subcategory;
-					subcategoryDropdown.appendChild(option);
-				});
-			}else if (category === "north indian") {
-				
-				var northSubcategories = ["Breads and Accompaniments", "Curries","Rice Dishes"];
-				northSubcategories.forEach(function (subcategory) {
-					var option = document.createElement("option");
-					option.value = subcategory;
-					option.text = subcategory;
-					subcategoryDropdown.appendChild(option);
-				});
-			}else if (category === "arabian") {
-				
-				var arabianSubcategories = ["Appentizers","Rolls & Grills", "Main Course"];
-				arabianSubcategories.forEach(function (subcategory) {
-					var option = document.createElement("option");
-					option.value = subcategory;
-					option.text = subcategory;
-					subcategoryDropdown.appendChild(option);
-				});
-			}else if (category === "beverages") {
-				
-				var beveragesSubcategories = ["Hot Beverages","Cold Beverages"];
-				beveragesSubcategories.forEach(function (subcategory) {
-					var option = document.createElement("option");
-					option.value = subcategory;
-					option.text = subcategory;
-					subcategoryDropdown.appendChild(option);
-				});
-			}
-			// Add more conditions for other categories if needed
-		};
-
-		var categoryDropdown = document.getElementById("Mcategory");
-		var subcategoryDropdown = document.getElementById("Msubcategory");
-		var subsubcategoryDropdown = document.getElementById("Msubsubcategory");
-
-		categoryDropdown.addEventListener("change", updateSubSubcategories);
-		subcategoryDropdown.addEventListener("change", updateSubSubcategories);
-
-		function updateSubSubcategories() {
-			var category = document.getElementById("Mcategory").value;
-			var subcategory = document.getElementById("Msubcategory").value;
-			var subsubcategoryDropdown = document.getElementById("Msubsubcategory");
-
-			// Clear existing options in the sub-subcategory dropdown
-			subsubcategoryDropdown.innerHTML = '<option value="">Select a sub-subcategory</option>';
-
-			//var selectedSubcategory = subcategoryDropdown.value;
-
-			if (category === "kerala") {
-				// Add sub-subcategory options specific to Kerala Subcategory 1
-				var subSubcategories = ["Vegetarian", "Non-Vegetarian"];
-				subSubcategories.forEach(function (subsubcategory) {
-					var option = document.createElement("option");
-					option.value = subsubcategory;
-					option.text = subsubcategory;
-					subsubcategoryDropdown.appendChild(option);
-				});
-			} else if (category === "chineese") {
-				var subSubcategories = ["Vegetarian", "Non-Vegetarian"];
-				subSubcategories.forEach(function (subsubcategory) {
-					var option = document.createElement("option");
-					option.value = subsubcategory;
-					option.text = subsubcategory;
-					subsubcategoryDropdown.appendChild(option);
-				});
-			}else if (category === "north indian") {
-				var subSubcategories = ["Vegetarian", "Non-Vegetarian"];
-				subSubcategories.forEach(function (subsubcategory) {
-					var option = document.createElement("option");
-					option.value = subsubcategory;
-					option.text = subsubcategory;
-					subsubcategoryDropdown.appendChild(option);
-				});
-			}else if (category === "arabian") {
-				var subSubcategories = ["Vegetarian", "Non-Vegetarian"];
-				subSubcategories.forEach(function (subsubcategory) {
-					var option = document.createElement("option");
-					option.value = subsubcategory;
-					option.text = subsubcategory;
-					subsubcategoryDropdown.appendChild(option);
-				});
-			}
-			else if (category === "beverages") {
-				var subSubcategories = ["Water-based", "Milk-based"];
-				subSubcategories.forEach(function (subsubcategory) {
-					var option = document.createElement("option");
-					option.value = subsubcategory;
-					option.text = subsubcategory;
-					subsubcategoryDropdown.appendChild(option);
-				});
-			}
-		};
-
-		function toggleSubcategories(selectedCategory) {
-			var subcategoryDiv = document.getElementById("Msubcategory");
-			var subsubcategoryDiv = document.getElementById("Msubsubcategory");
-		
-			// If "Deserts" is selected, hide both subcategory and sub-subcategory dropdowns
-			if (category === "deserts") {
-				subcategoryDiv.style.display = "none";
-				subsubcategoryDiv.style.display = "none";
+		document.getElementById("Ename").addEventListener("input", function() {
+			var inputField = this;
+			var inputValue = inputField.value;
+	
+			// Define a regular expression pattern to match only alphabets (A-Z and a-z).
+			var alphabetPattern = /^[A-Za-z]+$/;
+	
+			if (!alphabetPattern.test(inputValue)) {
+				// If the input does not match the pattern, display an error message.
+				document.getElementById("itemNameError").textContent = "Please enter only alphabets.";
 			} else {
-				subcategoryDiv.style.display = "block";
-				subsubcategoryDiv.style.display = "block";
+				// Clear the error message if the input is valid.
+				document.getElementById("itemNameError").textContent = "";
 			}
-		}
+		});
 
-		function validateItemName(input) {
-			var itemName = input.value;
-			var itemNameError = document.getElementById("itemNameError");
-		
-			// Use a regular expression to check if the input contains only alphabetic characters
-			var regex = /^[A-Za-z\s]+$/;
-		
-			if (regex.test(itemName)) {
-				// Clear the error message if the input is valid
-				itemNameError.textContent = "";
-				itemNameError.style.color = "";
+		document.getElementById("Eemail").addEventListener("input", function() {
+			var inputField = this;
+			var inputValue = inputField.value;
+	
+			// Define a regular expression pattern for a valid email format.
+			var emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+	
+			if (!emailPattern.test(inputValue)) {
+				// If the input does not match the email pattern, display an error message.
+				document.getElementById("itemPriceError").textContent = "Please enter a valid email address.";
 			} else {
-				// Display an error message if the input is not valid
-				itemNameError.textContent = "Item name should contain only alphabetic characters.";
-				itemNameError.style.color = "red";
+				// Clear the error message if the input is a valid email address.
+				document.getElementById("itemPriceError").textContent = "";
 			}
-		}
-		
-		function validateItemPrice(input) {
-			var itemPrice = input.value;
-			var itemPriceError = document.getElementById("itemPriceError");
-		
-			// Use a regular expression to check if the input contains only numeric characters
-			var regex = /^\d+$/;
-		
-			if (regex.test(itemPrice)) {
-				// Clear the error message if the input is valid
-				itemPriceError.textContent = "";
-				itemNameError.style.color = "red";
-			} else {
-				// Display an error message if the input is not valid
-				itemPriceError.textContent = "Item price should contain only numbers.";
-				itemPriceError.style.color = "red";
-			}
-		}
-		function validateForm() {
-			var itemName = document.getElementById("Mname").value;
-			var itemPrice = document.getElementById("Mprice").value;
-			
-			var itemNameError = document.getElementById("itemNameError");
-			var itemPriceError = document.getElementById("itemPriceError");
-			
-			// Check if the required fields are empty
-			if (itemName.trim() === "") {
-				itemNameError.textContent = "Item name is required.";
-				itemNameError.style.color = "red";
-				return false; // Prevent form submission
-			} else {
-				itemNameError.textContent = ""; // Clear the error message
-			}
-			
-			if (itemPrice.trim() === "") {
-				itemPriceError.textContent = "Item price is required.";
-				itemNameError.style.color = "red";
-				return false; // Prevent form submission
-			} else {
-				itemPriceError.textContent = ""; // Clear the error message
+			itemPriceError.style.color="red";
+		});
 
+		document.getElementById("Ephn").addEventListener("input", function() {
+			var inputField = this;
+			var inputValue = inputField.value;
+	
+			// Define a regular expression pattern for an Indian phone number format (10 digits).
+			var phonePattern = /^[0-9]{10}$/;
+	
+			if (!phonePattern.test(inputValue)) {
+				// If the input does not match the phone number pattern, display an error message.
+				document.getElementById("phoneNumberError").textContent = "Please enter a valid Indian phone number (10 digits).";
+			} else {
+				// Clear the error message if the input is a valid Indian phone number.
+				document.getElementById("phoneNumberError").textContent = "";
 			}
-		
-			// Add more validation checks for other fields if needed
-			
-			// If all required fields are filled, allow form submission
-			return true;
-		}
-		
+			phoneNumberError.style.color="red";
+		});
+
+		document.getElementById("Epswrd").addEventListener("input", function() {
+			var inputField = this;
+			var inputValue = inputField.value;
+	
+			// Define a regular expression pattern for a valid password.
+			var passwordPattern = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+	
+			if (!passwordPattern.test(inputValue)) {
+				// If the input does not match the password pattern, display an error message.
+				document.getElementById("passwordError").textContent = "Password must contain at least one uppercase letter, one lowercase letter, one number, one special character, and be at least 8 characters long.";
+			} else {
+				// Clear the error message if the input is a valid password.
+				document.getElementById("passwordError").textContent = "";
+			}
+			passwordError.style.color="red";
+		});
+
+		document.getElementById("Epsn").addEventListener("input", function() {
+			var inputField = this;
+			var inputValue = inputField.value;
+	
+			// Define a regular expression pattern to match only alphabets (A-Z and a-z).
+			var alphabetPattern = /^[A-Za-z]+$/;
+	
+			if (!alphabetPattern.test(inputValue)) {
+				// If the input does not match the pattern, display an error message.
+				document.getElementById("positionError").textContent = "Please enter only alphabets.";
+			} else {
+				// Clear the error message if the input is valid.
+				document.getElementById("positionError").textContent = "";
+			}
+			positionError.style.color="red";
+		});
+
+		document.getElementById("Eyoe").addEventListener("input", function() {
+			var inputField = this;
+			var inputValue = inputField.value;
+	
+			// Define a regular expression pattern to match positive float numbers or whole numbers.
+			var yoePattern = /^(?!-)\d+(\.\d+)?$/;
+	
+			if (!yoePattern.test(inputValue)) {
+				// If the input does not match the pattern, display an error message.
+				document.getElementById("yoeError").textContent = "Please enter a positive number or a positive float number.";
+			} else {
+				// Clear the error message if the input is valid.
+				document.getElementById("yoeError").textContent = "";
+			}
+			yoeError.style.color="red";
+		});
 	</script>
+	
+	
+	
+	
+	
+	
 </body>
 
 

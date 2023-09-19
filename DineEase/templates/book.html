@@ -167,13 +167,13 @@
             <form method="POST"> <!-- Specify the HTTP method as POST -->
               {% csrf_token %} <!-- Include a CSRF token for form security -->
               <div>
-                <input type="text" class="form-control" name="name" placeholder="Your Name" value="{{ user_data.name }}" /> <!-- Use 'name' attribute -->
+                <input type="text" class="form-control" name="name" placeholder="Your Name" value="{{ user_data.name }}" readonly required/> <!-- Use 'name' attribute -->
               </div>
               <div>
-                <input type="text" class="form-control" name="phone" placeholder="Phone Number" value="{{ user_data.phone }}" /> <!-- Use 'name' attribute -->
+                <input type="text" class="form-control" name="phone" placeholder="Phone Number" value="{{ user_data.phone }}" readonly required/> <!-- Use 'name' attribute -->
               </div>
               <div>
-                <input type="email" class="form-control" name="email" placeholder="Your Email" value="{{ user_data.email }}" /> <!-- Use 'name' attribute -->
+                <input type="email" class="form-control" name="email" placeholder="Your Email" value="{{ user_data.email }}" readonly required /> <!-- Use 'name' attribute -->
               </div>
               <div>
                 <select class="form-control nice-select wide" name="num_of_persons"> <!-- Use 'name' attribute -->

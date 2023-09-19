@@ -74,7 +74,7 @@
 									</li> {% endcomment %}
 
 									<li class="">
-										<a class="sidenav-item-link" href="tbl_booking_list.html">
+										<a class="sidenav-item-link" href="{% url 'res_list' %}">
 											<span class="nav-text">Reservation List</span>
 										</a>
 									</li>
@@ -818,22 +818,20 @@
 			}
 		}
 		
-		function validateItemPrice(input) {
-			var itemPrice = input.value;
-			var itemPriceError = document.getElementById("itemPriceError");
-		
-			// Use a regular expression to check if the input contains only numeric characters
-			var regex = /^\d+$/;
-		
-			if (regex.test(itemPrice)) {
-				// Clear the error message if the input is valid
-				itemPriceError.textContent = "";
-				itemNameError.style.color = "red";
+		function validateItemPrice(inputField) {
+			var inputValue = inputField.value;
+	
+			// Convert the input value to a floating-point number.
+			var price = parseFloat(inputValue);
+	
+			if (isNaN(price) || price <= 0) {
+				// If the input is not a positive number, display an error message.
+				document.getElementById("itemPriceError").textContent = "Please enter a valid positive number.";
 			} else {
-				// Display an error message if the input is not valid
-				itemPriceError.textContent = "Item price should contain only numbers.";
-				itemPriceError.style.color = "red";
+				// Clear the error message if the input is a valid positive number.
+				document.getElementById("itemPriceError").textContent = "";
 			}
+			itemPriceErrorr.style.colr="red";
 		}
 		function validateForm() {
 			var itemName = document.getElementById("Mname").value;

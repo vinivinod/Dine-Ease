@@ -570,6 +570,9 @@ def emp_add(request):
 def emp_list(request):
     emp_lists = Employee.objects.all()  # Retrieve all menu items from the database
     return render(request,'admin_dashboard/emp-list.html',{'emp_lists':emp_lists})
+def emp_profile(request):
+    emp_list= Employee.objects.all()
+    return render(request,'employee/emp-profile.html',{'emp_list':emp_list})
 
 def emp_menu(request):
     return render(request,'employee/emp_menu.html')
