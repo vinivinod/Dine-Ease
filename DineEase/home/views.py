@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages,auth
 from django.http import HttpResponse
-from .models import Employee, menus,hmenus,tables,Reservation,CustomUser
+from .models import Employee, menus,hmenus,tables,Reservation,CustomUser,AddToCart
 from .forms import  YourForm
 from django.contrib.auth import get_user_model
 
@@ -533,32 +533,53 @@ def delete_menu_item(request, menu_id):
 from django.http import JsonResponse
 from .models import menus
 
-def cart(request):
-    if request.method == 'POST':
-        item_name = request.POST.get('item_name')
-        item_price = request.POST.get('item_price')
+# def cart(request):
+#     if request.method == 'POST':
+#         item_name = request.POST.get('item_name')
+#         item_price = request.POST.get('item_price')
         
-        # Check if the item already exists in the cart
-        existing_item = menus.objects.filter(name=item_name).first()
+#         # Check if the item already exists in the cart
+#         existing_item = menus.objects.filter(name=item_name).first()
 
-        if existing_item:
-            # If item exists, update its quantity and total price
-            existing_item.quantity += 1
-            existing_item.total_price = existing_item.quantity * existing_item.price
-            existing_item.save()
-        else:
-            # If item doesn't exist, create a new cart item
-            new_item = menus(
-                name=item_name,
-                price=item_price,
-                quantity=1,  # Set the initial quantity to 1
-                total_price=item_price,  # Set the initial total price
-            )
-            new_item.save()
+#         if existing_item:
+#             # If item exists, update its quantity and total price
+#             existing_item.quantity += 1
+#             existing_item.total_price = existing_item.quantity * existing_item.price
+#             existing_item.save()
+#         else:
+#             # If item doesn't exist, create a new cart item
+#             new_item = menus(
+#                 name=item_name,
+#                 price=item_price,
+#                 quantity=1,  # Set the initial quantity to 1
+#                 total_price=item_price,  # Set the initial total price
+#             )
+#             new_item.save()
 
-        return JsonResponse({'message': 'Item added to cart successfully'})
+#         return JsonResponse({'message': 'Item added to cart successfully'})
 
-    return JsonResponse({'message': 'Invalid request'}, status=400)
+#     return JsonResponse({'message': 'Invalid request'}, status=400)
+def cart(request):
+    return render(request,'cart.html')
+
+def add_cart(request, menuid):
+    userid=request.user.id
+    menu = AddToCart( 
+        user_id=userid,
+        menu_id=menuid        
+    )
+    menu.save()
+    return redirect('cart')
+
+def cart_add(request):
+    # Assuming you have the user object for the currently logged-in user
+    user_id = request.user.id  # Replace with your user retrieval logic if needed
+# Retrieve menus in the user's cart
+    menus_in_cart = AddToCart.objects.filter(user_id=user_id)
+# Retrieve menu details for the items in the cart
+    cart_details = AddToCart.objects.filter(id_in=menus_in_cart.values_list('menu_id', flat=True))
+
+    return render(request,"cart.html",{'cart_books':cart_details})
 
 
 def emp_index(request):
@@ -591,7 +612,7 @@ def emp_registration(request):
     
         role=CustomUser.EMPLOYEE
         if CustomUser.objects.filter(email=email,role=CustomUser.EMPLOYEE).exists():
-            return render(request,'employee/emp_reg.html')
+            return render(request,'employee/index.html')
         else:
             user=CustomUser.objects.create_user(name=name,email=email,phone=phone,password=password)
             user.role = CustomUser.EMPLOYEE

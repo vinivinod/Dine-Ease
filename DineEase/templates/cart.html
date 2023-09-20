@@ -3,140 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopping Cart</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f2f2f2;
-        }
+    <title>Menu Cards</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
-        h1 {
-            text-align: center;
-            padding: 20px;
-            background-color: #333;
-            color: white;
-        }
-
-        #cart {
-            margin: auto;
-            width: 80%;
-            background-color: white;
-            padding: 20px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        td:last-child {
-            text-align: right;
-        }
-
-        tfoot td {
-            font-weight: bold;
-            background-color: #f2f2f2;
-        }
-#checkout-button {
-            display: block;
-            margin: 20px auto;
-            padding: 10px 20px;
-            background-color: #f39c12;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-        }
-
-        #checkout-button:hover {
-            background-color: #e67e22;
-        }
-    </style>
+    
 </head>
 <body>
-    <h1>Shopping Cart</h1>
-    
-    <div id="cart">
-        <table>
-            <thead>
-                <tr>
-                    <th>Item Number</th>
-                    <th>Item Name</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Total Price</th>
-                </tr>
-            </thead>
-            <tbody id="cart-items">
-                {% for item in cart_items %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ item.name }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td>${{ item.price|floatformat:2 }}</td>
-                    <td>${{ item.total_price|floatformat:2 }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="4"><strong></strong></td>
-                    <td id="cart-total">₹{{ cart_total|floatformat:2 }}</td>
-                </tr>
-            </tfoot>
-        </table>
-        <button id="checkout-button">Proceed to Checkout</button>
+    <div class="container">
+        <h1>Menu Items</h1>
+        <div class="row">
+            
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <img src="1.jpg" class="card-img-top" alt="">
+                    <div class="card-body">
+                        <h5 class="card-title">Product 1</h5>
+                        <p class="card-text">Category: Category 1</p>
+                        <p class="card-text">Price: $24</p>
+                        <!-- Add to Cart Button -->
+                        <button class="btn btn-primary" onclick="addToCart(24)">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </div>    
     </div>
 
+    <!-- Include Bootstrap JS and jQuery (optional) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
     <script>
-        function updateCartTotal() {
-            let total = 0;
-            for (const item of cartItems) {
-                total += item.price * item.quantity;
-            }
+        // JavaScript for handling cart and payment
+        let cart = [];
+        let totalAmount = 0;
 
-            // Display the total in Indian Rupees
-            const cartTotalCell = document.getElementById('cart-total');
-            cartTotalCell.textContent = `₹${total.toFixed(2).toLocaleString()}`;
+        function addToCart(price) {
+            cart.push(price);
+            totalAmount = cart.reduce((sum, currentPrice) => sum + currentPrice, 0);
+            document.getElementById('totalAmount').value = '$' + totalAmount.toFixed(2);
         }
 
-       function renderCartItems() {
-            cartItemsList.innerHTML = '';
-            for (let i = 0; i < cartItems.length; i++) {
-                const item = cartItems[i];
-                const totalItemPrice = (item.price * item.quantity).toFixed(2);
-                const row = `
-                    <tr>
-                        <td>${i + 1}</td>
-                        <td>${item.name}</td>
-                        <td>${item.quantity}</td>
-                        <td>$${item.price.toFixed(2)}</td>
-                        <td>$${totalItemPrice}</td>
-                    </tr>
-                `;
-                cartItemsList.insertAdjacentHTML('beforeend', row);
-            }
-            updateCartTotal();
-        }
-
-        function addItemToCart(name, quantity, price) {
-            cartItems.push({ name, quantity, price });
-            renderCartItems();
+        function processPayment() {
+            // Here, you can implement the payment processing logic
+            // You can send the totalAmount to your payment gateway or handle it as needed.
+            alert('Payment processed successfully. Total Amount: $' + totalAmount.toFixed(2));
+            // Reset the cart and totalAmount
+            cart = [];
+            totalAmount = 0;
+            document.getElementById('totalAmount').value = '';
         }
     </script>
 </body>

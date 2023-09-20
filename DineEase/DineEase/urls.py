@@ -19,7 +19,7 @@ from django.urls import path,include
 from home.views import userlogin,register,loggout,login_page
 
 from home.views import index,menu,about,menumore,add_table,add_reservation,booking_confirm,cancel_reservation,edit_reservation,res_list
-from home.views import payment,book_table,cart
+from home.views import payment,book_table,cart,add_cart,cart_add
 from home.views import admin_login,admin_index,add_menu,user_list,ad_MenuList,menu_list,menu_edit,delete_menu_item
 from home.views import emp_leave,emp_index,emp_add,emp_profile,emp_list,products_by_category,filtered_menus,emp_registration
 from django.views.generic import TemplateView
@@ -56,6 +56,8 @@ urlpatterns = [
     path('payment/',payment, name='payment'),
     path('book_table/', book_table, name='book_table'),
     path('cart/',cart, name='cart'),
+    path('add_cart/<int:menuid>/', add_cart, name='add_cart'),
+    path('cart_add/', cart_add, name='cart_add'),
 
 
     path('admin_login/',admin_login,name='admin_login'),
