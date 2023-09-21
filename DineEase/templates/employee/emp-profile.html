@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,94 +10,114 @@
 
     <style>
         /* Example styles for the employee cards */
-.employee-card {
-    border: 1px solid #ccc;
-    padding: 20px;
-    margin: 20px;
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
 
-.employee-card h2 {
-    font-size: 24px;
-    color: #333;
-}
+        header {
+            text-align: center;
+            background-color:#dead28;
+            color: white;
+            padding: 20px 0;
+        }
 
-.employee-card p {
-    margin: 5px 0;
-    font-size: 16px;
-    color: #666;
-}
-/* Add this CSS to your stylesheets */
+        h1 {
+            margin: 0;
+        }
 
-.employee-details {
-    background-color: #f5f5f5;
-    padding: 20px;
-    border-radius: 10px;
-    margin: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-}
+        /* Style for the main content */
+        main {
+            padding: 20px;
+        }
 
-.employee-card {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-}
+        /* Style for the employee cards container */
+        .employee-details-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Two columns */
+            gap: 20px;
+        }
 
-.employee-card h2 {
-    text-align: center;
-    color: #007bff;
-}
+        /* Example styles for the employee cards */
+        .employee-details-card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
 
-.form-group {
-    margin-bottom: 20px;
-}
+        .employee-details-card h2 {
+            text-align: center;
+            color: #dead28;
+        }
 
-label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 5px;
-}
+        .form-group {
+            margin-bottom: 20px;
+        }
 
-input[type="text"],
-input[type="email"] {
-    width: 40%;
-    padding: 10px;
-    margin-top: 5px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
 
-/* Customize other form elements as needed */
+        input[type="text"],
+        input[type="email"],
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
 
-/* Add hover effect for input fields */
-input[type="text"]:hover,
-input[type="email"]:hover {
-    border-color: #007bff;
-}
+        input[readonly] {
+            background-color: #f7f7f7;
+            cursor: not-allowed;
+            color: #555;
+        }
 
-/* Style the readonly input fields */
-input[readonly] {
-    background-color: #f7f7f7;
-    cursor: not-allowed;
-    color: #555;
-}
+        /* Style for buttons */
+        button[type="button"],
+        button[type="submit"] {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            color: white;
+            font-weight: bold;
+        }
 
-/* Style the submit button if needed */
-/* button[type="submit"] {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    padding: 10px 20px;
-    cursor: pointer;
-} */
+        /* Style for the "Cancel" button */
+        .cancel-button {
+            background-color: #c93b30; /* Red background color */
+        }
 
-/* Add styles as needed for validation/error messages */
+        .cancel-button:hover {
+            background-color: #ff4133; /* Darker red background color on hover */
+        }
 
+        /* Style for the "Submit" button */
+        .submit-button {
+            background-color: #007bff; /* Blue background color */
+        }
+
+        .submit-button:hover {
+            background-color: #0056b3; /* Darker blue background color on hover */
+        }
+
+        /* Center-align buttons using Flexbox */
+        .button-container {
+            display: flex;
+            justify-content: center; /* Horizontally center-align */
+            align-items: center; /* Vertically center-align */
+            margin-top: 20px;
+        }
+
+        /* Add styles as needed for validation/error messages */
     </style>
 </head>
 <body>
@@ -105,17 +126,20 @@ input[readonly] {
     </header>
 
     <main>
-        <section class="employee-details">
-            {% if user.is_authenticated and user.role == 2 %}
-                {% for emp in emp_list %}
-                    {% if user == emp.user %}
-                        <div class="employee-card">
-                            <h2>Employee Details</h2>
-                            <form>
+        <form method="post" action="{% url 'save_employee_details' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="employee-details-container">
+                {% if user.is_authenticated and user.role == 2 %}
+                    {% for emp in emp_list %}
+                        {% if user == emp.user %}
+                            <!-- Box 1: Employee Details -->
+                            <div class="employee-details-card">
+                                <h2>Employee Details</h2>
                                 <div class="form-group">
                                     <label for="name">Name:</label>
                                     <input type="text" id="name" name="name" value="{{ emp.user.name }}" readonly>
                                 </div>
+                                <!-- Add other employee details fields here -->
                                 <div class="form-group">
                                     <label for="email">Email:</label>
                                     <input type="email" id="email" name="email" value="{{ emp.user.email }}" readonly>
@@ -132,17 +156,71 @@ input[readonly] {
                                     <label for="experience">Years of Experience:</label>
                                     <input type="text" id="experience" name="experience" value="{{ emp.years_of_experience }}" readonly>
                                 </div>
-                            </form>
-                        </div>
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
-        </section>
-        
-        
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                
+                {% if user.is_authenticated and user.role == 2 %}
+                    {% for emp in emp_list %}
+                        {% if user == emp.user %}
+                            <div class="employee-details-card additional-details">
+                                <h2>Additional Details</h2>
+                                <div class="form-group">
+                                    <label for="address">Address:</label>
+                                    <input type="text" id="address" name="address" value="{{ emp.address }}">
+                                </div>
+                                <!-- Add other additional details fields here -->
+                                <div class="form-group">
+                                    <label for="idProof">ID Proof Number:</label>
+                                    <input type="text" id="idProof" name="idProof" value="{{ emp.id_proof_number }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="education">Education:</label>
+                                    <input type="text" id="education" name="education" value="{{ emp.education }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="qualification">Qualification:</label>
+                                    <input type="text" id="qualification" name="qualification" value="{{ emp.qualification }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="emergencyName">Emergency Name:</label>
+                                    <input type="text" id="emergencyName" name="emergencyName" value="{{ emp.emergency_name }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="emergencyContact">Emergency Contact Number:</label>
+                                    <input type="text" id="emergencyContact" name="emergencyContact" value="{{ emp.emergency_contact_number }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="photo">Upload Photo:</label>
+                                    <input type="file" id="photo" name="photo" value="{{ emp.image }}">
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <br>
+            <div class="button-container">
+                <div class="form-group">
+                    <button type="button" onclick="cancelForm()" class="cancel-button">
+                        <a href="{% url 'emp_index' %}" style="color: white; text-decoration: none;">Cancel</a>
+                    </button>&ensp;&ensp;
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="submit-button">Save</button>
+                </div>&ensp;
+                <div class="form-group" style="display: flex; justify-content: flex-end;">
+                    <button type="button" onclick="cancelForm()" class="cancel-button" style="margin-right: -80px;">
+                        <a href="{% url 'emp_index' %}" style="color: white; text-decoration: none;">Go Back</a>
+                    </button>
+                </div>
+                
+            </div>
+        </form>
     </main>
 
     <!-- Add any additional HTML or scripts here -->
-
 </body>
 </html>
+

@@ -562,24 +562,49 @@ from .models import menus
 def cart(request):
     return render(request,'cart.html')
 
-def add_cart(request, menuid):
-    userid=request.user.id
-    menu = AddToCart( 
-        user_id=userid,
-        menu_id=menuid        
-    )
-    menu.save()
-    return redirect('cart')
+# def add_cart(request, menuid):
+#     userid=request.user.id
+#     menu = AddToCart( 
+#         user_id=userid,
+#         menu_id=menuid        
+#     )
+#     menu.save()
+#     return redirect('cart')
 
-def cart_add(request):
-    # Assuming you have the user object for the currently logged-in user
-    user_id = request.user.id  # Replace with your user retrieval logic if needed
-# Retrieve menus in the user's cart
-    menus_in_cart = AddToCart.objects.filter(user_id=user_id)
-# Retrieve menu details for the items in the cart
-    cart_details = AddToCart.objects.filter(id_in=menus_in_cart.values_list('menu_id', flat=True))
+# def cart_add(request):
+#     # Assuming you have the user object for the currently logged-in user
+#     user_id = request.user.id  # Replace with your user retrieval logic if needed
+# # Retrieve menus in the user's cart
+#     menus_in_cart = AddToCart.objects.filter(user_id=user_id)
+# # Retrieve menu details for the items in the cart
+#     cart_details = AddToCart.objects.filter(id_in=menus_in_cart.values_list('menu_id', flat=True))
 
-    return render(request,"cart.html",{'cart_books':cart_details})
+#     return render(request,"cart.html",{'cart_books':cart_details})
+
+
+# cart/views.py
+from django.shortcuts import render, redirect
+from .models import AddToCart
+
+def add_to_cart(request, menu_id):
+    # Assuming menu_id is passed as an argument to specify the menu item to add
+    if request.method == 'POST':
+        # Get the user (you might need to implement user authentication)
+        user = request.user  # Assuming you have user authentication set up
+
+        # Get the menu item based on menu_id
+        menu_item = menus.objects.get(id=menu_id)
+
+        # Create a cart entry for the user and menu item
+        AddToCart.objects.create(user=user, menu=menu_item)
+
+        return redirect('cart')  # Redirect to the cart page after adding an item
+
+def view_cart(request):
+    # Retrieve cart items for the logged-in user
+    user_cart_items = AddToCart.objects.filter(user=request.user)
+
+    return render(request, 'cart.html', {'cart_items': user_cart_items})
 
 
 def emp_index(request):
@@ -593,7 +618,65 @@ def emp_list(request):
     return render(request,'admin_dashboard/emp-list.html',{'emp_lists':emp_lists})
 def emp_profile(request):
     emp_list= Employee.objects.all()
-    return render(request,'employee/emp-profile.html',{'emp_list':emp_list})
+    user = request.user
+    return render(request,'employee/emp-profile.html',{'emp_list':emp_list,'user': user})
+
+from django.shortcuts import render, redirect
+from .models import Employee,CustomUser
+
+
+def save_employee_details(request):
+    if request.method == "POST":
+        # Get the form data from the POST request
+        position = request.POST.get('position')
+        experience = request.POST.get('experience')
+        address = request.POST.get('address')
+        id_proof_number = request.POST.get('idProof')
+        education = request.POST.get('education')
+        qualification = request.POST.get('qualification')
+        emergency_name = request.POST.get('emergencyName')
+        emergency_contact_number = request.POST.get('emergencyContact')
+        image = request.FILES.get('photo')  # Get the uploaded image
+
+        # Get the user associated with the request
+        user = request.user
+
+        # Check if an Employee record already exists for the user
+        try:
+            employee = Employee.objects.get(user=user)
+            # If it exists, update the fields
+            employee.position = position
+            employee.years_of_experience = experience
+            employee.address = address
+            employee.id_proof_number = id_proof_number
+            employee.education = education
+            employee.qualification = qualification
+            employee.emergency_name = emergency_name
+            employee.emergency_contact_number = emergency_contact_number
+            if image:
+                employee.image = image  # Update the image if provided
+            employee.save()
+        except Employee.DoesNotExist:
+            # If it doesn't exist, create a new Employee instance
+            employee = Employee(
+                user=user,
+                position=position,
+                years_of_experience=experience,
+                address=address,
+                id_proof_number=id_proof_number,
+                education=education,
+                qualification=qualification,
+                emergency_name=emergency_name,
+                emergency_contact_number=emergency_contact_number,
+                image=image
+            )
+            employee.save()
+
+        return redirect('emp_index')  # Redirect to the desired URL after saving
+
+    # Render the form on the page
+    return render(request, 'emp_profile.html')
+
 
 def emp_menu(request):
     return render(request,'employee/emp_menu.html')
@@ -619,6 +702,6 @@ def emp_registration(request):
             user.save()
             empRegister = Employee(user=user,position=position,years_of_experience=years_of_experience)
             empRegister.save()
-            return redirect('menu_list')
+            return redirect('emp_list')
     else:
         return render(request,'employee/emp-add.html')

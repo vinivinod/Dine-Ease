@@ -30,7 +30,7 @@
   <link href="{% static 'css/style.css' %}" rel="stylesheet" />
   <!-- responsive style -->
   <link href="{% static 'css/responsive.css' %}" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
 <style>
   /* Style for the submenus */
 .submenu {
@@ -485,24 +485,20 @@
                               <div class="button-container">
                                   {% comment %} <span class="wishlist-icon" data-item-id="{{ menu_item.id }}">
                                   <i class="fa fa-heart"></i>
-                                  </span> {% endcomment %} &ensp;
-                                  <a href="{% url 'booking_confirm' %}" class="btn btn-primary add-to-table-button">
-                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                          class="bi bi-table" viewBox="0 0 16 16">
-                                          <path
-                                              d="M0 6.5A.5.5 0 0 1 .5 6H4v7a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V6h9.5a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5H14a2 2 0 0 1-2-2v-6a2 2 0 0 1-2-2V1a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v5a2 2 0 0 1-2 2z" />
-                                          <path
-                                              d="M1.293 2.293a1 1 0 0 0 0 1.414L3 6l-1.293 1.293a1 1 0 0 0 1.414 1.414L4 7.414V14a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V7.414l.293.293a1 1 0 0 0 1.414-1.414L5 6l1.293-1.293a1 1 0 0 0-1.414-1.414L4 4.586V1a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v3.586L.293 3.293a1 1 0 0 0 0 1.414z" />
-                                      </svg>
+                                  </span>  &ensp; {% endcomment %}
+                                  <a href="{% url 'booking_confirm' %}">
+                                    <i class="fa fa-cutlery" aria-hidden="true" style="color: black;"></i>
                                   </a>
                                   &ensp;
-                                  <button class="btn btn-success cart-button"
+                                  {% comment %} <button class="btn btn-success cart-button"
                                       data-item-name="{{ menu_item.name }}"
                                       data-item-price="{{ menu_item.price }}"
                                       data-item-description="{{ menu_item.desc }}">
                                       <i class="fa-solid fa-cart-shopping"></i> AddtoCart
-                                  </button>
-
+                                  </button> {% endcomment %}
+                                  <a href="{% url 'cart' %}?item_name={{ menu_item.name }} & item_price={{ menu_item.price }}">
+                                    <i class="fa fa-cart-plus" aria-hidden="true" style="color: black;"></i>
+                                  </a>
                               </div>
                           </div>
                       </div>
@@ -633,48 +629,40 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script>
-      $(document).ready(function () {
-          $(".cart-link").click(function (event) {
-              event.preventDefault(); // Prevent the default link behavior
-              var itemName = $(this).data("item-name");
-              var itemPrice = $(this).data("item-price");
-  
-              // Send the data to a Django view using AJAX
-              $.ajax({
-                  type: "POST",
-                  url: "{% url 'cart' %}",
-                  data: {
-                      item_name: itemName,
-                      item_price: itemPrice,
-                      csrfmiddlewaretoken: '{{ csrf_token }}'
-                  },
-                  success: function (response) {
-                      // Handle the response, e.g., show a confirmation message
-                      alert("Item added to cart!");
-                  }
-              });
-          });
-      });
-  </script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $(".wishlist-icon").on("click", function () {
-            var icon = $(this).find("i");
-
-            // Toggle the color style to change the icon color to red
-            if (icon.hasClass("red-heart")) {
-                icon.removeClass("red-heart");
-            } else {
-                icon.addClass("red-heart");
-            }
-
-            // Rest of your code for AJAX and handling wishlist functionality
-            var itemID = $(this).data("item-id");
-            // ... (continue with your AJAX code)
-        });
-    });
+    <script>
+      // Initialize an empty cart array
+      let cart = [];
+      
+      // Function to add an item to the cart
+      function addToCart(item) {
+          cart.push(item);
+      }
+      
+      // Function to display the cart contents
+      function displayCart() {
+          // Display cart contents in your HTML as needed
+      }
+      
+      // Extract query parameters from the URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const itemName = urlParams.get('item_name');
+      const itemPrice = urlParams.get('item_price');
+      const itemDescription = urlParams.get('item_description');
+      
+      // Create an item object
+      const newItem = {
+          name: itemName,
+          price: parseFloat(itemPrice),
+          description: itemDescription,
+      };
+      
+      // Add the item to the cart
+      addToCart(newItem);
+      
+      // Display the updated cart
+      displayCart();
+      </script>
+      
 </script>
 
 

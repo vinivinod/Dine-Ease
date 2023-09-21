@@ -81,16 +81,23 @@ class CustomUser(AbstractUser):
 from django.db import models
 
 class Employee(models.Model):
-    position = models.CharField(max_length=100)  # Field for the employee's position
-    years_of_experience = models.PositiveIntegerField()  # Field for years of experience
+    position = models.CharField(max_length=100,editable=False,null=True,default='default')  # Field for the employee's position
+    years_of_experience = models.PositiveIntegerField(null=True,default='default')  # Field for years of experience
     user=models.OneToOneField(CustomUser,on_delete=models.CASCADE)
+    address = models.TextField(default='',null=True)  # Field for employee's address
+    id_proof_number = models.CharField(max_length=100,default='',null=True)  # Field for employee's ID proof number
+    education = models.CharField(max_length=100,default='',null=True)  # Field for employee's education
+    qualification = models.CharField(max_length=100,default='',null=True)  # Field for employee's qualification
+    emergency_name = models.CharField(max_length=100,default='',null=True)  # Field for emergency contact name
+    emergency_contact_number = models.CharField(max_length=12,default='',blank=True, null=True)  # Field for emergency contact number
+    image = models.ImageField(upload_to='employee_profile/', blank=True, null=True)
     # name = models.CharField(max_length=50)
     # email = models.EmailField(max_length=100, unique=True)
     # phone = models.CharField(max_length=12, blank=True)
     # password = models.CharField(max_length=128)
 
     def __str__(self):
-        return self.position
+        return f"{self.user.username} - {self.position}"
 
 
 class menus(models.Model):
