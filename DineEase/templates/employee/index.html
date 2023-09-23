@@ -348,7 +348,7 @@
 										</li>
 										{% endif %}
 										<li>
-											<a href="{% url 'emp_profile' %}">
+											<a href="{% url 'employee_profile' %}">
 												<i class="mdi mdi-account"></i> My Profile
 											</a>
 										</li>
@@ -538,19 +538,19 @@
 
 			<!-- CONTENT WRAPPER -->
 			<div class="ec-content-wrapper">
-				<div class="content">
+				<div class="content" style="margin-top:-600px;">
 					<!-- Top Statistics -->
 					<div class="row">
-						<h style="text-align: center; font-weight: bold; font-size:24px; ">Employee-Dashboard</h>
-						{% comment %} <div class="col-xl-3 col-sm-6 p-b-15 lbl-card">
+						<h style="text-align: center; font-weight: bold; font-size:24px;">Employee-Dashboard</h>
+						<div class="col-xl-3 col-sm-6 p-b-15 lbl-card">
 							<div class="card card-mini dash-card card-1">
 								<div class="card-body">
-									<h2 class="mb-1">1,503</h2>
-									<p>Daily Signups</p>
+									<h2>{{ emp_count }}</h2>
+									<p>Registered Employees</p>
 									<span class="mdi mdi-account-arrow-left"></span>
 								</div>
 							</div>
-						</div> {% endcomment %}
+						</div> 
 						{% comment %} <div class="col-xl-3 col-sm-6 p-b-15 lbl-card">
 							<div class="card card-mini dash-card card-2">
 								<div class="card-body">
@@ -577,8 +577,8 @@
 									<span class="mdi mdi-currency-usd"></span>
 								</div>
 							</div>
-						</div>
-					</div> {% endcomment %}
+						</div> {% endcomment %}
+					</div>
 
 					{% comment %} <div class="row">
 						<div class="col-xl-8 col-md-12 p-b-15">

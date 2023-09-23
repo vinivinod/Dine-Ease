@@ -21,7 +21,7 @@ from home.views import userlogin,register,loggout,login_page
 from home.views import index,menu,about,menumore,add_table,add_reservation,booking_confirm,cancel_reservation,edit_reservation,res_list
 from home.views import payment,book_table,cart,add_to_cart,view_cart
 from home.views import admin_login,admin_index,add_menu,user_list,ad_MenuList,menu_list,menu_edit,delete_menu_item
-from home.views import emp_leave,emp_index,emp_add,emp_profile,emp_list,products_by_category,filtered_menus,emp_registration,save_employee_details
+from home.views import emp_leave,emp_index,emp_add,emp_profile,emp_list,products_by_category,filtered_menus,emp_registration,save_employee_details,employee_profile
 from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
 from django.conf import settings
@@ -78,6 +78,7 @@ urlpatterns = [
     # path('emp_menu/',emp_menu, name='emp_menu'),
     path('emp_list/',emp_list, name='emp_list'),
     path('emp_profile/',emp_profile, name='emp_profile'),
+    path('employee_profile/',employee_profile,name='employee_profile'),
     path('save_employee_details',save_employee_details,name='save_employee_details'),
 
     path('products/<str:category_name>/', products_by_category, name='products_by_category'),

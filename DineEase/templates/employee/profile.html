@@ -1,0 +1,151 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Profile</title>
+    <!-- Include your CSS stylesheets and any necessary scripts here -->
+    <style>
+        /* Add your custom CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0; /* Remove default margin to ensure full width */
+        }
+
+        header {
+            background-color: #dead28;
+            color: white;
+            padding: 10px 0;
+            display: flex; /* Use Flexbox for alignment */
+            justify-content: space-between; /* Align items horizontally */
+            align-items: center; /* Center items vertically */
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex; /* Use Flexbox for alignment */
+        }
+
+        nav ul li {
+            margin-right: 80px;
+            color:white;
+            font-weight:bold;
+            font-size:20px;
+        }
+        nav ul li a {
+            text-decoration: none; /* Remove underline from links */
+            color: white; /* Set the link text color */
+        }
+        
+        .profile-card {
+            max-width: 400px;
+            background-color: #e3bc78;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .profile-header {
+            text-align: center;
+        }
+
+        .profile-header h1 {
+            font-size: 24px;
+            margin: 0;
+            color: #333;
+        }
+
+        .profile-header p {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .profile-image img {
+            width: 40%;
+            max-height: 150px; /* Adjust the max-height as needed */
+            border-radius: 10px;
+            margin-top: 10px;
+            margin-left: 120px;
+        }
+
+        .profile-details {
+            margin-top: 20px;
+            background-color: wheat; /* Light gray background */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-details h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .profile-details ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .profile-details ul li {
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: black; /* Slightly darker text color */
+        }
+
+        .profile-details ul li strong {
+            font-weight: bold;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 style="margin-left:500px;">Employee Profile</h1>
+        <nav>
+            <ul>
+                {% if user.is_authenticated and user.role == 2 %}
+                <li><a href="{% url 'emp_index' %}" >Home</a></li>
+                {% comment %} <li><a href="#">Profile</a></li> {% endcomment %}
+                {% comment %} <li><a href="#">Settings</a></li> {% endcomment %}
+                <li><a href="{% url 'login' %}">Logout</a></li>
+                {% else %}
+                <li><a href="{% url 'login' %}">Login</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+    <div class="profile-card">
+        {% if user.is_authenticated and user.role == 2 %}
+            <div class="profile-header">
+                <h1>{{ user.employee.user.name }}</h1>
+                <p>{{ user.employee.position }}</p>
+            </div>
+            <div class="profile-image">
+                {% if user.employee.image %}
+                    <img src="{{ user.employee.image.url }}" alt="{{ user.employee.user.name }}">
+                {% endif %}
+            </div>
+            <div class="profile-details">
+                <ul>
+                    <li><strong>Email:</strong> {{ user.employee.user.email }}</li>
+                    <li><strong>Phone:</strong> {{ user.employee.user.phone }}</li>
+                    <li><strong>Address:</strong> {{ user.employee.address }}</li>
+                    <li><strong>ID Proof Number:</strong> {{ user.employee.id_proof_number }}</li>
+                    <li><strong>Education:</strong> {{ user.employee.education }}</li>
+                    <li><strong>Qualification:</strong> {{ user.employee.qualification }}</li>
+                    <li><strong>Emergency Contact Name:</strong> {{ user.employee.emergency_name }}</li>
+                    <li><strong>Emergency Contact Number:</strong> {{ user.employee.emergency_contact_number }}</li>
+                    <li><strong>Years of Experience:</strong> {{ user.employee.years_of_experience }}</li>
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

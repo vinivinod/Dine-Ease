@@ -3,63 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu Cards</title>
-    <!-- Include Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
-    
+    <title>Shopping Cart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f3f3;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            margin: 20px 0;
+            color: #333;
+        }
+        .cart {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 100%;
+        }
+        .product {
+            display: flex;
+            border-bottom: 1px solid #ccc;
+            padding: 15px;
+        }
+        .product img {
+            max-width: 100px;
+            max-height: 100px;
+            margin-right: 20px;
+        }
+        .product-details {
+            flex: 1;
+        }
+        .product-name {
+            font-size: 1.2em;
+            color: #333;
+        }
+        .product-price {
+            color: #FF5733;
+            font-size: 1.2em;
+        }
+        .product-quantity {
+            font-size: 1.2em;
+        }
+        .product-total {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        #total-amount {
+            font-size: 1.5em;
+            font-weight: bold;
+            padding: 20px;
+            background-color: #333;
+            color: #fff;
+            text-align: right;
+        }
+        .quantity-input {
+            width: 50px;
+            padding: 5px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Menu Items</h1>
-        <div class="row">
-            
-            <div class="container">
-                <div class="row">
-                    {% for cart_item in cart_items %}
-                    <div class="col-md-4">
-                        <div class="card mb-4">
-                            <img src="{{ cart_item.menu.img.url }}" class="card-img-top" alt="">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ cart_item.menu.name }}</h5>
-                                <p class="card-text">Category: {{ cart_item.menu.category }}</p>
-                                <p class="card-text">Price: ${{ cart_item.menu.price }}</p>
-                                <!-- You can add a button or link to remove items from the cart if needed -->
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
+    <h1>Your Shopping Cart</h1>
+    <div class="cart">
+        <div class="product">
+            <img src="product1.jpg" alt="Product 1">
+            <div class="product-details">
+                <div class="product-name">Product 1</div>
+                <div class="product-price">₹19.00</div>
             </div>
-            
-        </div>    
+            <input class="quantity-input" type="number" value="2" min="1" max="10">
+            <div class="product-total">₹39.00</div>
+        </div>
+        <div id="total-amount">Total Amount: ₹109.94</div>
     </div>
-
-    <!-- Include Bootstrap JS and jQuery (optional) -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
     <script>
-        // JavaScript for handling cart and payment
-        let cart = [];
-        let totalAmount = 0;
-
-        function addToCart(price) {
-            cart.push(price);
-            totalAmount = cart.reduce((sum, currentPrice) => sum + currentPrice, 0);
-            document.getElementById('totalAmount').value = '$' + totalAmount.toFixed(2);
+        // Function to update the total price for a product
+        function updateProductTotal(product) {
+            const price = parseFloat(product.querySelector('.product-price').textContent.replace('₹', ''));
+            const quantity = parseFloat(product.querySelector('.quantity-input').value);
+            const total = price * quantity;
+            product.querySelector('.product-total').textContent = `₹${total.toFixed(2)}`;
+            return total;
         }
 
-        function processPayment() {
-            // Here, you can implement the payment processing logic
-            // You can send the totalAmount to your payment gateway or handle it as needed.
-            alert('Payment processed successfully. Total Amount: $' + totalAmount.toFixed(2));
-            // Reset the cart and totalAmount
-            cart = [];
-            totalAmount = 0;
-            document.getElementById('totalAmount').value = '';
+        // Function to update the total amount for all products
+        function updateTotalAmount() {
+            const products = document.querySelectorAll('.product');
+            let totalAmount = 0;
+            products.forEach(product => {
+                totalAmount += updateProductTotal(product);
+            });
+            document.getElementById('total-amount').textContent = `Total Amount: ₹${totalAmount.toFixed(2)}`;
         }
+
+        // Add event listeners to update totals when quantity changes
+        const quantityInputs = document.querySelectorAll('.quantity-input');
+        quantityInputs.forEach(input => {
+            input.addEventListener('input', updateTotalAmount);
+        });
+
+        // Calculate initial total amount
+        updateTotalAmount();
     </script>
 </body>
 </html>

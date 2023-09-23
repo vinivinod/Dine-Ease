@@ -608,7 +608,9 @@ def view_cart(request):
 
 
 def emp_index(request):
-    return render(request,'employee/index.html')
+    emp_count=CustomUser.objects.filter(role='2').count()
+    return render(request,'employee/index.html',{'emp_count':emp_count})
+
 def emp_add(request):
     return render(request,'admin_dashboard/emp-add.html')
 
@@ -672,7 +674,7 @@ def save_employee_details(request):
             )
             employee.save()
 
-        return redirect('emp_index')  # Redirect to the desired URL after saving
+        return redirect('employee_profile')  # Redirect to the desired URL after saving
 
     # Render the form on the page
     return render(request, 'emp_profile.html')
@@ -705,3 +707,15 @@ def emp_registration(request):
             return redirect('emp_list')
     else:
         return render(request,'employee/emp-add.html')
+from django.shortcuts import render
+from .models import Employee
+
+def employee_profile(request):
+    # Query all Employee model objects
+    employees = Employee.objects.all()
+
+    context = {
+        'employees': employees,
+    }
+
+    return render(request, 'employee/profile.html', context)
