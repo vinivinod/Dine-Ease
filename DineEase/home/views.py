@@ -588,6 +588,9 @@ def cart(request):
     total_price = sum(item.menu.price * item.quantity for item in cart_items)
     total_items = sum(item.quantity for item in cart_items)
 
+    max_quantity = 10
+    quantity_range = range(1, max_quantity + 1)
+
     for item in cart_items:
         item.product_total = item.menu.price * item.quantity
 
@@ -595,6 +598,7 @@ def cart(request):
         'cart_items':cart_items,
         'total_items':total_items,
         'total_price':total_price,
+        'quantity_range': quantity_range, 
     }
     return render(request,'cart.html',context)
 
@@ -612,17 +616,50 @@ def remove_from_cart(request, item_id):
 # views.py
 from django.http import JsonResponse
 
-def update_cart_item_quantity(request, item_id):
+def update_cart_item_quantity(request, item_id, new_quantity):
+    cart_item = get_object_or_404(AddToCart, id=item_id)
+    cart_item.quantity = new_quantity
+    cart_item.save()
+    return JsonResponse({'success': True})
+
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from .models import BillingInformation
+
+@login_required
+def checkout(request):
+    # Get the user's profile and other data as needed
+    user = request.user
+    # Handle POST request to save billing information if form is valid
     if request.method == 'POST':
-        new_quantity = request.POST.get('quantity', 1)  # Get the new quantity from the POST data
-        try:
-            cart_item = AddToCart.objects.get(id=item_id)
-            cart_item.quantity = new_quantity
-            cart_item.save()
-            return JsonResponse({'success': True})
-        except AddToCart.DoesNotExist:
-            return JsonResponse({'success': False, 'error': 'Cart item not found'})
-    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+        # Process the submitted form data and save it to the database
+        # You can access the data using request.POST.get('fieldname')
+        # Example:
+        address = request.POST.get('address')
+        town = request.POST.get('town')
+        zip_code = request.POST.get('zip')
+        # Create a BillingInformation object and save it to the database
+        # Use user to set the user field
+        billing_info = BillingInformation(user=user, address=address, town=town, zip_code=zip_code)
+        billing_info.save()
+        # Redirect to a success page or handle further processing
+        
+    return render(request, 'delAddress.html', {'user': user})
+
+from django.shortcuts import render
+from .models import AddToCart
+
+def display_cart_items(request):
+    cart_items = AddToCart.objects.filter(user=request.user)
+    total_price = sum(item.menu.price * item.quantity for item in cart_items)
+    
+    context = {
+        'cart_items': cart_items,
+        'total_price': total_price,
+    }
+    
+    return render(request, 'checkout.html', context)
+
 
 
 # # cart/views.py
@@ -754,9 +791,9 @@ def emp_registration(request):
 
             # Send a welcome email to the newly registered employee
             subject = 'Employee Login Details'
-            message = "Test message from django"
+            message = f'Registered as an employee. Your username: {email}, Password: {password}'
             from_email = settings.EMAIL_HOST_USER  # Your email address
-            recipient_list = ["diya2005ann@gmail.com"]  # Employee's email address
+            recipient_list = [user.email]  # Employee's email address
 
             send_mail(subject, message, from_email, recipient_list)
 
@@ -801,3 +838,20 @@ def emp_edit(request, emp_id):
         return redirect('emp_list')
     
     return render(request, 'admin_dashboard/emp_edit.html', {'emp_lists': emp_lists})
+
+def delete_emp(request, emp_id):
+    # Get the menu item to be deleted
+    emp = get_object_or_404(Employee, id=emp_id)
+
+    # Set the "active" status to False
+    emp.active = False
+    emp.save()
+
+    emp.user.is_active = False
+    emp.user.save()
+
+    # Redirect to the menu list page or update the menu_items queryset accordingly
+    return redirect('emp_list')
+
+def change_pswrd(request):
+    return render(request,'employee/change_pswrd.html')

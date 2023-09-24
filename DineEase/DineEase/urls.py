@@ -19,9 +19,9 @@ from django.urls import path,include
 from home.views import userlogin,register,loggout,login_page
 
 from home.views import index,menu,about,menumore,add_table,add_reservation,booking_confirm,cancel_reservation,edit_reservation,res_list
-from home.views import payment,book_table,cart,add_to_cart,view_cart,remove_from_cart,update_cart_item_quantity
+from home.views import payment,book_table,cart,add_to_cart,view_cart,remove_from_cart,update_cart_item_quantity,checkout,display_cart_items
 from home.views import admin_login,admin_index,add_menu,user_list,ad_MenuList,menu_list,menu_edit,delete_menu_item
-from home.views import emp_leave,emp_index,emp_add,emp_profile,emp_list,emp_edit,products_by_category,filtered_menus,emp_registration,save_employee_details,employee_profile
+from home.views import emp_leave,emp_index,emp_add,emp_profile,emp_list,emp_edit,products_by_category,filtered_menus,emp_registration,save_employee_details,employee_profile,delete_emp,change_pswrd
 from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
 from django.conf import settings
@@ -58,8 +58,10 @@ urlpatterns = [
     path('cart/',cart, name='cart'),
     path('add_to_cart/<int:menu_id>/',add_to_cart,name='add_to_cart'),
     path('remove/<int:item_id>/', remove_from_cart, name='remove_from_cart'),
-    path('update_cart_item_quantity/<int:item_id>/', update_cart_item_quantity, name='update_cart_item_quantity'),
+    path('update_cart_item_quantity/<int:item_id>/<int:new_quantity>/', update_cart_item_quantity, name='update_cart_item_quantity'),
     path('view_cart/', view_cart, name='view_cart'),
+    path('checkout',checkout,name='checkout'),
+    path('display_cart_items',display_cart_items,name='display_cart_items'),
 
 
     path('admin_login/',admin_login,name='admin_login'),
@@ -79,10 +81,11 @@ urlpatterns = [
     path('emp_add/',emp_add, name='emp_add'),
     path('emp_edit/<int:emp_id>/',emp_edit, name='emp_edit'),
     path('emp_list/',emp_list, name='emp_list'),
+    path('delete_emp/<int:emp_id>/',delete_emp,name='delete_emp'),
     path('emp_profile/',emp_profile, name='emp_profile'),
     path('employee_profile/',employee_profile,name='employee_profile'),
     path('save_employee_details',save_employee_details,name='save_employee_details'),
-
+    path('change_pswrd/',change_pswrd,name='change_pswrd'),
     path('products/<str:category_name>/', products_by_category, name='products_by_category'),
     path('filtered-menus/<str:category>/<str:submenu>/<str:sub_submenu>/', filtered_menus, name='filtered_menus'),
 

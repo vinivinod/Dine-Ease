@@ -551,6 +551,7 @@
 											</thead>
 											<tbody>
 												{% for list_emp in emp_lists %}
+												{% if list_emp.active %}
 												{% comment %} {% if user.role == 2 %}  {% endcomment %}
 												<tr>
 													<td>#{{list_emp.id }}</td> 
@@ -568,12 +569,13 @@
 															</button>
 															<div class="dropdown-menu">
 																<a class="dropdown-item" href="{% url 'emp_edit' list_emp.id %}">Edit</a>
-																<a class="dropdown-item" href="">Delete</a>
+																<a class="dropdown-item" href="{% url 'delete_emp' list_emp.id %}">Delete</a>
 															</div>
 														</div>
 													</td>
 												</tr>
 												{% comment %} {% endif %}  {% endcomment %}
+												{% endif %}
 												{% endfor %}
 											</tbody>
 										</table>

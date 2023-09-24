@@ -120,6 +120,20 @@
         #checkout:hover {
             background-color: #00587A;
         }
+        .quantity-dropdown {
+            width: 50px; /* Set the desired width */
+            height:30px;
+            margin-top:25px;
+            padding: 5px; /* Add some padding for better appearance */
+            border: 1px solid #ccc; /* Add a border */
+            border-radius: 5px; /* Add rounded corners */
+            font-size: 16px; /* Set the font size */
+        }
+    
+        /* Style the dropdown options */
+        .quantity-dropdown option {
+            font-size: 16px; /* Set the font size for options */
+        }
     </style>
 </head>
 <body>
@@ -132,7 +146,11 @@
                 <div class="product-name">{{ item.menu.name }}</div>
                 <div class="product-price">₹{{ item.menu.price }}</div>
             </div>
-            <input class="quantity-input" type="number" value="{{ item.quantity }}" min="1" max="10">&ensp;
+            <select class="quantity-dropdown" data-item-id="{{ item.id }}">
+                {% for i in quantity_range %}
+                    <option value="{{ i }}" {% if item.quantity == i %}selected{% endif %}>{{ i }}</option>
+                {% endfor %}
+            </select>&ensp;
             <div class="product-total">₹{{ item.product_total|floatformat:2 }}</div>&ensp;
             <a href="{% url 'remove_from_cart' item.id %}">
                 <button class="remove-button">Remove</button>
@@ -144,24 +162,22 @@
             <a href="{% url 'menu' %}">
                 <button id="add-more-items">Add More Items</button>
             </a>
-            <a href="{% url 'cart' %}">
-                <button id="checkout">Checkout</button>
+            <a href="{% url 'checkout' %}">
+                <button id="checkout">Place Order</button>
             </a>
         </div>
     </div>
+    
     <script>
         function updateProductTotal(product) {
             const price = parseFloat(product.querySelector('.product-price').textContent.replace('₹', ''));
-            const quantityInput = product.querySelector('.quantity-input');
+            const quantityInput = product.querySelector('.quantity-dropdown');
             const newQuantity = parseFloat(quantityInput.value);
             const total = price * newQuantity;
             product.querySelector('.product-total').textContent = `₹${total.toFixed(2)}`;
-            // Update the quantity in the database via AJAX
-            const itemID = quantityInput.getAttribute('data-item-id');
-            updateCartQuantity(itemID, newQuantity);
             return total;
         }
-        
+    
         function updateTotalAmount() {
             const products = document.querySelectorAll('.product');
             let totalAmount = 0;
@@ -170,35 +186,39 @@
             });
             document.getElementById('total-amount').textContent = `Total Amount: ₹${totalAmount.toFixed(2)}`;
         }
-        
-        const quantityInputs = document.querySelectorAll('.quantity-input');
-        quantityInputs.forEach(input => {
-            input.addEventListener('input', updateTotalAmount);
-        });
-        
-        function updateCartQuantity(itemID, newQuantity) {
-            // Send an AJAX request to update the cart item quantity
-            $.ajax({
-                url: `/update_cart_item_quantity/${itemID}/`, // Update the URL based on your actual URL pattern
-                method: 'POST',
-                data: {
-                    quantity: newQuantity, // Pass the new quantity
-                    csrfmiddlewaretoken: '{{ csrf_token }}'
-                },
-                success: function (data) {
-                    // Handle the success response if needed
-                },
-                error: function () {
-                    // Handle errors
-                }
-            });
-        }
-        
-        // Calculate initial total amount
-        updateTotalAmount();
-        
-    </script>
     
+        const quantityInputs = document.querySelectorAll('.quantity-dropdown');
+        quantityInputs.forEach(input => {
+            input.addEventListener('change', updateTotalAmount);
+        });
+    
+        
+        $(document).ready(function() {
+            $('.quantity-dropdown').change(function() {
+                const itemID = $(this).data('item-id');
+                const newQuantity = $(this).val();
+                updateQuantity(itemID, newQuantity);
+            });
+    
+            function updateQuantity(itemID, newQuantity) {
+                $.ajax({
+                    url: `/update_cart_item_quantity/${itemID}/${newQuantity}/`,
+                    method: 'POST',
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: function(data) {
+                        // Handle success (if needed)
+                        updateTotalAmount();
+                    },
+                    error: function() {
+                        // Handle errors (if needed)
+                    }
+                });
+            }
+            // Your existing code for updating total amounts
+        });
+    </script>
     
     {% comment %} <script>
         const quantityInputs = document.querySelectorAll('.quantity-input');

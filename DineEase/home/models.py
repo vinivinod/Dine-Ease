@@ -91,6 +91,8 @@ class Employee(models.Model):
     emergency_name = models.CharField(max_length=100,default='',null=True)  # Field for emergency contact name
     emergency_contact_number = models.CharField(max_length=12,default='',blank=True, null=True)  # Field for emergency contact number
     image = models.ImageField(upload_to='employee_profile/', blank=True, null=True)
+    active = models.BooleanField(default=True)
+    
     # name = models.CharField(max_length=50)
     # email = models.EmailField(max_length=100, unique=True)
     # phone = models.CharField(max_length=12, blank=True)
@@ -230,3 +232,17 @@ class TimeSlot(models.Model):
 # class Fav(models.Model):
 #     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 #     items = models.ManyToManyField(menus)  # Assuming Menu is the model for products
+
+from django.db import models
+
+class BillingInformation(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)  # Use a one-to-one relationship with the User model
+    address = models.TextField()
+    town = models.CharField(max_length=50)
+    zip_code = models.CharField(max_length=10)
+
+    def __str__(self):
+        return self.user.username  # Return a meaningful representation for the model
+
+    def get_full_address(self):
+        return f"{self.address}, {self.city}, {self.zip_code}"
