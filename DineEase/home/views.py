@@ -562,43 +562,86 @@ from .models import menus
 def cart(request):
     return render(request,'cart.html')
 
-# def add_cart(request, menuid):
-#     userid=request.user.id
-#     menu = AddToCart( 
-#         user_id=userid,
-#         menu_id=menuid        
-#     )
-#     menu.save()
-#     return redirect('cart')
+@login_required(login_url='http://127.0.0.1:8000/')
+def add_to_cart(request, menu_id):
+    menu = get_object_or_404(menus, id=menu_id)
+    user = request.user
 
-# def cart_add(request):
-#     # Assuming you have the user object for the currently logged-in user
-#     user_id = request.user.id  # Replace with your user retrieval logic if needed
-# # Retrieve menus in the user's cart
-#     menus_in_cart = AddToCart.objects.filter(user_id=user_id)
-# # Retrieve menu details for the items in the cart
-#     cart_details = AddToCart.objects.filter(id_in=menus_in_cart.values_list('menu_id', flat=True))
+    check=AddToCart.objects.filter(menu_id=menu_id,user_id=user.id).exists()
+    if check:
+        cart_item=AddToCart.objects.get(menu_id=menu_id,user_id=user.id)
+        cart_item.quantity += 1
+        cart_item.save()
+    else:
+        cartItem=AddToCart(
+            menu_id=menu_id,
+            user_id=user.id,
+            quantity=1
+        )
+        cartItem.save()
 
-#     return render(request,"cart.html",{'cart_books':cart_details})
+    return redirect('menu')
 
+@login_required(login_url='http://127.0.0.1:8000/')
+def cart(request):
+    cart_items = AddToCart.objects.filter(user=request.user)
+    total_price = sum(item.menu.price * item.quantity for item in cart_items)
+    total_items = sum(item.quantity for item in cart_items)
 
-# cart/views.py
-from django.shortcuts import render, redirect
+    for item in cart_items:
+        item.product_total = item.menu.price * item.quantity
+
+    context = {
+        'cart_items':cart_items,
+        'total_items':total_items,
+        'total_price':total_price,
+    }
+    return render(request,'cart.html',context)
+
+from django.shortcuts import redirect
 from .models import AddToCart
 
-def add_to_cart(request, menu_id):
-    # Assuming menu_id is passed as an argument to specify the menu item to add
+def remove_from_cart(request, item_id):
+    try:
+        item = AddToCart.objects.get(id=item_id, user=request.user)
+        item.delete()
+    except AddToCart.DoesNotExist:
+        pass  # Handle item not found as needed
+    return redirect('cart')
+
+# views.py
+from django.http import JsonResponse
+
+def update_cart_item_quantity(request, item_id):
     if request.method == 'POST':
-        # Get the user (you might need to implement user authentication)
-        user = request.user  # Assuming you have user authentication set up
+        new_quantity = request.POST.get('quantity', 1)  # Get the new quantity from the POST data
+        try:
+            cart_item = AddToCart.objects.get(id=item_id)
+            cart_item.quantity = new_quantity
+            cart_item.save()
+            return JsonResponse({'success': True})
+        except AddToCart.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Cart item not found'})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
-        # Get the menu item based on menu_id
-        menu_item = menus.objects.get(id=menu_id)
 
-        # Create a cart entry for the user and menu item
-        AddToCart.objects.create(user=user, menu=menu_item)
+# # cart/views.py
+# from django.shortcuts import render, redirect
+# from .models import AddToCart
 
-        return redirect('cart')  # Redirect to the cart page after adding an item
+# def add_to_cart(request, menu_id):
+#     # Assuming menu_id is passed as an argument to specify the menu item to add
+#     if request.method == 'POST':
+#         # Get the user (you might need to implement user authentication)
+#         user = request.user  # Assuming you have user authentication set up
+
+#         # Get the menu item based on menu_id
+#         menu_item = menus.objects.get(id=menu_id)
+
+#         # Create a cart entry for the user and menu item
+#         AddToCart.objects.create(user=user, menu=menu_item)
+
+#         return redirect('cart')  # Redirect to the cart page after adding an item
 
 def view_cart(request):
     # Retrieve cart items for the logged-in user
@@ -707,6 +750,7 @@ def emp_registration(request):
             return redirect('emp_list')
     else:
         return render(request,'employee/emp-add.html')
+
 from django.shortcuts import render
 from .models import Employee
 

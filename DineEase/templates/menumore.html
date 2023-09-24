@@ -450,31 +450,31 @@
       <div class="filters-content">
         <div class="row grid">
        
-    {% for Menus in Menus %}
-    {% if Menus.active %}
+    {% for Menu in Menus %}
+    {% if Menu.active %}
     <div class="col-sm-6 col-lg-4 all pasta">
         <div class="box" style="height: 420px;">
         <div>
             <div class="img-box" >
-                <img src="{{ Menus.img.url }}" alt="" >
+                <img src="{{ Menu.img.url }}" alt="" >
             </div>
             <div class="detail-box">
                 <h5>
-                    {{ Menus.name }}
+                    {{ Menu.name }}
                 </h5>
                 <p>
-                {{ Menus.desc }}  
+                {{ Menu.desc }}  
                 </p>
                 <div class="options">
                     <h6>
-                    Rs. {{ Menus.price }}
+                    Rs. {{ Menu.price }}
                     </h6>
                     <div class="button-container">
                       <a href="{% url 'booking_confirm' %}">
                         <i class="fa fa-cutlery" aria-hidden="true" style="color: black;"></i>
                       </a>
                       &ensp;
-                      <a href="{% url 'cart' %}">
+                      <a href="{% url 'add_to_cart' Menu.id %}">
                         <i class="fa fa-cart-plus" aria-hidden="true" style="color: black;"></i>
                     </a>
                     </div> 

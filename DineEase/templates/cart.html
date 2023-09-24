@@ -1,8 +1,11 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <title>Shopping Cart</title>
     <style>
         body {
@@ -24,6 +27,7 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
             max-width: 600px;
             width: 100%;
+            margin: 20px;
         }
         .product {
             display: flex;
@@ -51,6 +55,7 @@
         }
         .product-total {
             font-size: 1.2em;
+            margin-top:30px;
             font-weight: bold;
         }
         #total-amount {
@@ -63,36 +68,100 @@
         }
         .quantity-input {
             width: 50px;
+            height:20px;
             padding: 5px;
+            margin-top:25px;
             text-align: center;
+        }
+        #add-more-items {
+            background-color: #008CBA;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 20px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        #add-more-items:hover {
+            background-color: #00587A;
+        }
+        .remove-button {
+            background-color: #d11f1f; /* Red background color */
+            color: #fff; /* White text color */
+            border: none;
+            padding: 5px 10px;
+            margin-top:30px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .remove-button:hover {
+            background-color: #FF3333; /* Darker red on hover */
+        }
+
+        #checkout {
+            background-color: #008CBA;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        #checkout:hover {
+            background-color: #00587A;
         }
     </style>
 </head>
 <body>
     <h1>Your Shopping Cart</h1>
     <div class="cart">
+        {% for item in cart_items %}
         <div class="product">
-            <img src="product1.jpg" alt="Product 1">
+            <img src="{{ item.menu.img.url }}" alt="{{ item.menu.name }}">
             <div class="product-details">
-                <div class="product-name">Product 1</div>
-                <div class="product-price">₹19.00</div>
+                <div class="product-name">{{ item.menu.name }}</div>
+                <div class="product-price">₹{{ item.menu.price }}</div>
             </div>
-            <input class="quantity-input" type="number" value="2" min="1" max="10">
-            <div class="product-total">₹39.00</div>
+            <input class="quantity-input" type="number" value="{{ item.quantity }}" min="1" max="10">&ensp;
+            <div class="product-total">₹{{ item.product_total|floatformat:2 }}</div>&ensp;
+            <a href="{% url 'remove_from_cart' item.id %}">
+                <button class="remove-button">Remove</button>
+            </a>
         </div>
-        <div id="total-amount">Total Amount: ₹109.94</div>
+        {% endfor %}
+        <div id="total-amount">Total Amount: ₹{{ total_price }}</div>
+        <div class="button-container">
+            <a href="{% url 'menu' %}">
+                <button id="add-more-items">Add More Items</button>
+            </a>
+            <a href="{% url 'cart' %}">
+                <button id="checkout">Checkout</button>
+            </a>
+        </div>
     </div>
     <script>
-        // Function to update the total price for a product
         function updateProductTotal(product) {
             const price = parseFloat(product.querySelector('.product-price').textContent.replace('₹', ''));
-            const quantity = parseFloat(product.querySelector('.quantity-input').value);
-            const total = price * quantity;
+            const quantityInput = product.querySelector('.quantity-input');
+            const newQuantity = parseFloat(quantityInput.value);
+            const total = price * newQuantity;
             product.querySelector('.product-total').textContent = `₹${total.toFixed(2)}`;
+            // Update the quantity in the database via AJAX
+            const itemID = quantityInput.getAttribute('data-item-id');
+            updateCartQuantity(itemID, newQuantity);
             return total;
         }
-
-        // Function to update the total amount for all products
+        
         function updateTotalAmount() {
             const products = document.querySelectorAll('.product');
             let totalAmount = 0;
@@ -101,15 +170,45 @@
             });
             document.getElementById('total-amount').textContent = `Total Amount: ₹${totalAmount.toFixed(2)}`;
         }
-
-        // Add event listeners to update totals when quantity changes
+        
         const quantityInputs = document.querySelectorAll('.quantity-input');
         quantityInputs.forEach(input => {
             input.addEventListener('input', updateTotalAmount);
         });
-
+        
+        function updateCartQuantity(itemID, newQuantity) {
+            // Send an AJAX request to update the cart item quantity
+            $.ajax({
+                url: `/update_cart_item_quantity/${itemID}/`, // Update the URL based on your actual URL pattern
+                method: 'POST',
+                data: {
+                    quantity: newQuantity, // Pass the new quantity
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    // Handle the success response if needed
+                },
+                error: function () {
+                    // Handle errors
+                }
+            });
+        }
+        
         // Calculate initial total amount
         updateTotalAmount();
+        
     </script>
+    
+    
+    {% comment %} <script>
+        const quantityInputs = document.querySelectorAll('.quantity-input');
+        quantityInputs.forEach(input => {
+            input.addEventListener('change', () => {
+                const itemID = input.getAttribute('data-item-id');
+                const newQuantity = input.value;
+                window.location.href = `{% url 'update_cart_item_quantity' 0 0 %}`.replace('0', itemID).replace('0', newQuantity);
+            });
+        });
+    </script> {% endcomment %}
 </body>
 </html>

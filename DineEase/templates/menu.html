@@ -490,15 +490,9 @@
                                     <i class="fa fa-cutlery" aria-hidden="true" style="color: black;"></i>
                                   </a>
                                   &ensp;
-                                  {% comment %} <button class="btn btn-success cart-button"
-                                      data-item-name="{{ menu_item.name }}"
-                                      data-item-price="{{ menu_item.price }}"
-                                      data-item-description="{{ menu_item.desc }}">
-                                      <i class="fa-solid fa-cart-shopping"></i> AddtoCart
-                                  </button> {% endcomment %}
-                                  <a href="{% url 'cart' %}?item_name={{ menu_item.name }} & item_price={{ menu_item.price }}">
-                                    <i class="fa fa-cart-plus" aria-hidden="true" style="color: black;"></i>
-                                  </a>
+                                  <a href="{% url 'add_to_cart' menu_item.id %}">
+                                    <i class="fa fa-cart-plus" aria-hidden="true" style="color: black;"></i> 
+                                </a>                                
                               </div>
                           </div>
                       </div>

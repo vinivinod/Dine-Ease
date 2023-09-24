@@ -551,56 +551,6 @@
 														<small class="text-danger" id="itemNameError"></small>
 													</div><br>
 													
-													{% comment %} <div class="col-md-6">
-														<label for="Mcategory" class="form-label">Category</label>
-														<select class="form-control" name="Mcategory" id="Mcategory">
-															<option value="">Select a category</option>
-															<option value="kerala">Kerala</option>
-															<option value="chineese">Chineese</option>
-															<option value="north indian">North indian</option>
-															<option value="arabian">Arabian</option>
-															<option value="beverages">Beverages</option>
-														</select>
-													</div> {% endcomment %}
-													{% comment %} <div class="col-md-6">
-														<label for="Msubcategory" class="form-label">Subcategory</label>
-														<select class="form-control" name="Msubcategory" id="Msubcategory">
-															<option value="">Select a subcategory</option>
-															<!-- Add options specific to Kerala -->
-															<option value="breads" data-category="kerala">Breads</option>
-															<option value="curries" data-category="kerala">Curries</option>
-															<option value="rice" data-category="kerala">Rice Dishes</option>
-															
-															<!-- Add options specific to Chineese -->
-															<option value="appetizers" data-category="chineese">Appetizers</option>
-															<option value="maincourse" data-category="chineese">Main Course</option>
-															<!-- Add options specific to North Indian -->
-															<option value="breads" data-category="north indian">Breads and Accompaniments</option>
-															<option value="curries" data-category="north indian">Curries</option>
-															<option value="rice" data-category="north indian">Rice Dishes</option>
-															
-															<!-- Add options specific to Arabian -->
-															<option value="appetizers" data-category="arabian">Appentizers</option>
-															<option value="rollsNgrills" data-category="arabian">Rolls & Grills</option>
-															<option value="maincourse" data-category="arabian">Main Course</option>
-															
-															<!-- Add options specific to Deserts -->
-															{% comment %} <option value="deserts-option1" data-category="deserts">Deserts Option 1</option> {% endcomment %}
-															{% comment %} <option value="deserts-option2" data-category="deserts">Deserts Option 2</option> {% endcomment %}
-															<!-- Add options specific to Beverages --> 
-															{% comment %} <option value="hotbeverages" data-category="beverages">Hot Beverages </option>
-															<option value="coldbeverages" data-category="beverages">Cold Beverages</option>
-														</select>
-													</div>
-													<div class="col-md-6">
-														<label for="Msubsubcategory" class="form-label">Sub-Subcategory</label>
-														<select class="form-control" name="Msubsubcategory" id="Msubsubcategory">
-															<option value="">Select a sub-subcategory</option>
-															<!-- Add sub-subcategory options based on category and subcategory selections -->
-														
-														</select>
-													</div>  {% endcomment %}
-													
 													<div class="col-md-6">
 														<label for="Eemail" class="form-label">Email</label>
 														<input type="text" class="form-control" placeholder="Employee email" name="email" id="Eemail">
@@ -628,22 +578,13 @@
 														<input type="text" class="form-control" placeholder="Employee yoe" name="years_of_experience" id="Eyoe">
 														<small id="yoeError" class="text-danger"></small>
 													</div>
-													
-													{% comment %} <div class="col-md-6">
-														<label for="Mimg" class="form-label">Upload Image</label>
-														<input type="file" class="form-control" name="Mimg" id="Mimg">
-													</div> {% endcomment %}
 								
 													<div class="col-md-12">
 														<div class="product_add_cancel_button">
-															
-																
-																{% comment %} <button type="submit" class="btn btn-border">Cancel</button> {% endcomment %}
-																<!-- Remove the nested form tag -->
-																<button type="submit" class="btn btn-primary">Add Employee</button>
-															
+															<button type="submit" class="btn btn-primary">Add Employee</button>
+															{% comment %} <button type="button" class="btn btn-success" id="sendEmailButton">Send Email</button> {% endcomment %}
 														</div>
-													</div>
+													</div>													
 												</form>
 											</div>
 										</div>

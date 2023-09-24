@@ -19,7 +19,7 @@ from django.urls import path,include
 from home.views import userlogin,register,loggout,login_page
 
 from home.views import index,menu,about,menumore,add_table,add_reservation,booking_confirm,cancel_reservation,edit_reservation,res_list
-from home.views import payment,book_table,cart,add_to_cart,view_cart
+from home.views import payment,book_table,cart,add_to_cart,view_cart,remove_from_cart,update_cart_item_quantity
 from home.views import admin_login,admin_index,add_menu,user_list,ad_MenuList,menu_list,menu_edit,delete_menu_item
 from home.views import emp_leave,emp_index,emp_add,emp_profile,emp_list,products_by_category,filtered_menus,emp_registration,save_employee_details,employee_profile
 from django.views.generic import TemplateView
@@ -56,7 +56,9 @@ urlpatterns = [
     path('payment/',payment, name='payment'),
     path('book_table/', book_table, name='book_table'),
     path('cart/',cart, name='cart'),
-     path('add_to_cart/<int:menu_id>/',add_to_cart, name='add_to_cart'),
+    path('add_to_cart/<int:menu_id>/',add_to_cart,name='add_to_cart'),
+    path('remove/<int:item_id>/', remove_from_cart, name='remove_from_cart'),
+    path('update_cart_item_quantity/<int:item_id>/', update_cart_item_quantity, name='update_cart_item_quantity'),
     path('view_cart/', view_cart, name='view_cart'),
 
 
