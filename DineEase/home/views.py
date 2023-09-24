@@ -728,6 +728,10 @@ def emp_menu(request):
 def emp_leave(request):
     return render(request,'employee/emp_leave.html')
 
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.shortcuts import render, redirect
+from django.conf import settings
 
 def emp_registration(request):
     if request.method=='POST':
@@ -747,6 +751,15 @@ def emp_registration(request):
             user.save()
             empRegister = Employee(user=user,position=position,years_of_experience=years_of_experience)
             empRegister.save()
+
+            # Send a welcome email to the newly registered employee
+            subject = 'Employee Login Details'
+            message = "Test message from django"
+            from_email = settings.EMAIL_HOST_USER  # Your email address
+            recipient_list = ["diya2005ann@gmail.com"]  # Employee's email address
+
+            send_mail(subject, message, from_email, recipient_list)
+
             return redirect('emp_list')
     else:
         return render(request,'employee/emp-add.html')
@@ -763,3 +776,28 @@ def employee_profile(request):
     }
 
     return render(request, 'employee/profile.html', context)
+
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Employee,CustomUser
+def emp_edit(request, emp_id):
+    emp_lists= get_object_or_404(Employee, id=emp_id)
+    # custom_user = emp_lists.user
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        position = request.POST.get('position')
+        years_of_experience = request.POST.get('years_of_experience')
+
+        emp_lists.user.name = name
+        emp_lists.user.email = email
+        emp_lists.user.phone = phone
+        emp_lists.user.save()
+
+        emp_lists.position=position
+        emp_lists.years_of_experience=years_of_experience
+        emp_lists.save()
+
+        return redirect('emp_list')
+    
+    return render(request, 'admin_dashboard/emp_edit.html', {'emp_lists': emp_lists})
