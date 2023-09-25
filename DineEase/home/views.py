@@ -1,4 +1,5 @@
 from difflib import context_diff
+from venv import logger
 from django.shortcuts import render,redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
@@ -341,8 +342,6 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from home.models import Reservation
 
-from django.shortcuts import get_object_or_404, render
-from django.http import HttpResponseRedirect
 
 def cancel_reservation(request, reservation_id):
     booking = get_object_or_404(Reservation, reservation_id=reservation_id)
@@ -625,6 +624,7 @@ def update_cart_item_quantity(request, item_id, new_quantity):
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from .models import BillingInformation
+import razorpay
 
 @login_required
 def checkout(request):
@@ -664,10 +664,56 @@ def checkout(request):
             billing_info.zip_code = zip_code
         
         billing_info.save()
+
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+                    # Create an order with Razorpay
+        order_amount = 10000  # Amount in paise (Change as needed)
+        order_currency = 'INR'
+        order_receipt = str(billing_info.id)
+        order_notes = {'billing_info_id': billing_info.id}
+        order_payload = {
+            'amount': order_amount,
+            'currency': order_currency,
+            'receipt': order_receipt,
+            'notes': order_notes,
+            }
+        order = client.order.create(data=order_payload)
+
+                    # Update the appointment with the Razorpay order ID
+        billing_info.order_id = order.get('id')
+        billing_info.save()
+
+        # Render the Razorpay payment page
+        return render(request, 'razorpay.html', {'order': order, 'billing_info': billing_info})
         # Redirect to a success page or handle further processing
 
     return render(request, 'delAddress.html', context)
 
+
+from django.views.decorators.csrf import csrf_exempt
+@csrf_exempt
+def payment_confirmation(request, order_id):
+    try:
+        # Retrieve the appointment based on the order_id
+        billing_info = BillingInformation.objects.get(order_id=order_id)
+
+        # Check if the appointment status is 'not_paid'
+        if billing_info.status == 'not_paid':
+            # Update the appointment status to 'confirmed' since payment is successful
+            billing_info.status = 'confirmed'
+            billing_info.save()
+
+            # Render the payment confirmation page with appointment details
+            return render(request, 'confirm_payment.html', {'billing_info': billing_info})
+        else:
+            # Handle cases where the appointment status is already 'confirmed' or 'cancelled'
+            return HttpResponse('Payment Failed')
+
+    except BillingInformation.DoesNotExist:
+        # Handle cases where the appointment with the given order_id does not exist
+        logger.error(f"Appointment with order_id {order_id} does not exist")
+        return HttpResponse('Appointment DoesNotExist')
 
 from django.shortcuts import render
 from .models import AddToCart

@@ -170,3 +170,8 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 EMAIL_HOST_USER = 'viniann03@gmail.com'
 EMAIL_HOST_PASSWORD = 'hzpapfdygyuegawy'
+
+
+
+RAZORPAY_KEY_ID = "rzp_test_IncGE9dRoGNUPI"
+RAZORPAY_KEY_SECRET = "uRLc3Tf2oA8Y8jYNLMjMVbxA"

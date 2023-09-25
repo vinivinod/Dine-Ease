@@ -19,13 +19,14 @@ from django.urls import path,include
 from home.views import userlogin,register,loggout,login_page
 
 from home.views import index,menu,about,menumore,add_table,add_reservation,booking_confirm,cancel_reservation,edit_reservation,res_list
-from home.views import payment,book_table,cart,add_to_cart,view_cart,remove_from_cart,update_cart_item_quantity,checkout,display_cart_items
+from home.views import payment,book_table,cart,add_to_cart,view_cart,remove_from_cart,update_cart_item_quantity,checkout,display_cart_items,payment_confirmation
 from home.views import admin_login,admin_index,add_menu,user_list,ad_MenuList,menu_list,menu_edit,delete_menu_item
 from home.views import emp_leave,emp_index,emp_add,emp_profile,emp_list,emp_edit,products_by_category,filtered_menus,emp_registration,save_employee_details,employee_profile,delete_emp,change_pswrd
 from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
+from django.urls import path
 
 
 urlpatterns = [
@@ -62,6 +63,7 @@ urlpatterns = [
     path('view_cart/', view_cart, name='view_cart'),
     path('checkout',checkout,name='checkout'),
     path('display_cart_items',display_cart_items,name='display_cart_items'),
+    path('confirm_payment/<str:order_id>/', payment_confirmation, name='payment_confirmation'),
 
 
     path('admin_login/',admin_login,name='admin_login'),

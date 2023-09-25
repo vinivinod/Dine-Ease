@@ -236,10 +236,17 @@ class TimeSlot(models.Model):
 from django.db import models
 
 class BillingInformation(models.Model):
+    STATUS_CHOICES = (
+        ('not_paid', 'Not Paid'),
+        ('confirmed', 'Confirmed'),
+        ('cancelled', 'Cancelled'),
+    )
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)  # Use a one-to-one relationship with the User model
     address = models.TextField()
     town = models.CharField(max_length=50)
     zip_code = models.CharField(max_length=10)
+    order_id = models.CharField(max_length=100, blank=True, null=True)  # Add this field for Razorpay order ID
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='not_paid')
 
     def __str__(self):
         return self.user.username  # Return a meaningful representation for the model
