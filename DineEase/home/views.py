@@ -631,6 +631,7 @@ def checkout(request):
     # Get the user's profile and other data as needed
     cart_items = AddToCart.objects.filter(user=request.user)
     total_price = sum(item.menu.price * item.quantity for item in cart_items)
+    total_price_integer = int(total_price)
 
     user = request.user
 
@@ -662,13 +663,14 @@ def checkout(request):
             billing_info.address = address
             billing_info.town = town
             billing_info.zip_code = zip_code
+            billing_info.status = 'not_paid'
         
         billing_info.save()
 
         client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
 
-                    # Create an order with Razorpay
-        order_amount = 10000  # Amount in paise (Change as needed)
+        # Create an order with Razorpay
+        order_amount = int(total_price_integer * 100)  # Amount in paise (Change as needed)
         order_currency = 'INR'
         order_receipt = str(billing_info.id)
         order_notes = {'billing_info_id': billing_info.id}

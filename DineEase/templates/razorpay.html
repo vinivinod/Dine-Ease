@@ -6,12 +6,63 @@
     <title>Razorpay Payment</title>
     <!-- Include Razorpay's JavaScript SDK -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #payment-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        button#rzp-button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button#rzp-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <h1>Make a Payment</h1>
-
     <!-- Payment Form -->
     <form id="payment-form">
+        <h1>Make a Payment</h1>
+
         <!-- Name -->
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" required><br>
@@ -43,8 +94,8 @@
             key: 'rzp_test_IncGE9dRoGNUPI', // Replace with your Razorpay API key
             amount: document.getElementById('amount').value,
             currency: 'INR',
-            name: 'Advocate Assist',
-            description: 'Payment for Legal Services',
+            name: 'DineEase',
+            description: 'Payment for Online Delivery',
             image: '',
             handler: function (response) {
                 var paymentId = response.razorpay_payment_id;
