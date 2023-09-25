@@ -629,7 +629,23 @@ from .models import BillingInformation
 @login_required
 def checkout(request):
     # Get the user's profile and other data as needed
+    cart_items = AddToCart.objects.filter(user=request.user)
+    total_price = sum(item.menu.price * item.quantity for item in cart_items)
+
     user = request.user
+
+    # Fetch the user's billing information if it exists
+    try:
+        billing_info = BillingInformation.objects.get(user=user)
+    except BillingInformation.DoesNotExist:
+        billing_info = None
+
+    context = {
+        'cart_items': cart_items,
+        'total_price': total_price,
+        'billing_info': billing_info,
+    }
+
     # Handle POST request to save billing information if form is valid
     if request.method == 'POST':
         # Process the submitted form data and save it to the database
@@ -638,13 +654,20 @@ def checkout(request):
         address = request.POST.get('address')
         town = request.POST.get('town')
         zip_code = request.POST.get('zip')
-        # Create a BillingInformation object and save it to the database
-        # Use user to set the user field
-        billing_info = BillingInformation(user=user, address=address, town=town, zip_code=zip_code)
+        
+        # Check if billing_info exists, if not, create a new one
+        if billing_info is None:
+            billing_info = BillingInformation(user=user, address=address, town=town, zip_code=zip_code)
+        else:
+            billing_info.address = address
+            billing_info.town = town
+            billing_info.zip_code = zip_code
+        
         billing_info.save()
         # Redirect to a success page or handle further processing
-        
-    return render(request, 'delAddress.html', {'user': user})
+
+    return render(request, 'delAddress.html', context)
+
 
 from django.shortcuts import render
 from .models import AddToCart
