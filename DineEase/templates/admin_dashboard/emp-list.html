@@ -99,33 +99,33 @@
 						</li> 
 
 						<!-- Users -->
-						{% comment %} <li class="has-sub">
+						<li class="has-sub">
 							<a class="sidenav-item-link" href="javascript:void(0)">
 								<i class="mdi mdi-account-multiple-outline"></i>
 								<span class="nav-text">Customers</span> <b class="caret"></b>
 							</a>
 							<div class="collapse">
 								<ul class="sub-menu" id="users" data-parent="#sidebar-menu">
-									<li>
+									{% comment %} <li>
 										<a class="sidenav-item-link" href="user-card.html">
 											<span class="nav-text">User Grid</span>
 										</a>
-									</li>
+									</li> {% endcomment %}
 
 									<li class="">
 										<a class="sidenav-item-link" href="{% url 'user_list' %}">
 											<span class="nav-text">User List</span>
 										</a>
 									</li>
-									 <li class="">
+									{% comment %} <li class="">
 										<a class="sidenav-item-link" href="user-profile.html">
 											<span class="nav-text">Users Profile</span>
 										</a>
-									</li> 
+									</li> {% endcomment %}
 								</ul>
 							</div>
 							<hr>
-						</li> {% endcomment %}
+						</li>
 
 						<!-- Category -->
 						<!-- <li class="has-sub">
@@ -148,6 +148,39 @@
 								</ul>
 							</div>
 						</li> -->
+
+						<!-- Products -->
+						<li class="has-sub">
+							<a class="sidenav-item-link" href="javascript:void(0)">
+								<!-- <i class="mdi mdi-palette-advanced"></i> -->
+								<i class="mdi mdi-package-variant-closed"></i>
+								<span class="nav-text">Menu</span> <b class="caret"></b>
+							</a>
+							<div class="collapse show">
+								<ul class="sub-menu" id="products" data-parent="#sidebar-menu">
+									<li class="">
+										<a class="sidenav-item-link" href="{% url 'add_menu' %}">
+											<span class="nav-text">Add Menu</span>
+										</a>
+									</li>
+									<li class="">
+										<a class="sidenav-item-link" href="{% url 'menu_list' %}">
+											<span class="nav-text">List Menu</span>
+										</a>
+									</li>
+									<!-- <li class="">
+										<a class="sidenav-item-link" href="product-grid.html">
+											<span class="nav-text">Grid Product</span>
+										</a>
+									</li>
+									<li class="">
+										<a class="sidenav-item-link" href="product-detail.html">
+											<span class="nav-text">Product Detail</span>
+										</a>
+									</li> -->
+								</ul>
+							</div>
+						</li>
 
 						<!-- Products -->
 						<li class="has-sub active">
@@ -181,29 +214,6 @@
 								</ul>
 							</div>
 						</li>
-
-						<!-- Orders -->
-						<!-- <li class="has-sub">
-							<a class="sidenav-item-link" href="javascript:void(0)">
-								<i class="mdi mdi-cart-outline"></i>
-								<span class="nav-text">Orders</span> <b class="caret"></b>
-							</a>
-							<div class="collapse">
-								<ul class="sub-menu" id="orders" data-parent="#sidebar-menu">
-									<li class="">
-										<a class="sidenav-item-link" href="new-order.html">
-											<span class="nav-text">Order list</span>
-										</a>
-									</li>
-									<li class="">
-										<a class="sidenav-item-link" href="order-detail.html">
-											<span class="nav-text">Order Detail</span>
-										</a>
-									</li>
-									
-								</ul>
-							</div>
-						</li> -->
 
 						<!-- Invoice -->
 						<!-- <li class="has-sub">
