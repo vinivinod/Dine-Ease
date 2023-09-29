@@ -19,7 +19,7 @@ from django.urls import path,include
 from home.views import userlogin,register,loggout,login_page
 
 from home.views import index,menu,about,menumore,add_table,add_reservation,booking_confirm,cancel_reservation,edit_reservation,res_list
-from home.views import payment,book_table,cart,add_to_cart,view_cart,remove_from_cart,update_cart_item_quantity,checkout,display_cart_items,payment_confirmation
+from home.views import payment,paymenthandler,book_table,cart,add_to_cart,view_cart,remove_from_cart,update_cart_item_quantity,checkout,display_cart_items
 from home.views import admin_login,admin_index,add_menu,user_list,ad_MenuList,menu_list,menu_edit,delete_menu_item
 from home.views import emp_leave,emp_index,emp_add,emp_profile,emp_list,emp_edit,products_by_category,filtered_menus,emp_registration,save_employee_details,employee_profile,delete_emp,change_pswrd
 from django.views.generic import TemplateView
@@ -54,17 +54,17 @@ urlpatterns = [
     path('cancel_reservation/<str:reservation_id>/', cancel_reservation, name='cancel_reservation'),
     path('edit_reservation/<str:reservation_id>/', edit_reservation, name='edit_reservation'),
     path('res_list/',res_list,name='res_list'),
-    path('payment/',payment, name='payment'),
     path('book_table/', book_table, name='book_table'),
     path('cart/',cart, name='cart'),
     path('add_to_cart/<int:menu_id>/',add_to_cart,name='add_to_cart'),
     path('remove/<int:item_id>/', remove_from_cart, name='remove_from_cart'),
     path('update_cart_item_quantity/<int:item_id>/<int:new_quantity>/', update_cart_item_quantity, name='update_cart_item_quantity'),
     path('view_cart/', view_cart, name='view_cart'),
-    path('checkout',checkout,name='checkout'),
+    path('checkout/',checkout,name='checkout'),
+    path('payment/<int:billing_id>/', payment, name='payment'),
+    path('paymenthandler/<int:billing_id>/', paymenthandler, name='paymenthandler'),
     path('display_cart_items',display_cart_items,name='display_cart_items'),
-    path('confirm_payment/<str:order_id>/', payment_confirmation, name='payment_confirmation'),
-
+    
 
     path('admin_login/',admin_login,name='admin_login'),
     path('admin_index/',admin_index,name='admin_index'),

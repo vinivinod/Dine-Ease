@@ -144,11 +144,11 @@
                   </g>
                 </svg>
               </a>
-               <form class="form-inline">
+               {% comment %} <form class="form-inline">
                 <button class="btn  my-2 my-sm-0 nav_search-btn" type="submit">
                   <i class="fa fa-search" aria-hidden="true"></i>
                 </button>
-              </form> 
+              </form>  {% endcomment %}
               <a href="menu/" class="order_online">
                 Order Online
               </a>
@@ -167,10 +167,8 @@
               <div class="row">
                 <div class="col-md-7 col-lg-6 ">
                   <div class="detail-box">
-                    <h1 id="dineease_h">
-                      DineEase Hub 
-                    </h1>
-                    <p>
+                    <h1>DineEase Hub </h1>
+                    <p id="hindex">
                       Discover a world of exceptional dining experiences right at your fingertips. 
                       From savoring delectable dishes to reserving your table with ease, we're here to 
                       make your dining journey a seamless and memorable one.  
@@ -230,7 +228,7 @@
                 </div>
               </div>
             </div>
-          </div>
+          </div> 
         </div>
         <div class="container">
           <ol class="carousel-indicators">
@@ -1172,13 +1170,13 @@
           <div class="form_container">
             <form action="">
               <div>
-                <input type="text" class="form-control" placeholder="Your Name" />
+                <input type="text" class="form-control" placeholder="Your Name" readonly/>
               </div>
               <div>
-                <input type="text" class="form-control" placeholder="Phone Number" />
+                <input type="text" class="form-control" placeholder="Phone Number" readonly/>
               </div>
               <div>
-                <input type="email" class="form-control" placeholder="Your Email" />
+                <input type="email" class="form-control" placeholder="Your Email" readonly/>
               </div>
               <div>
                 <select class="form-control nice-select wide">
@@ -1203,10 +1201,10 @@
                 </select>
               </div>
               <div>
-                <input type="date" class="form-control">
+                <input type="date" class="form-control" readonly>
               </div>
               <div class="btn_box">
-                <button>
+                <button id="booknow" >
                   Book Now
                 </button>
               </div>
@@ -1220,7 +1218,7 @@
         </div>
       </div>
     </div>
-  </section> {% endcomment %}
+  </section>  {% endcomment %}
   <!-- end book section -->
 
   <!-- client section -->

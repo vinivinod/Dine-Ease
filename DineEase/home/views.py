@@ -5,10 +5,19 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages,auth
 from django.http import HttpResponse
-from .models import Employee, menus,hmenus,tables,Reservation,CustomUser,AddToCart
+from django.urls import reverse
+from .models import Employee, menus,hmenus,tables,Reservation,CustomUser,AddToCart,Payment
 from .forms import  YourForm
 from django.contrib.auth import get_user_model
-
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from .models import BillingInformation
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponseBadRequest
+import razorpay
+razorpay_client = razorpay.Client(
+    auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KEY_SECRET))
 
 # Create your views here.
 User=get_user_model()
@@ -621,25 +630,46 @@ def update_cart_item_quantity(request, item_id, new_quantity):
     cart_item.save()
     return JsonResponse({'success': True})
 
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from .models import BillingInformation
-import razorpay
+
 
 @login_required
 def checkout(request):
-    # Get the user's profile and other data as needed
-    cart_items = AddToCart.objects.filter(user=request.user)
-    total_price = sum(item.menu.price * item.quantity for item in cart_items)
-    total_price_integer = int(total_price)
+    if not request.user.is_authenticated:
+        return redirect('login')  # Redirect to login page if the user is not authenticated
 
     user = request.user
+    cart_items = AddToCart.objects.filter(user=user)
+    total_price = sum(item.menu.price * item.quantity for item in cart_items)
 
-    # Fetch the user's billing information if it exists
     try:
         billing_info = BillingInformation.objects.get(user=user)
     except BillingInformation.DoesNotExist:
         billing_info = None
+
+    if request.method == 'POST':
+        address = request.POST.get('address')
+        town = request.POST.get('town')
+        zip_code = request.POST.get('zip')
+
+        if billing_info is None:
+            billing_info = BillingInformation(user=user, address=address, town=town, zip_code=zip_code)
+        else:
+            billing_info.address = address
+            billing_info.town = town
+            billing_info.zip_code = zip_code
+
+        billing_info.amount = total_price
+        billing_info.save()
+
+        # Save the products from the cart to billing_info
+        product_ids = [item.menu.id for item in cart_items]
+        products_to_add = menus.objects.filter(id__in=product_ids)
+        
+
+        # Add the products to the billing_info
+        billing_info.menu.add(*products_to_add)
+
+        return redirect('payment', billing_id=billing_info.id)  # Redirect to a success page
 
     context = {
         'cart_items': cart_items,
@@ -647,75 +677,93 @@ def checkout(request):
         'billing_info': billing_info,
     }
 
-    # Handle POST request to save billing information if form is valid
-    if request.method == 'POST':
-        # Process the submitted form data and save it to the database
-        # You can access the data using request.POST.get('fieldname')
-        # Example:
-        address = request.POST.get('address')
-        town = request.POST.get('town')
-        zip_code = request.POST.get('zip')
-        
-        # Check if billing_info exists, if not, create a new one
-        if billing_info is None:
-            billing_info = BillingInformation(user=user, address=address, town=town, zip_code=zip_code)
-        else:
-            billing_info.address = address
-            billing_info.town = town
-            billing_info.zip_code = zip_code
-            billing_info.status = 'not_paid'
-        
-        billing_info.save()
-
-        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
-
-        # Create an order with Razorpay
-        order_amount = int(total_price_integer * 100)  # Amount in paise (Change as needed)
-        order_currency = 'INR'
-        order_receipt = str(billing_info.id)
-        order_notes = {'billing_info_id': billing_info.id}
-        order_payload = {
-            'amount': order_amount,
-            'currency': order_currency,
-            'receipt': order_receipt,
-            'notes': order_notes,
-            }
-        order = client.order.create(data=order_payload)
-
-                    # Update the appointment with the Razorpay order ID
-        billing_info.order_id = order.get('id')
-        billing_info.save()
-
-        # Render the Razorpay payment page
-        return render(request, 'razorpay.html', {'order': order, 'billing_info': billing_info})
-        # Redirect to a success page or handle further processing
-
     return render(request, 'delAddress.html', context)
 
+def payment(request, billing_id):
+    billing = BillingInformation.objects.get(pk=billing_id)
+    user = request.user
 
-from django.views.decorators.csrf import csrf_exempt
+    # For Razorpay integration
+    currency = 'INR'
+    amount = billing.amount 
+    amount_in_paise = int(amount * 100)
+
+    # Create a Razorpay Order
+    razorpay_order = razorpay_client.order.create(dict(
+        amount=amount_in_paise,
+        currency=currency,
+        payment_capture='0'  # Capture payment manually after verifying it
+    ))
+
+    # Order ID of the newly created order
+    razorpay_order_id = razorpay_order['id']
+    callback_url = reverse('paymenthandler', args=[billing_id])
+
+    # Create a Payment record
+    payment = Payment.objects.create(
+        user=request.user,
+        razorpay_order_id=razorpay_order_id,
+        amount=billing.amount,
+        currency=currency,
+        payment_status=Payment.PaymentStatusChoices.PENDING,
+    )
+    payment.billing_info.add(billing)
+
+    # Prepare the context data
+    context = {
+        'user': request.user,
+        'billing': billing,
+        'razorpay_order_id': razorpay_order_id,
+        'razorpay_merchant_key': settings.RAZOR_KEY_ID,
+        'razorpay_amount': amount,
+        'currency': currency,
+        'amount': billing.amount,
+        'callback_url': callback_url,
+    }
+
+    return render(request, 'confirm_payment.html', context)
+
 @csrf_exempt
-def payment_confirmation(request, order_id):
-    try:
-        # Retrieve the appointment based on the order_id
-        billing_info = BillingInformation.objects.get(order_id=order_id)
+def paymenthandler(request, billing_id):
+    # Only accept POST requests.
+    if request.method == "POST":
+        # Get the required parameters from the POST request.
+        payment_id = request.POST.get('razorpay_payment_id', '')
+        razorpay_order_id = request.POST.get('razorpay_order_id', '')
+        signature = request.POST.get('razorpay_signature', '')
+        params_dict = {
+            'razorpay_order_id': razorpay_order_id,
+            'razorpay_payment_id': payment_id,
+            'razorpay_signature': signature
+        }
+        # Verify the payment signature.
+        result = razorpay_client.utility.verify_payment_signature(params_dict)
+        user = request.user
+        cart_items = AddToCart.objects.filter(user=user)
+        payment = Payment.objects.get(razorpay_order_id=razorpay_order_id)
+        amount = int(payment.amount * 100)  # Convert Decimal to paise
 
-        # Check if the appointment status is 'not_paid'
-        if billing_info.status == 'not_paid':
-            # Update the appointment status to 'confirmed' since payment is successful
-            billing_info.status = 'confirmed'
-            billing_info.save()
+        # Capture the payment.
+        razorpay_client.payment.capture(payment_id, amount)
+        payment = Payment.objects.get(razorpay_order_id=razorpay_order_id)
 
-            # Render the payment confirmation page with appointment details
-            return render(request, 'confirm_payment.html', {'billing_info': billing_info})
-        else:
-            # Handle cases where the appointment status is already 'confirmed' or 'cancelled'
-            return HttpResponse('Payment Failed')
+        # Update the order with payment ID and change status to "Successful."
+        payment.payment_id = payment_id
+        payment.payment_status = Payment.PaymentStatusChoices.SUCCESSFUL
+        payment.save()
 
-    except BillingInformation.DoesNotExist:
-        # Handle cases where the appointment with the given order_id does not exist
-        logger.error(f"Appointment with order_id {order_id} does not exist")
-        return HttpResponse('Appointment DoesNotExist')
+        # Clear the user's cart
+        cart_items.delete()
+
+        # Render the success page on successful capture of payment.
+        return render(request, 'index.html')
+
+    else:
+        billing = BillingInformation.objects.get(id=billing_id)
+        billing.status = False
+        billing.save()
+        # If other than POST request is made.
+        return HttpResponseBadRequest()
 
 from django.shortcuts import render
 from .models import AddToCart

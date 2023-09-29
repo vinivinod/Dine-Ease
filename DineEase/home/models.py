@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
-
+from django.utils import timezone
 # Create your models here.
 
 class UserManager(BaseUserManager):
@@ -236,20 +236,46 @@ class TimeSlot(models.Model):
 from django.db import models
 
 class BillingInformation(models.Model):
-    STATUS_CHOICES = (
-        ('not_paid', 'Not Paid'),
-        ('confirmed', 'Confirmed'),
-        ('cancelled', 'Cancelled'),
-    )
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)  # Use a one-to-one relationship with the User model
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     address = models.TextField()
     town = models.CharField(max_length=50)
     zip_code = models.CharField(max_length=10)
-    order_id = models.CharField(max_length=100, blank=True, null=True)  # Add this field for Razorpay order ID
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='not_paid')
+    payment_status = models.BooleanField(default=True)
+    amount = models.DecimalField(max_digits=8, decimal_places=2)
+    menu = models.ManyToManyField(menus, blank=True)
 
     def __str__(self):
-        return self.user.username  # Return a meaningful representation for the model
+        if self.user:
+            return f"Billing info for {self.user.name}"
+        return "Billing info (No associated user)"
 
-    def get_full_address(self):
-        return f"{self.address}, {self.city}, {self.zip_code}"
+class Payment(models.Model):
+    class PaymentStatusChoices(models.TextChoices):
+        PENDING = 'pending', 'Pending'
+        SUCCESSFUL = 'successful', 'Successful'
+        FAILED = 'failed', 'Failed'
+        
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)  # Link the payment to a user
+    razorpay_order_id = models.CharField(max_length=255)  # Razorpay order ID
+    payment_id = models.CharField(max_length=255)  # Razorpay payment ID
+    amount = models.DecimalField(max_digits=8, decimal_places=2)  # Amount paid
+    currency = models.CharField(max_length=3)  # Currency code (e.g., "INR")
+    timestamp = models.DateTimeField(auto_now_add=True)  # Timestamp of the payment
+    payment_status = models.CharField(max_length=20, choices=PaymentStatusChoices.choices, default=PaymentStatusChoices.PENDING)
+    billing_info = models.ManyToManyField(BillingInformation)
+
+    def str(self):
+        return f"Order for {self.user.name}"
+
+    class Meta:
+        ordering = ['-timestamp']
+
+#Update Status not implemented
+    def update_status(self):
+        # Calculate the time difference in minutes
+        time_difference = (timezone.now() - self.timestamp).total_seconds() / 60
+
+        if self.payment_status == self.PaymentStatusChoices.PENDING and time_difference > 1:
+            # Update the status to "Failed"
+            self.payment_status = self.PaymentStatusChoices.FAILED
+            self.save()
