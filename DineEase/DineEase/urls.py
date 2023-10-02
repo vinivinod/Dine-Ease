@@ -18,9 +18,9 @@ from django.contrib import admin
 from django.urls import path,include
 from home.views import userlogin,register,loggout,login_page
 
-from home.views import index,menu,about,menumore,add_table,add_reservation,booking_confirm,cancel_reservation,edit_reservation,res_list
+from home.views import index,menu,about,menumore,add_table,add_reservation,booking_confirm,cancel_reservation,edit_reservation,res_list,previous_reservations,approve_reservation
 from home.views import payment,paymenthandler,book_table,cart,add_to_cart,view_cart,remove_from_cart,update_cart_item_quantity,checkout,display_cart_items
-from home.views import admin_login,admin_index,add_menu,user_list,ad_MenuList,menu_list,menu_edit,delete_menu_item
+from home.views import admin_login,admin_index,add_menu,user_list,ad_MenuList,menu_list,menu_edit,delete_menu_item,employee_count
 from home.views import emp_leave,emp_index,emp_add,emp_profile,emp_list,emp_edit,products_by_category,filtered_menus,emp_registration,save_employee_details,employee_profile,delete_emp,change_pswrd
 from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
@@ -54,6 +54,8 @@ urlpatterns = [
     path('cancel_reservation/<str:reservation_id>/', cancel_reservation, name='cancel_reservation'),
     path('edit_reservation/<str:reservation_id>/', edit_reservation, name='edit_reservation'),
     path('res_list/',res_list,name='res_list'),
+    path('previous_reservations/', previous_reservations, name='previous_reservations'),
+     path('approve_reservation/<str:reservation_id>/', approve_reservation, name='approve_reservation'),
     path('book_table/', book_table, name='book_table'),
     path('cart/',cart, name='cart'),
     path('add_to_cart/<int:menu_id>/',add_to_cart,name='add_to_cart'),
@@ -77,6 +79,7 @@ urlpatterns = [
     path('user_list',user_list,name='user_list'),
     path('menu_edit/<int:menu_id>/', menu_edit, name='menu_edit'),
     path('delete_menu_item/<int:menu_id>/',delete_menu_item,name='delete_menu_item'),
+    path('employee_count',employee_count,name='employee_count'),
 
     path('emp_registration',emp_registration,name='emp_registration'),
     path('emp_index/',emp_index, name='emp_index'),

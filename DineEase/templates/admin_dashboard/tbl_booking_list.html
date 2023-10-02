@@ -55,7 +55,7 @@
 					<ul class="nav sidebar-inner" id="sidebar-menu">
 						<!-- Dashboard -->
 						<li class="">
-							<a class="sidenav-item-link" href="index.html">
+							<a class="sidenav-item-link" href="{% url 'admin_index' %}">
 								<i class="mdi mdi-view-dashboard-outline"></i>
 								<span class="nav-text">Dashboard</span>
 							</a>
@@ -78,19 +78,19 @@
 
 									<li class="">
 										<a class="sidenav-item-link" href="{% url 'res_list' %}">
-											<span class="nav-text">Reservation List</span>
-										</a>
-									</li>
-									{% comment %} <li class="">
-										<a class="sidenav-item-link" href="vendor-profile.html">
-											<span class="nav-text">Vendors Profile</span>
+											<span class="nav-text">Recent </span>
 										</a>
 									</li>
 									<li class="">
+										<a class="sidenav-item-link" href="{% url 'previous_reservations' %}">
+											<span class="nav-text">History</span>
+										</a>
+									</li>
+									{% comment %} <li class="">
 										<a class="sidenav-item-link" href="add-vendor.html">
 											<span class="nav-text">Add Vendors</span>
 										</a>
-									</li> {% endcomment %}
+									</li>  {% endcomment %}
 								</ul>
 							</div>
 						</li>
@@ -523,7 +523,8 @@
 						<div>
 							<h1>Reservation List</h1>
 							<p class="breadcrumbs"><span><a href="index.html">Home</a></span>
-								<span><i class="mdi mdi-chevron-right"></i></span>Reservation</p>
+								<span><i class="mdi mdi-chevron-right"></i></span>Reservation
+								<span><i class="mdi mdi-chevron-right"></i></span>Recent</p></p>
 						</div>
 					</div>
 					<div class="row">
@@ -542,39 +543,36 @@
 													<th>No. of persons</th>
 													<th>Time slot</th>
 													<th>Date</th>
-													{% comment %} <th>Joined</th>
-													<th>Action</th> {% endcomment %}
+													<th>Action</th>
+													<th>Status</th>
 												</tr>
 											</thead>
-
 											<tbody>
 												{% for resv_lists in res_lists %}
-												{% if resv_lists.is_active %}
-													<tr>
-														<td>#{{ resv_lists.id }}</td>
-														<td>{{ resv_lists.name }}</td>
-														<td>{{ resv_lists.email }}</td>
-														<td>{{ resv_lists.phone }}</td>
-														<td>{{ resv_lists.table_id }}</td>
-														<td>{{ resv_lists.num_of_persons }}</td>
-														<td>{{ resv_lists.time_slot }}</td>
-														<td>{{ resv_lists.reservation_date }}</td>
-														{% comment %} <td><span class="badge badge-success">Active</span></td> {% endcomment %}
-														<td>
-															{% comment %} <div class="btn-group">
-																<button type="button" class="btn btn-outline-success">Info</button>
-																<button type="button" class="btn btn-outline-success dropdown-toggle dropdown-toggle-split"
-																	data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
-																	<span class="sr-only">Info</span>
-																</button>
-																<div class="dropdown-menu">
-																	<a class="dropdown-item" href="#">Edit</a>
-																	<a class="dropdown-item" href="#">Delete</a>
-																</div>
-															</div> {% endcomment %}
-														</td>
-													</tr>
-													{% endif %}
+												<tr>
+													<td>#{{ resv_lists.id }}</td>
+													<td>{{ resv_lists.name }}</td>
+													<td>{{ resv_lists.email }}</td>
+													<td>{{ resv_lists.phone }}</td>
+													<td>{{ resv_lists.table_id }}</td>
+													<td>{{ resv_lists.num_of_persons }}</td>
+													<td>{{ resv_lists.time_slot }}</td>
+													<td>{{ resv_lists.reservation_date }}</td>
+													<td>
+														<div class="btn-group mb-1">
+															<button type="button" class="btn btn-outline-success">Info</button>
+															<button type="button" class="btn btn-outline-success dropdown-toggle dropdown-toggle-split"
+																data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+																<span class="sr-only">Info</span>
+															</button>
+															<div class="dropdown-menu">
+																<a class="dropdown-item" href="{% url 'approve_reservation' reservation_id=resv_lists.reservation_id %}">Approve</a>
+																<a class="dropdown-item" href="">Decline</a>
+															</div>
+														</div>
+													</td>
+													<td>{{ resv_lists.status }}</td>
+												</tr>
 												{% endfor %}
 											</tbody>
 										</table>
@@ -582,7 +580,7 @@
 								</div>
 							</div>
 						</div>
-					</div>
+					</div>										
 				</div> <!-- End Content -->
 			</div> <!-- End Content Wrapper -->
 

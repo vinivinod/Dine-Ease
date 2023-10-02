@@ -1,3 +1,4 @@
+from datetime import date
 from difflib import context_diff
 from venv import logger
 from django.shortcuts import render,redirect
@@ -396,9 +397,29 @@ def edit_reservation(request, reservation_id):
     return render(request, 'edit_reservation.html', {'booking': booking, 'table_numbers': table_numbers, 'all_time_slots': all_time_slots, 'initial_time_slot': initial_time_slot})
 
 def res_list(request):
-    res_lists = Reservation.objects.all()  # Retrieve all menu items from the database
+    today = date.today()
+    res_lists = Reservation.objects.filter(is_active=True, reservation_date__gte=today)
     return render(request,'admin_dashboard/tbl_booking_list.html',{'res_lists':res_lists})
 
+from django.shortcuts import render
+from datetime import date, timedelta
+from .models import Reservation  # Import your Reservation model
+def previous_reservations(request):
+    today = date.today()
+    one_day_ago = today - timedelta(days=1)  # Get yesterday's date
+    first_reservation = Reservation.objects.filter(reservation_date__lt=one_day_ago).order_by('reservation_date')
+    return render(request, 'admin_dashboard/previous_reservations.html', {'previous_reservations': first_reservation})
+
+from django.shortcuts import redirect
+from .models import Reservation
+def approve_reservation(request, reservation_id):
+    # Retrieve the reservation from the database
+    reservation = Reservation.objects.get(reservation_id=reservation_id)
+
+    # Update the status to 'approved'
+    reservation.status = 'approved'
+    reservation.save()
+    return redirect('res_list')  # Change 'success_page' to your actual URL name
 
 def admin_login(request):
     return render(request,'admin_dashboard/admin_login.html')
@@ -492,8 +513,8 @@ from .models import CustomUser
 
 def user_list(request):
     user_lists = CustomUser.objects.filter(role='1')
-    user_count=CustomUser.objects.filter(is_admin='0').count()
-    active_user_count = CustomUser.objects.filter(is_active='1', is_admin='0').count()
+    user_count=CustomUser.objects.filter(is_admin='0', role='1').count()
+    active_user_count = CustomUser.objects.filter(is_active='1', is_admin='0',role='1').count()
     print(user_lists)
     return render(request, 'admin_dashboard/user-list.html', {'user_lists': user_lists, 'user_count': user_count,'active_user_count': active_user_count})
 
@@ -817,6 +838,15 @@ def emp_add(request):
 def emp_list(request):
     emp_lists = Employee.objects.all()  # Retrieve all menu items from the database
     return render(request,'admin_dashboard/emp-list.html',{'emp_lists':emp_lists})
+
+def employee_count(request):
+    # Count the number of employees with role=2
+    emp_count = CustomUser.objects.filter(role='2').count()
+    active_emp=CustomUser.objects.filter(role='2',is_active='1').count()
+    print("Employee Count:", employee_count)
+    print("Active Employee Count:", active_emp)
+    return render(request, 'admin_dashboard/emp-list.html', {'emp_count': emp_count,'active_emp':active_emp,})
+
 def emp_profile(request):
     emp_list= Employee.objects.all()
     user = request.user
