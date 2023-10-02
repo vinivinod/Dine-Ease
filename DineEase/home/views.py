@@ -264,25 +264,19 @@ from django.db import transaction
 
 def add_reservation(request):
     table_numbers = tables.objects.values_list('tab_id', flat=True)
-    selected_table = None  # Initialize selected_table outside the if statement
-
+    
     if request.method == 'POST':
         name = request.POST.get('name')
         email = request.POST.get('email')
         phone = request.POST.get('phone')
         reservation_date = request.POST.get('reservation_date')
         num_of_persons = request.POST.get('num_of_persons')
-        table_id = request.POST.get('table_id')
         time_slot = request.POST.get('time_slot')  # Assuming you have added the time_slot field
 
         with transaction.atomic():
-            # Use select_for_update to lock the selected table row
-            selected_table = tables.objects.select_for_update().get(tab_id=table_id)
-
             existing_reservation = Reservation.objects.filter(
-                table_id=table_id,
                 reservation_date=reservation_date,
-                time_slot=time_slot  # Check for the same time slot as well
+                time_slot=time_slot
             ).first()
 
             if existing_reservation:
@@ -295,8 +289,7 @@ def add_reservation(request):
                     phone=phone,
                     reservation_date=reservation_date,
                     num_of_persons=num_of_persons,
-                    table_id=selected_table,
-                    time_slot=time_slot  # Save the selected time slot
+                    time_slot=time_slot
                 )
                 reservation.save()
                 messages.success(request, 'Reservation added successfully!')
@@ -311,7 +304,6 @@ def add_reservation(request):
 
     initial_time_slot = None
     return render(request, 'book.html', {'table_numbers': table_numbers, 'user_data': user_data, 'initial_time_slot': initial_time_slot})
-
 
 
 def book_table(request):

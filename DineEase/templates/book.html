@@ -175,37 +175,17 @@
               <div>
                 <input type="email" class="form-control" name="email" placeholder="Your Email" value="{{ user_data.email }}" readonly required /> <!-- Use 'name' attribute -->
               </div>
+              <input type="date" class="form-control" name="reservation_date" id="reservation_date" />
+                <div id="date_error" class="text-danger"></div>
               <div>
-                <select class="form-control nice-select wide" name="num_of_persons"> <!-- Use 'name' attribute -->
-                  <option value="" disabled selected>
-                    How many persons?
-                  </option>
-                  <option value="2">
-                    2
-                  </option>
-                  <option value="3">
-                    3
-                  </option>
-                  <option value="4">
-                    4
-                  </option>
-                  <option value="5">
-                    5
-                  </option>
-                  <option value="6">
-                    6
-                  </option>
-                </select>
-              </div>
-              <div>
-                <div>
-                  <select class="form-control" name="table_id"> <!-- Use 'name' attribute -->
+                {% comment %} <div>
+                 <select class="form-control" name="table_id"> <!-- Use 'name' attribute -->
                     <option value="" disabled selected>Select Table </option>
                     {% for table_number in table_numbers %}
                       <option value="{{ table_number }}">{{ table_number }}</option>
                     {% endfor %}
                   </select>
-                </div>
+                </div> {% endcomment %}
                 <div>
                   <select class="form-control" name="time_slot"> <!-- Use 'name' attribute -->
                     <option value="" disabled selected>Select Time Slot</option>
@@ -223,9 +203,10 @@
                     <option value="09:00 PM - 10:00 PM">09:00 PM - 10:00 PM</option>
                   </select>
                 </div>
-                
-                <input type="date" class="form-control" name="reservation_date" id="reservation_date" />
-                <div id="date_error" class="text-danger"></div>
+                <div>
+                  <input type="text" class="form-control" name="num_of_persons" placeholder="How many Persons" oninput="validateBooking()" required />
+                  <div id="error_message" class="text-danger"></div>
+              </div>
 
                <!-- Use 'name' attribute -->
               </div>
@@ -235,9 +216,7 @@
                 <div class="btn_box">
                     <button type="submit" class="btn btn-primary">Book Now</button>
                 </div>
-                </form>
-                
-            
+                </form>           
             </form>
           </div>
         </div>
@@ -390,7 +369,7 @@
       });
   });
 </script> {% endcomment %}
-<script>
+<script type="text/javascript">
   // Get a reference to the date input field by its ID
   var reservationDateInput = document.getElementById('reservation_date');
 
@@ -422,6 +401,27 @@
           this.value = today; // Reset the input value to today's date
       }
   });
+  // Function to validate the number of persons
+    function validateBooking() {
+        const selectedTimeSlot = document.querySelector('select[name="time_slot"]').value;
+        const numPersons = parseInt(document.querySelector('input[name="num_of_persons"]').value, 10);
+
+        // You should get the total booked persons for the selected time slot from the server
+        const totalBookedFromServer = 20; // Replace this with the actual value fetched from the server
+
+        const totalBooked = totalBookedFromServer + numPersons;
+
+        if (totalBooked > 30) {
+            document.getElementById('error_message').innerHTML = 'Total number of persons exceeds the limit (30) for this time slot.';
+            // You can also disable the form submission here if needed
+        } else {
+            document.getElementById('error_message').innerHTML = '';
+        }
+    }
+
+    // Attach the validateBooking function to the oninput event of the num_of_persons input field
+    document.querySelector('input[name="num_of_persons"]').addEventListener('input', validateBooking);
+
 </script>
 
 </body>
