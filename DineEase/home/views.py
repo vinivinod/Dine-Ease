@@ -613,8 +613,28 @@ def add_to_cart(request, menu_id):
 
 @login_required(login_url='http://127.0.0.1:8000/')
 def cart(request):
-    cart_items = AddToCart.objects.filter(user=request.user)
-    total_price = sum(item.menu.price * item.quantity for item in cart_items)
+    # Retrieve cart items
+    cart_items = AddToCart.objects.filter(user=request.user, status=1)
+
+    if request.method == 'POST':
+        # Process the payment and get payment_id (you should implement this logic)
+        payment_id = process_payment(request)  # Implement this function
+
+        if payment_id:
+            # Update the order with payment ID and change status to "Successful."
+            for item in cart_items:
+                item.status = 0
+                item.save()
+
+            # Set the total_price to 0
+            total_price = 0
+        else:
+            # Handle the case where payment processing failed
+            total_price = sum(item.menu.price * item.quantity for item in cart_items)
+    else:
+        # Calculate the total price for the cart items
+        total_price = sum(item.menu.price * item.quantity for item in cart_items)
+
     total_items = sum(item.quantity for item in cart_items)
 
     max_quantity = 10
@@ -624,12 +644,12 @@ def cart(request):
         item.product_total = item.menu.price * item.quantity
 
     context = {
-        'cart_items':cart_items,
-        'total_items':total_items,
-        'total_price':total_price,
-        'quantity_range': quantity_range, 
+        'cart_items': cart_items,
+        'total_items': total_items,
+        'total_price': total_price,
+        'quantity_range': quantity_range,
     }
-    return render(request,'cart.html',context)
+    return render(request, 'cart.html', context)
 
 from django.shortcuts import redirect
 from .models import AddToCart
@@ -773,8 +793,8 @@ def paymenthandler(request, billing_id):
         payment.payment_status = Payment.PaymentStatusChoices.SUCCESSFUL
         payment.save()
 
-        # Clear the user's cart
-        cart_items.delete()
+        # Mark the cart items as inactive (status = 0)
+        cart_items.update(status=0)
 
         # Render the success page on successful capture of payment.
         return render(request, 'index.html')
@@ -825,6 +845,17 @@ def view_cart(request):
     user_cart_items = AddToCart.objects.filter(user=request.user)
 
     return render(request, 'cart.html', {'cart_items': user_cart_items})
+
+from django.shortcuts import render
+from .models import AddToCart, Payment
+def order_summary(request):
+    # Retrieve cart items for the user
+    cart_items = AddToCart.objects.filter(user=request.user, status=0)
+    total_price = sum(item.menu.price * item.quantity for item in cart_items)
+    # Filter payments with successful status
+    successful_payments = Payment.objects.filter(user=request.user, payment_status=Payment.PaymentStatusChoices.SUCCESSFUL)
+
+    return render(request, 'orderSummary.html', {'cart_items': cart_items, 'total_price':total_price, 'successful_payments': successful_payments})
 
 
 def emp_index(request):

@@ -158,7 +158,8 @@ from django.db import models
 class AddToCart(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     menu = models.ForeignKey(menus, on_delete=models.CASCADE)
-    quantity=models.PositiveIntegerField(default=1)
+    quantity = models.PositiveIntegerField(default=1)
+    status = models.PositiveSmallIntegerField(default=1)
 
     def __str__(self):
         return f"Cart for {self.user.username} - {self.menu.name} ({str(self.quantity)} items)"

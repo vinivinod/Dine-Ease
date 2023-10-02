@@ -19,7 +19,7 @@ from django.urls import path,include
 from home.views import userlogin,register,loggout,login_page
 
 from home.views import index,menu,about,menumore,add_table,add_reservation,booking_confirm,cancel_reservation,edit_reservation,res_list,previous_reservations,approve_reservation
-from home.views import payment,paymenthandler,book_table,cart,add_to_cart,view_cart,remove_from_cart,update_cart_item_quantity,checkout,display_cart_items
+from home.views import payment,paymenthandler,book_table,cart,add_to_cart,view_cart,remove_from_cart,update_cart_item_quantity,checkout,display_cart_items,order_summary
 from home.views import admin_login,admin_index,add_menu,user_list,ad_MenuList,menu_list,menu_edit,delete_menu_item,employee_count
 from home.views import emp_leave,emp_index,emp_add,emp_profile,emp_list,emp_edit,products_by_category,filtered_menus,emp_registration,save_employee_details,employee_profile,delete_emp,change_pswrd
 from django.views.generic import TemplateView
@@ -62,6 +62,7 @@ urlpatterns = [
     path('remove/<int:item_id>/', remove_from_cart, name='remove_from_cart'),
     path('update_cart_item_quantity/<int:item_id>/<int:new_quantity>/', update_cart_item_quantity, name='update_cart_item_quantity'),
     path('view_cart/', view_cart, name='view_cart'),
+    path('order_summary/', order_summary, name='order_summary'),
     path('checkout/',checkout,name='checkout'),
     path('payment/<int:billing_id>/', payment, name='payment'),
     path('paymenthandler/<int:billing_id>/', paymenthandler, name='paymenthandler'),

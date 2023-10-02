@@ -299,7 +299,8 @@
                 <strong>Reservation Date:</strong> {{ booking.reservation_date }}<br>
                 <strong>Time Slot:</strong> {{ booking.time_slot }}<br>
                 <strong>Number of Persons:</strong> {{ booking.num_of_persons }}<br>
-                <strong>Table Number:</strong> {{ booking.table_id }}<br><br>
+                <strong>Table Number:</strong> {{ booking.table_id }}<br>
+                <strong>Booking Status:</strong> {{ booking.status }}<br><br>
                 {% if booking.menu_item %}
                             <h2>Menu Item Details</h2><br>
                             <h3>Name: {{ booking.menu_item.name }}</h3><br>
