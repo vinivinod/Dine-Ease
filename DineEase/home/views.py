@@ -305,6 +305,16 @@ def add_reservation(request):
     initial_time_slot = None
     return render(request, 'book.html', {'table_numbers': table_numbers, 'user_data': user_data, 'initial_time_slot': initial_time_slot})
 
+from django.http import JsonResponse
+
+def get_total_persons(request):
+    selected_date = request.GET.get('date')
+    selected_time_slot = request.GET.get('time_slot')
+
+    total_persons = Reservation.objects.filter(reservation_date=selected_date, time_slot=selected_time_slot).aggregate(total_persons=Sum('num_of_persons'))['total_persons'] or 0
+
+    return JsonResponse({'totalPersons': total_persons})
+
 
 def book_table(request):
     if request.method == 'POST':
@@ -361,13 +371,16 @@ def cancel_reservation(request, reservation_id):
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Reservation,TimeSlot
 
+from django.shortcuts import get_object_or_404, render, redirect
+from .models import Reservation, TimeSlot  # Import your models
+
 def edit_reservation(request, reservation_id):
     booking = get_object_or_404(Reservation, reservation_id=reservation_id)
     table_numbers = tables.objects.values_list('tab_id', flat=True)
 
     # Fetch all available time slots from the database
     all_time_slots = TimeSlot.objects.values_list('slot_time', flat=True)
-     # Set the initial_time_slot to the currently booked time slot
+    # Set the initial_time_slot to the currently booked time slot
     initial_time_slot = booking.time_slot
 
     if request.method == 'POST':
@@ -378,9 +391,9 @@ def edit_reservation(request, reservation_id):
         booking.num_of_persons = request.POST['num_of_persons']
         booking.table_id = tables.objects.get(tab_id=request.POST['table_id'])
         booking.reservation_date = request.POST['reservation_date']
-        
-        # Update the time slot by querying the TimeSlot model
-        booking.time_slot = TimeSlot.objects.get(slot_time=request.POST['time_slot'])
+
+        # Update the time slot with the selected value from the form
+        booking.time_slot = request.POST['time_slot']
         booking.save()
 
         # Redirect back to the booking confirmation page or any other desired page
@@ -603,30 +616,51 @@ def add_to_cart(request, menu_id):
 
     return redirect('menu')
 
+# @login_required(login_url='http://127.0.0.1:8000/')
+# def cart(request):
+#     # Retrieve cart items
+#     cart_items = AddToCart.objects.filter(user=request.user, status=1)
+
+#     if request.method == 'POST':
+#         # Process the payment and get payment_id (you should implement this logic)
+#         payment_id = process_payment(request)  # Implement this function
+
+#         if payment_id:
+#             # Update the order with payment ID and change status to "Successful."
+#             for item in cart_items:
+#                 item.status = 0
+#                 item.save()
+
+#             # Set the total_price to 0
+#             total_price = 0
+#         else:
+#             # Handle the case where payment processing failed
+#             total_price = sum(item.menu.price * item.quantity for item in cart_items)
+#     else:
+#         # Calculate the total price for the cart items
+#         total_price = sum(item.menu.price * item.quantity for item in cart_items)
+
+#     total_items = sum(item.quantity for item in cart_items)
+
+#     max_quantity = 10
+#     quantity_range = range(1, max_quantity + 1)
+
+#     for item in cart_items:
+#         item.product_total = item.menu.price * item.quantity
+
+#     context = {
+#         'cart_items': cart_items,
+#         'total_items': total_items,
+#         'total_price': total_price,
+#         'quantity_range': quantity_range,
+#     }
+#     return render(request, 'cart.html', context)
+
 @login_required(login_url='http://127.0.0.1:8000/')
 def cart(request):
-    # Retrieve cart items
-    cart_items = AddToCart.objects.filter(user=request.user, status=1)
-
-    if request.method == 'POST':
-        # Process the payment and get payment_id (you should implement this logic)
-        payment_id = process_payment(request)  # Implement this function
-
-        if payment_id:
-            # Update the order with payment ID and change status to "Successful."
-            for item in cart_items:
-                item.status = 0
-                item.save()
-
-            # Set the total_price to 0
-            total_price = 0
-        else:
-            # Handle the case where payment processing failed
-            total_price = sum(item.menu.price * item.quantity for item in cart_items)
-    else:
-        # Calculate the total price for the cart items
-        total_price = sum(item.menu.price * item.quantity for item in cart_items)
-
+    cart_items = AddToCart.objects.filter(user=request.user)
+    at_least_one_item_with_status_1 = any(item.status == 1 for item in cart_items)
+    total_price = sum(item.menu.price * item.quantity for item in cart_items if item.status)
     total_items = sum(item.quantity for item in cart_items)
 
     max_quantity = 10
@@ -636,12 +670,14 @@ def cart(request):
         item.product_total = item.menu.price * item.quantity
 
     context = {
-        'cart_items': cart_items,
-        'total_items': total_items,
-        'total_price': total_price,
-        'quantity_range': quantity_range,
+        'cart_items':cart_items,
+        'total_items':total_items,
+        'total_price':total_price,
+        'quantity_range': quantity_range, 
+        'at_least_one_item_with_status_1': at_least_one_item_with_status_1,
     }
-    return render(request, 'cart.html', context)
+    return render(request,'cart.html',context)
+
 
 from django.shortcuts import redirect
 from .models import AddToCart
@@ -672,7 +708,8 @@ def checkout(request):
 
     user = request.user
     cart_items = AddToCart.objects.filter(user=user)
-    total_price = sum(item.menu.price * item.quantity for item in cart_items)
+    total_price = sum(item.menu.price * item.quantity for item in cart_items if item.status)
+
 
     try:
         billing_info = BillingInformation.objects.get(user=user)
@@ -862,6 +899,14 @@ def emp_list(request):
     emp_lists = Employee.objects.all()  # Retrieve all menu items from the database
     return render(request,'admin_dashboard/emp-list.html',{'emp_lists':emp_lists})
 
+from django.shortcuts import render
+from .models import LeaveApplication
+
+def empLeave_list(request):
+    leave_applications = LeaveApplication.objects.all()
+    return render(request, 'admin_dashboard/empLeave_list.html', {'leave_applications': leave_applications})
+
+
 def employee_count(request):
     # Count the number of employees with role=2
     emp_count = CustomUser.objects.filter(role='2').count()
@@ -934,8 +979,6 @@ def save_employee_details(request):
 
 def emp_menu(request):
     return render(request,'employee/emp_menu.html')
-def emp_leave(request):
-    return render(request,'employee/emp_leave.html')
 
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
@@ -1027,3 +1070,50 @@ def delete_emp(request, emp_id):
 
 def change_pswrd(request):
     return render(request,'employee/change_pswrd.html')
+
+from django.shortcuts import render, redirect
+from .models import LeaveApplication
+
+def apply_leave(request):
+    if request.method == 'POST':
+        # Get the currently authenticated user
+        logged_in_user = request.user
+
+        # Get the form data from the POST request (you can use a form if needed)
+        date = request.POST.get('leaveDate')
+        duration = request.POST.get('leaveDuration')
+        reason = request.POST.get('leaveReason')
+
+        # Create a new LeaveApplication instance with the user's information
+        leave_application = LeaveApplication(
+            user=logged_in_user,
+            date=date,
+            duration=duration,
+            reason=reason,
+            status='pending'  # You can set an initial status
+        )
+
+        # Save the LeaveApplication instance
+        leave_application.save()
+
+        # Redirect or perform other actions as needed
+        return redirect('apply_leave')  # Replace 'success_page' with your success page URL
+
+    return render(request, 'employee/emp_leave.html')  # Render your leave application form template
+
+
+from django.shortcuts import render
+from .models import LeaveApplication
+
+def leave_list(request):
+    leave_applications = LeaveApplication.objects.all()
+    return render(request, 'employee/leave_list.html', {'leave_applications': leave_applications})
+
+from django.shortcuts import redirect, get_object_or_404
+from .models import LeaveApplication
+
+def approve_leave(request, leave_id):
+    leave = get_object_or_404(LeaveApplication, id=leave_id)
+    leave.status = 'approved'
+    leave.save()
+    return redirect('empLeave_list')  # Redirect to the leave list page or another appropriate page

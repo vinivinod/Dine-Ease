@@ -20,8 +20,9 @@ from home.views import userlogin,register,loggout,login_page
 
 from home.views import index,menu,about,menumore,add_table,add_reservation,booking_confirm,cancel_reservation,edit_reservation,res_list,previous_reservations,approve_reservation
 from home.views import payment,paymenthandler,book_table,cart,add_to_cart,view_cart,remove_from_cart,update_cart_item_quantity,checkout,display_cart_items,order_summary
-from home.views import admin_login,admin_index,add_menu,user_list,ad_MenuList,menu_list,menu_edit,delete_menu_item,employee_count
-from home.views import emp_leave,emp_index,emp_add,emp_profile,emp_list,emp_edit,products_by_category,filtered_menus,emp_registration,save_employee_details,employee_profile,delete_emp,change_pswrd
+from home.views import admin_login,admin_index,add_menu,user_list,ad_MenuList,menu_list,menu_edit,delete_menu_item,employee_count,empLeave_list
+from home.views import emp_index,emp_add,emp_profile,emp_list,emp_edit,products_by_category,filtered_menus,emp_registration,save_employee_details,employee_profile,delete_emp,change_pswrd
+from home.views import apply_leave,leave_list,approve_leave
 from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
 from django.conf import settings
@@ -81,6 +82,7 @@ urlpatterns = [
     path('menu_edit/<int:menu_id>/', menu_edit, name='menu_edit'),
     path('delete_menu_item/<int:menu_id>/',delete_menu_item,name='delete_menu_item'),
     path('employee_count',employee_count,name='employee_count'),
+    path('empLeave_list/', empLeave_list, name='empLeave_list'),
 
     path('emp_registration',emp_registration,name='emp_registration'),
     path('emp_index/',emp_index, name='emp_index'),
@@ -92,6 +94,10 @@ urlpatterns = [
     path('employee_profile/',employee_profile,name='employee_profile'),
     path('save_employee_details',save_employee_details,name='save_employee_details'),
     path('change_pswrd/',change_pswrd,name='change_pswrd'),
+    path('apply_leave/', apply_leave, name='apply_leave'),
+    path('leave_list/', leave_list, name='leave_list'),
+    path('approve_leave/<int:leave_id>/', approve_leave, name='approve_leave'),
+
     path('products/<str:category_name>/', products_by_category, name='products_by_category'),
     path('filtered-menus/<str:category>/<str:submenu>/<str:sub_submenu>/', filtered_menus, name='filtered_menus'),
 

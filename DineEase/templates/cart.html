@@ -279,48 +279,41 @@
         </header>
         <!-- end header section -->
       </div>
-    
-      {% if total_price == 0 %}
-          <h1>Cart is empty</h1>
-          <div class="button-container">
-              <a href="{% url 'menu' %}">
-                  <button id="add-more-items">Add Items</button>
-              </a>
-          </div>
-      {% else %}
       <h1>Your Shopping Cart</h1>
       <div class="cart">
-          {% for item in cart_items %}
-              {% if item.status == 1 %}
-              <div class="product">
-                  <img src="{{ item.menu.img.url }}" alt="{{ item.menu.name }}">
-                  <div class="product-details">
-                      <div class="product-name">{{ item.menu.name }}</div>
-                      <div class="product-price">₹{{ item.menu.price }}</div>
-                  </div>
-                  <select class="quantity-dropdown" data-item-id="{{ item.id }}">
-                      {% for i in quantity_range %}
-                          <option value="{{ i }}" {% if item.quantity == i %}selected{% endif %}>{{ i }}</option>
-                      {% endfor %}
-                  </select>&ensp;
-                  <div class="product-total">₹{{ item.product_total|floatformat:2 }}</div>&ensp;
-                  <a href="{% url 'remove_from_cart' item.id %}">
-                      <button class="remove-button">Remove</button>
-                  </a>
-              </div>
-              {% endif %}
-          {% endfor %}
-          <div id="total-amount">Total Amount: ₹{{ total_price }}</div>
-          <div class="button-container">
-              <a href="{% url 'menu' %}">
-                  <button id="add-more-items">Add More Items</button>
-              </a>
-              <a href="{% url 'checkout' %}">
-                  <button id="checkout">Place Order</button>
-              </a>
-          </div>
-      {% endif %}
-  </div>
+        {% for item in cart_items %}
+            {% if item.status == 1 %}
+            <div class="product">
+                <img src="{{ item.menu.img.url }}" alt="{{ item.menu.name }}">
+                <div class="product-details">
+                    <div class="product-name">{{ item.menu.name }}</div>
+                    <div class="product-price">₹{{ item.menu.price }}</div>
+                </div>
+                <select class="quantity-dropdown" data-item-id="{{ item.id }}">
+                    {% for i in quantity_range %}
+                        <option value="{{ i }}" {% if item.quantity == i %}selected{% endif %}>{{ i }}</option>
+                    {% endfor %}
+                </select>&ensp;
+                <div class="product-total">₹{{ item.product_total|floatformat:2 }}</div>&ensp;
+                <a href="{% url 'remove_from_cart' item.id %}">
+                    <button class="remove-button">Remove</button>
+                </a>
+            </div>
+            {% endif %}
+        {% endfor %}
+        <div id="total-amount">Total Amount: ₹{{ total_price }}</div>
+        <div class="button-container">
+            <a href="{% url 'menu' %}">
+                <button id="add-more-items">Add More Items</button>
+            </a>
+            {% if at_least_one_item_with_status_1 %}
+        <a href="{% url 'checkout' %}">
+            <button id="checkout">Place Order</button>
+        </a>
+        {% endif %}
+        </div>
+    </div>
+    
   
     
     <script>

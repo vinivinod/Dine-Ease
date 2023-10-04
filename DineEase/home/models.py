@@ -292,3 +292,15 @@ class Payment(models.Model):
             # Update the status to "Failed"
             self.payment_status = self.PaymentStatusChoices.FAILED
             self.save()
+
+from django.db import models
+
+class LeaveApplication(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
+    date = models.DateField()
+    duration = models.CharField(max_length=20, choices=[('full-day', 'Full Day'), ('half-day-morning', 'Half Day (Morning)'), ('half-day-afternoon', 'Half Day (Afternoon)')])
+    reason = models.TextField()
+    status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('approved', 'Approved'), ('rejected', 'Rejected')])
+
+    def __str__(self):
+        return f"Leave Application for {self.user.username} on {self.date}"

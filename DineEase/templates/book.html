@@ -187,26 +187,16 @@
                   </select>
                 </div> {% endcomment %}
                 <div>
-                  <select class="form-control" name="time_slot"> <!-- Use 'name' attribute -->
-                    <option value="" disabled selected>Select Time Slot</option>
-                    <option value="10:00 AM - 11:00 AM">10:00 AM - 11:00 AM</option>
-                    <option value="11:00 AM - 12:00 PM">11:00 AM - 12:00 PM</option>
-                    <option value="12:00 PM - 01:00 PM">12:00 PM - 01:00 PM</option>
-                    <option value="01:00 PM - 02:00 PM">01:00 PM - 02:00 PM</option>
-                    <option value="02:00 PM - 03:00 PM">02:00 PM - 03:00 PM</option>
-                    <option value="03:00 PM - 04:00 PM">03:00 PM - 04:00 PM</option>
-                    <option value="04:00 PM - 05:00 PM">04:00 PM - 05:00 PM</option>
-                    <option value="05:00 PM - 06:00 PM">05:00 PM - 06:00 PM</option>
-                    <option value="06:00 PM - 07:00 PM">06:00 PM - 07:00 PM</option>
-                    <option value="07:00 PM - 08:00 PM">07:00 PM - 08:00 PM</option>
-                    <option value="08:00 PM - 09:00 PM">08:00 PM - 09:00 PM</option>
-                    <option value="09:00 PM - 10:00 PM">09:00 PM - 10:00 PM</option>
+                  <select class="form-control" name="time_slot" id="time_slot">
+                      <option value="" disabled selected>Select Time Slot</option>
+                      <!-- Add options for time slots here -->
                   </select>
-                </div>
-                <div>
-                  <input type="text" class="form-control" name="num_of_persons" placeholder="How many Persons" oninput="validateBooking()" required />
-                  <div id="error_message" class="text-danger"></div>
               </div>
+              <div>
+                <input type="number" class="form-control" name="num_of_persons" placeholder="How many Persons" required />
+                <span id="available_seats" class="text-success"></span>
+                <div id="error_message" class="text-danger"></div>
+            </div>                   
 
                <!-- Use 'name' attribute -->
               </div>
@@ -401,27 +391,65 @@
           this.value = today; // Reset the input value to today's date
       }
   });
-  // Function to validate the number of persons
+
+
+  const maxSeatsPerTimeSlot = 30;
+
+    document.querySelector('input[name="num_of_persons"]').addEventListener('input', function() {
+        validateBooking();
+    });
+
     function validateBooking() {
-        const selectedTimeSlot = document.querySelector('select[name="time_slot"]').value;
         const numPersons = parseInt(document.querySelector('input[name="num_of_persons"]').value, 10);
+        const availableSeats = parseInt(document.getElementById('available_seats').textContent.split(' ')[2], 10);
 
-        // You should get the total booked persons for the selected time slot from the server
-        const totalBookedFromServer = 20; // Replace this with the actual value fetched from the server
-
-        const totalBooked = totalBookedFromServer + numPersons;
-
-        if (totalBooked > 30) {
-            document.getElementById('error_message').innerHTML = 'Total number of persons exceeds the limit (30) for this time slot.';
-            // You can also disable the form submission here if needed
+        if (numPersons > availableSeats) {
+            document.getElementById('error_message').textContent = 'Number of persons exceeds the remaining seats.';
         } else {
-            document.getElementById('error_message').innerHTML = '';
+            document.getElementById('error_message').textContent = '';
         }
     }
 
-    // Attach the validateBooking function to the oninput event of the num_of_persons input field
-    document.querySelector('input[name="num_of_persons"]').addEventListener('input', validateBooking);
-
+    function populateTimeSlots() {
+      var timeSlotSelect = document.getElementById("time_slot");
+      var reservationDateInput = document.getElementById("reservation_date");
+      var selectedDate = new Date(reservationDateInput.value);
+      var today = new Date();
+  
+      // Define the start and end hours for time slots
+      var startHour, endHour;
+  
+      // Check if the selected date is today or later
+      if (selectedDate > today) {
+          startHour = 9; // Start from 9 AM
+          endHour = 22; // End at 10 PM
+      } else {
+          // If it's today's date, calculate the next hour
+          var currentHour = today.getHours();
+          startHour = currentHour < 22 ? currentHour + 1 : 22; // Start from the next hour or 10 PM
+          endHour = 22; // End at 10 PM
+      }
+  
+      // Clear existing options
+      timeSlotSelect.innerHTML = '<option value="" disabled selected>Select Time Slot</option>';
+  
+      for (var hour = startHour; hour <= endHour; hour++) {
+          var timeSlot = document.createElement("option");
+          var startTime = `${hour}:00`;
+          var endTime = `${(hour + 1) % 24}:00`;
+  
+          timeSlot.value = `${startTime} - ${endTime}`;
+          timeSlot.text = `${startTime} - ${endTime}`;
+  
+          timeSlotSelect.appendChild(timeSlot);
+      }
+  }
+  
+  // Call the function when the page loads and when the date input changes
+  populateTimeSlots();
+  
+  document.getElementById("reservation_date").addEventListener("change", populateTimeSlots);
+                                
 </script>
 
 </body>
