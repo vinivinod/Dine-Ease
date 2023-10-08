@@ -32,26 +32,25 @@
 
 <body class="ec-header-fixed ec-sidebar-fixed ec-sidebar-dark ec-header-light" id="body">
 
-	<!-- WRAPPER -->
+	<!--  WRAPPER  -->
 	<div class="wrapper">
-
+		
 		<!-- LEFT MAIN SIDEBAR -->
 		<div class="ec-left-sidebar ec-bg-sidebar">
 			<div id="sidebar" class="sidebar ec-sidebar-footer">
 
 				<div class="ec-brand">
-					<a href="index.html">
-						{% comment %} <img class="ec-brand-icon" src="{% static 'assets/img/logo/favicon.png' %}" alt="" /> {% endcomment %}
+					<a href="admin_index ">
+						<!-- <img class="ec-brand-icon" src="{% static 'assets/img/logo/favicon.png' %}" alt="" /> -->
 						<span class="ec-brand-name text-truncate">DineEase</span>
 					</a>
 				</div>
-
+				
 				<!-- begin sidebar scrollbar -->
 				<div class="ec-navigation" data-simplebar>
 					<!-- sidebar menu -->
 					<ul class="nav sidebar-inner" id="sidebar-menu">
-						<!-- Dashboard -->
-						<li class="">
+						<li class="active">
 							<a class="sidenav-item-link" href="{% url 'admin_index' %}">
 								<i class="mdi mdi-view-dashboard-outline"></i>
 								<span class="nav-text">Dashboard</span>
@@ -59,67 +58,44 @@
 							<hr>
 						</li>
 
-						<!-- Vendors -->
-						<li class="has-sub">
-							<a class="sidenav-item-link" href="javascript:void(0)">
-								<i class="mdi mdi-briefcase-outline"></i>
-								<span class="nav-text">Reservation</span> <b class="caret"></b>
-							</a>
-							<div class="collapse">
-								<ul class="sub-menu" id="vendors" data-parent="#sidebar-menu">
-									{% comment %} <li class="">
-										<a class="sidenav-item-link" href="vendor-card.html">
-											<span class="nav-text">Vendor Grid</span>
-										</a>
-									</li> {% endcomment %}
-
-									<li class="">
-										<a class="sidenav-item-link" href="{% url 'res_list' %}">
-											<span class="nav-text">Recent</span>
-										</a>
-									</li>
-									<li class="">
-										<a class="sidenav-item-link" href="{% url 'previous_reservations' %}">
-											<span class="nav-text">History</span>
-										</a>
-									</li>
-									{% comment %} <li class="">
-										<a class="sidenav-item-link" href="add-vendor.html">
-											<span class="nav-text">Add Vendors</span>
-										</a>
-									</li>  {% endcomment %}
-								</ul>
-							</div>
-						</li> 
-
 						<!-- Users -->
 						<li class="has-sub">
-							<a class="sidenav-item-link" href="javascript:void(0)">
+							<a class="sidenav-item-link" href="{% url 'user_list' %}">
 								<i class="mdi mdi-account-multiple-outline"></i>
-								<span class="nav-text">Customers</span> <b class="caret"></b>
+								<span class="nav-text">Customers</span> 
 							</a>
-							<div class="collapse">
+						</li>
+
+						<!-- Employee -->
+						<li class="has-sub">
+							<a class="sidenav-item-link" href="{% url 'emp_list' %}" id="Listemp">
+								<i class="mdi mdi-account-multiple-outline"></i>
+								<span class="nav-text">Employees</span> 
+							</a>
+							<hr>
+						</li>
+						{% comment %}<div class="collapse">
 								<ul class="sub-menu" id="users" data-parent="#sidebar-menu">
-									{% comment %} <li>
+									 <li>
 										<a class="sidenav-item-link" href="user-card.html">
 											<span class="nav-text">User Grid</span>
 										</a>
-									</li> {% endcomment %}
+									</li>  
 
 									<li class="">
 										<a class="sidenav-item-link" href="{% url 'user_list' %}">
 											<span class="nav-text">User List</span>
 										</a>
 									</li>
-									{% comment %} <li class="">
+									 <li class="">
 										<a class="sidenav-item-link" href="user-profile.html">
 											<span class="nav-text">Users Profile</span>
 										</a>
-									</li> {% endcomment %}
+									</li> 
 								</ul>
 							</div>
 							<hr>
-						</li> 
+						</li> {% endcomment %}
 
 						<!-- Category -->
 						<!-- <li class="has-sub">
@@ -143,16 +119,16 @@
 							</div>
 						</li> -->
 
-						<!-- Products -->
-						<li class="has-sub active">
+						<!-- Menu -->
+						<li class="has-sub">
 							<a class="sidenav-item-link" href="javascript:void(0)">
 								<!-- <i class="mdi mdi-palette-advanced"></i> -->
 								<i class="mdi mdi-package-variant-closed"></i>
 								<span class="nav-text">Menu</span> <b class="caret"></b>
 							</a>
-							<div class="collapse show">
+							<div class="collapse">
 								<ul class="sub-menu" id="products" data-parent="#sidebar-menu">
-									<li class="active">
+									<li class="">
 										<a class="sidenav-item-link" href="{% url 'add_menu' %}">
 											<span class="nav-text">Add Menu</span>
 										</a>
@@ -171,45 +147,63 @@
 										<a class="sidenav-item-link" href="product-detail.html">
 											<span class="nav-text">Product Detail</span>
 										</a>
-									</li> -->
+									</li>  -->
 								</ul>
 							</div>
 						</li>
 
-						<!-- Employees-->
+						<!-- Online Orders -->
+						<li class="has-sub">
+							<a class="sidenav-item-link" href="{% url 'user_list' %}">
+								<i class="mdi mdi-account-multiple-outline"></i>
+								<span class="nav-text">Online Orders</span> 
+							</a>
+						</li>
+
+						<!-- Reservation -->
 						<li class="has-sub">
 							<a class="sidenav-item-link" href="javascript:void(0)">
-								<i class="mdi mdi-account-multiple-outline"></i>
-								<span class="nav-text">Employees</span> <b class="caret"></b>
+								<i class="mdi mdi-briefcase-outline"></i>
+								<span class="nav-text">Reservation</span> <b class="caret"></b>
 							</a>
 							<div class="collapse">
-								<ul class="sub-menu" id="orders" data-parent="#sidebar-menu">
+								<ul class="sub-menu" id="vendors" data-parent="#sidebar-menu">
+									{% comment %} <li class="">
+										<a class="sidenav-item-link" href="vendor-card.html">
+											<span class="nav-text">Vendor Grid</span>
+										</a>
+									</li> {% endcomment %}
+
 									<li class="">
-										<a class="sidenav-item-link" href="{% url 'emp_add' %}">
-											<span class="nav-text">Add Employee </span>
+										<a class="sidenav-item-link" href="{% url '' %}">
+											<span class="nav-text">Recent</span>
 										</a>
 									</li>
 									<li class="">
-										<a class="sidenav-item-link" href="{% url 'emp_list' %}">
-											<span class="nav-text">Employee List</span>
+										<a class="sidenav-item-link" href="{% url '' %}">
+											<span class="nav-text">History</span>
 										</a>
-									</li> 
-									<li class="">
-										<a class="sidenav-item-link" href="{% url 'empLeave_list' %}">
-											<span class="nav-text">Leave Taken</span>
+									</li>
+									{% comment %} <li class="">
+										<a class="sidenav-item-link" href="add-vendor.html">
+											<span class="nav-text">Add Vendors</span>
 										</a>
-									</li> 
+									</li>  {% endcomment %}
 								</ul>
 							</div>
+							<hr>
 						</li>
 
-						<!-- Invoice -->
-						<!-- <li class="has-sub">
-							<a class="sidenav-item-link" href="javascript:void(0)">
+						
+						<!-- Leave -->
+						<li class="has-sub">
+							<a class="sidenav-item-link" href="{% url 'empLeave_list' %}">
 								<i class="mdi mdi-receipt"></i>
-								<span class="nav-text">Invoice</span> <b class="caret"></b>
+								<span class="nav-text">Leave Taken</span> 
 							</a>
-							<div class="collapse">
+						</li>
+
+							<!-- <div class="collapse">
 								<ul class="sub-menu" id="authentication" data-parent="#sidebar-menu">
 									<li class="">
 										<a href="invoice.html">
@@ -234,7 +228,7 @@
 						</li> -->
 
 						<!-- Brands -->
-						<!-- <li class="">
+						<!-- <li>
 							<a class="sidenav-item-link" href="brand-list.html">
 								<i class="mdi mdi-tag-outline"></i>
 								<span class="nav-text">Brands</span>
@@ -261,14 +255,14 @@
 									</li>
 								</ul>
 							</div>
-						</li>
+						</li> -->
 						<!-- Setting -->
 						<!-- <li>
 							<a class="sidenav-item-link" href="setting.html">
 								<i class="mdi mdi-cogs"></i>
 								<span class="nav-text">Setting</span>
 							</a>
-						</li> --> 
+						</li> -->
 						<!-- Authentication --> 
 						<!-- <li class="has-sub">
 							<a class="sidenav-item-link" href="javascript:void(0)">
@@ -292,7 +286,7 @@
 						</li> -->
 
 						<!-- Error page -->
-						<!-- <li class="">
+						<!-- <li>
 							<a class="sidenav-item-link" href="404.html">
 								<i class="mdi mdi-alert-circle-outline"></i>
 								<span class="nav-text">Error page</span>

@@ -18,8 +18,8 @@ from django.contrib import admin
 from django.urls import path,include
 from home.views import userlogin,register,loggout,login_page
 
-from home.views import index,menu,about,menumore,add_table,add_reservation,booking_confirm,cancel_reservation,edit_reservation,res_list,previous_reservations,approve_reservation
-from home.views import payment,paymenthandler,book_table,cart,add_to_cart,view_cart,remove_from_cart,update_cart_item_quantity,checkout,display_cart_items,order_summary
+from home.views import index,menu,about,menumore,add_reservation,booking_confirm
+from home.views import payment,paymenthandler,cart,add_to_cart,view_cart,remove_from_cart,update_cart_item_quantity,checkout,display_cart_items,order_summary
 from home.views import admin_login,admin_index,add_menu,user_list,ad_MenuList,menu_list,menu_edit,delete_menu_item,employee_count,empLeave_list
 from home.views import emp_index,emp_add,emp_profile,emp_list,emp_edit,products_by_category,filtered_menus,emp_registration,save_employee_details,employee_profile,delete_emp,change_pswrd
 from home.views import apply_leave,leave_list,approve_leave
@@ -32,6 +32,8 @@ from django.urls import path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('accounts/', include('allauth.urls')),
+
     path('',index,name=''),
     path('menu/',menu,name='menu'),
     path('about/',about, name='about'),
@@ -48,22 +50,22 @@ urlpatterns = [
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
     path("",include("allauth.urls")),
     path('home/',include('home.urls')),
-    path('add_table/', add_table, name='add_table'),
+    # path('add_table/', add_table, name='add_table'),
     path('add_reservation/', add_reservation, name='add_reservation'),
     path('booking_confirm/',booking_confirm, name='booking_confirm'),
     path('booking_confirm/<int:menu_id>/',booking_confirm, name='booking_confirm'),
-    path('cancel_reservation/<str:reservation_id>/', cancel_reservation, name='cancel_reservation'),
-    path('edit_reservation/<str:reservation_id>/', edit_reservation, name='edit_reservation'),
-    path('res_list/',res_list,name='res_list'),
-    path('previous_reservations/', previous_reservations, name='previous_reservations'),
-     path('approve_reservation/<str:reservation_id>/', approve_reservation, name='approve_reservation'),
-    path('book_table/', book_table, name='book_table'),
+    # path('cancel_reservation/<str:reservation_id>/', cancel_reservation, name='cancel_reservation'),
+    # path('edit_reservation/<str:reservation_id>/', edit_reservation, name='edit_reservation'),
+    # path('res_list/',res_list,name='res_list'),
+    # path('previous_reservations/', previous_reservations, name='previous_reservations'),
+    #  path('approve_reservation/<str:reservation_id>/', approve_reservation, name='approve_reservation'),
+    # path('book_table/', book_table, name='book_table'),
     path('cart/',cart, name='cart'),
     path('add_to_cart/<int:menu_id>/',add_to_cart,name='add_to_cart'),
     path('remove/<int:item_id>/', remove_from_cart, name='remove_from_cart'),
     path('update_cart_item_quantity/<int:item_id>/<int:new_quantity>/', update_cart_item_quantity, name='update_cart_item_quantity'),
     path('view_cart/', view_cart, name='view_cart'),
-    path('order_summary/', order_summary, name='order_summary'),
+    path('order_summary/<int:user_id>/',order_summary, name='order_summary'),
     path('checkout/',checkout,name='checkout'),
     path('payment/<int:billing_id>/', payment, name='payment'),
     path('paymenthandler/<int:billing_id>/', paymenthandler, name='paymenthandler'),

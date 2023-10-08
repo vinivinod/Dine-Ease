@@ -145,7 +145,7 @@
 						</li> -->
 
 						<!-- Products -->
-						<li class="has-sub ">
+						{% comment %} <li class="has-sub ">
 							<a class="sidenav-item-link" href="javascript:void(0)">
 								<!-- <i class="mdi mdi-palette-advanced"></i> -->
 								<i class="mdi mdi-package-variant-closed"></i>
@@ -168,15 +168,19 @@
 											<span class="nav-text">Leave Taken</span>
 										</a>
 									</li>
-									{% comment %} <li class="">
+									<li class="">
 										<a class="sidenav-item-link" href="product-detail.html">
 											<span class="nav-text">Product Detail</span>
 										</a>
-									</li>  {% endcomment %}
+									</li>  
 								</ul>
 							</div>
+						</li> {% endcomment %}
+						<li class="">
+							<a class="sidenav-item-link" href="{% url 'leave_list' %}" id="listLeave">
+								<span class="nav-text">Leave Taken</span>
+							</a>
 						</li>
-
 						<!-- Orders -->
 						<!-- <li class="has-sub">
 							<a class="sidenav-item-link" href="javascript:void(0)">

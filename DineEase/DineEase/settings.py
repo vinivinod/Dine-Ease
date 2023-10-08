@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'home.apps.HomeConfig',
 ]
 
-SITE_ID=1
+
 SOCIALACCOUNT_LOGIN_ON_GET=True
 
 MIDDLEWARE = [
@@ -140,10 +140,20 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
+SITE_ID=1
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
+CCOUNT_EMAIL_VERIFICATION = 'none'
+LOGIN_REDIRECT_URL = '/'
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_USERNAME_REQUIRED = False
+
 
 AUTH_USER_MODEL = 'home.CustomUser'
 # MEDIA_ROOT= os.path.join(BASE_DIR,'media')

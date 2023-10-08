@@ -79,12 +79,12 @@
 									</li> {% endcomment %}
 
 									<li class="">
-										<a class="sidenav-item-link" href="{% url 'res_list' %}">
+										<a class="sidenav-item-link" href="{% url '' %}">
 											<span class="nav-text">Recent</span>
 										</a>
 									</li>
 									<li class="">
-										<a class="sidenav-item-link" href="{% url 'previous_reservations' %}">
+										<a class="sidenav-item-link" href="{% url '' %}">
 											<span class="nav-text">History</span>
 										</a>
 									</li>
@@ -585,8 +585,7 @@
 								
 													<div class="col-md-12">
 														<div class="product_add_cancel_button">
-															<button type="submit" class="btn btn-primary">Add Employee</button>
-															{% comment %} <button type="button" class="btn btn-success" id="sendEmailButton">Send Email</button> {% endcomment %}
+															<button class="btn btn-primary" id="createEmp" name="empCreate">Create Employee</button>
 														</div>
 													</div>													
 												</form>

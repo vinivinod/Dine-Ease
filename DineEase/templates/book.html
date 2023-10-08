@@ -160,6 +160,9 @@
         <h2>
           Book A Table
         </h2>
+        {% if error_message %}
+        <p class="error text-danger">{{ error_message }}</p>
+      {% endif %}
       </div>
       <div class="row">
         <div class="col-md-6">
@@ -167,40 +170,54 @@
             <form method="POST"> <!-- Specify the HTTP method as POST -->
               {% csrf_token %} <!-- Include a CSRF token for form security -->
               <div>
-                <input type="text" class="form-control" name="name" placeholder="Your Name" value="{{ user_data.name }}" readonly required/> <!-- Use 'name' attribute -->
+                <input type="text" class="form-control" name="name" placeholder="Your Name" value="{{ user.name }}" readonly required/> <!-- Use 'name' attribute -->
               </div>
               <div>
-                <input type="text" class="form-control" name="phone" placeholder="Phone Number" value="{{ user_data.phone }}" readonly required/> <!-- Use 'name' attribute -->
+                <input type="text" class="form-control" name="phone" placeholder="Phone Number" value="{{ user.phone }}" readonly required/> <!-- Use 'name' attribute -->
               </div>
               <div>
-                <input type="email" class="form-control" name="email" placeholder="Your Email" value="{{ user_data.email }}" readonly required /> <!-- Use 'name' attribute -->
+                <input type="email" class="form-control" name="email" placeholder="Your Email" value="{{ user.email }}" readonly required /> <!-- Use 'name' attribute -->
               </div>
               <input type="date" class="form-control" name="reservation_date" id="reservation_date" />
                 <div id="date_error" class="text-danger"></div>
               <div>
-                {% comment %} <div>
-                 <select class="form-control" name="table_id"> <!-- Use 'name' attribute -->
-                    <option value="" disabled selected>Select Table </option>
-                    {% for table_number in table_numbers %}
-                      <option value="{{ table_number }}">{{ table_number }}</option>
-                    {% endfor %}
-                  </select>
-                </div> {% endcomment %}
-                <div>
-                  <select class="form-control" name="time_slot" id="time_slot">
-                      <option value="" disabled selected>Select Time Slot</option>
-                      <!-- Add options for time slots here -->
-                  </select>
-              </div>
+                <div class="form-group">
+                  <label for="start-time">Start Time (Between 10 AM and 11 PM)</label>
+                  <input type="time" id="start-time" name="start_time" class="form-control form-control-lg" required />
+                </div>
+                
+                <div class="form-group">
+                  <label for="end-time">End Time</label>
+                  <input type="time" id="end-time" name="end_time" class="form-control form-control-lg" readonly />
+                </div>
               <div>
-                <input type="number" class="form-control" name="num_of_persons" placeholder="How many Persons" required />
+                <label for="table-type">Select Table Type</label>
+                <select class="form-control" name="table_name" required>
+                  <option value="Two-Top">Two-Top </option>
+                  <option value="Four-Top">Four-Top </option>
+                  <option value="Six-Top">Six-Top</option>
+                  <option value="Eight-Top">Eight-Top </option>
+                  <option value="Large Party">Large Party Table (for ten people)</option>
+                </select>
                 <span id="available_seats" class="text-success"></span>
                 <div id="error_message" class="text-danger"></div>
-            </div>                   
+              </div>
+              <div>
+                <label for="table-num">Select Table Number</label>
+                <select class="form-control" name="table_num" required>
+                  <option value="Table 1">Table 1</option>
+                  <option value="Table 2">Table 2</option>
+                  <option value="Table 3">Table 3</option>
+                  <option value="Table 4">Table 4</option>
+                </select>
+                <span id="available_seats" class="text-success"></span>
+                <div id="error_message" class="text-danger"></div>
+              </div>
+                       
 
                <!-- Use 'name' attribute -->
-              </div>
-              <form method="POST" action="{% url 'booking_confirm' %}">
+            </div>
+              <form method="POST" action="{% url 'menu' %}">
                 {% csrf_token %}
                 <!-- Your form fields here -->
                 <div class="btn_box">
@@ -211,20 +228,14 @@
           </div>
         </div>
         <div class="col-md-6">
-          <div class="map_container ">
-            <div id="googleMap"></div>
+          <div class="map_container">
+            <!-- Replace this div with the Google Maps iframe -->
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d62955.28227692174!2d76.77796412085486!3d9.53432592814221!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b0635e244723219%3A0x67bf6074c37dfc5f!2sTharavadu%20The%20multi%20Cuisine%20Restaurant!5e0!3m2!1sen!2sin!4v1696702743268!5m2!1sen!2sin" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
           </div>
         </div>
+        
       </div>
       <br>
-      {% if messages %}
-      <div class="alert alert-success">
-        {% for message in messages %}
-        {{ message }}
-        {% endfor %}
-      </div>
-    {% endif %}
-
       </div>
     </div>
   </section>
@@ -359,7 +370,7 @@
       });
   });
 </script> {% endcomment %}
-<script type="text/javascript">
+{% comment %} <script type="text/javascript">
   // Get a reference to the date input field by its ID
   var reservationDateInput = document.getElementById('reservation_date');
 
@@ -450,7 +461,103 @@
   
   document.getElementById("reservation_date").addEventListener("change", populateTimeSlots);
                                 
-</script>
+</script> {% endcomment %}
+
+<script>
+   document.getElementById("start-time").addEventListener("input", function () {
+    var selectedTime = this.value;
+    var selectedHour = parseInt(selectedTime.split(":")[0]);
+  
+    if (selectedHour >= 10 && selectedHour < 22) { // Only show end time if start time is between 10 AM and 10 PM
+      var startTime = new Date("1970-01-01 " + selectedTime);
+      var endTime = new Date(startTime.getTime() + 60 * 60 * 1000); // Add one hour
+      var endHour = endTime.getHours().toString().padStart(2, "0");
+      var endMinute = endTime.getMinutes().toString().padStart(2, "0");
+      document.getElementById("end-time").value = endHour + ":" + endMinute;
+      document.getElementById("end-time").readOnly = false;
+    } else {
+      document.getElementById("end-time").value = "";
+      document.getElementById("end-time").readOnly = true;
+    }
+  }); 
+
+  // Get a reference to the date input field by its ID
+  var reservationDateInput = document.getElementById('reservation_date');
+
+  // Get today's date
+  var today = new Date();
+  var dd = today.getDate();
+  var mm = today.getMonth() + 1; // January is 0
+  var yyyy = today.getFullYear();
+
+  // Format today's date as "YYYY-MM-DD"
+  if (dd < 10) {
+      dd = '0' + dd;
+  }
+
+  if (mm < 10) {
+      mm = '0' + mm;
+  }
+
+  today = yyyy + '-' + mm + '-' + dd;
+
+  // Set the minimum date attribute to today
+  reservationDateInput.min = today;
+
+  // Add an event listener for date input changes
+  reservationDateInput.addEventListener('change', function () {
+      var selectedDate = new Date(this.value);
+      if (selectedDate < today) {
+          alert('Please select a date from today onwards.');
+          this.value = today; // Reset the input value to today's date
+      }
+  });
+
+
+ document.getElementById("start-time").addEventListener("input", function() {
+    var selectedTime = this.value;
+    var selectedHour = parseInt(selectedTime.split(":")[0]);
+  
+    // Check if the selected time is within the valid range (10 AM to 11 PM)
+    if (selectedHour < 10 || selectedHour >= 22) {
+      alert("Please select a time between 10 AM and 10 PM.");
+      this.value = " "; // Reset to the default time (10 AM)
+    }
+  }); 
+
+
+  document.getElementById("start-time").addEventListener("change", function() {
+    var selectedStartTime = new Date("1970-01-01T" + this.value);
+    var allowedStartTime = new Date("1970-01-01T10:00");
+    var allowedEndTime = new Date("1970-01-01T23:00");
+    var now = new Date();
+
+    // Check if the selected start time is within the allowed range
+    if (selectedStartTime >= allowedStartTime && selectedStartTime <= allowedEndTime) {
+        // Check if the selected start time is after the existing booking
+        var existingEndTime = new Date("1970-01-01T11:59");  // Replace with the actual existing end time
+        if (selectedStartTime < existingEndTime) {
+            // Display an error message
+            document.getElementById("error_message").textContent = "Table already booked. Next available time: 11:59 AM";
+            // Disable the form submission
+            document.querySelector("form").onsubmit = function(event) {
+                event.preventDefault();
+            };
+        } else {
+            // Clear the error message and enable form submission
+            document.getElementById("error_message").textContent = "";
+            document.querySelector("form").onsubmit = null;
+        }
+    } else {
+        // Display an error message
+        document.getElementById("error_message").textContent = "Please select a time between 10:00 AM and 11:00 PM";
+        // Disable the form submission
+        document.querySelector("form").onsubmit = function(event) {
+            event.preventDefault();
+        };
+    }
+});
+  </script>
 
 </body>
 

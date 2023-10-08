@@ -282,7 +282,7 @@
       <h1>Your Shopping Cart</h1>
       <div class="cart">
         {% for item in cart_items %}
-            {% if item.status == 1 %}
+            {% comment %} {% if item.status == 1 %} {% endcomment %}
             <div class="product">
                 <img src="{{ item.menu.img.url }}" alt="{{ item.menu.name }}">
                 <div class="product-details">
@@ -299,7 +299,7 @@
                     <button class="remove-button">Remove</button>
                 </a>
             </div>
-            {% endif %}
+            {% comment %} {% endif %} {% endcomment %}
         {% endfor %}
         <div id="total-amount">Total Amount: ₹{{ total_price }}</div>
         <div class="button-container">

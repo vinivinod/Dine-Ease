@@ -1,4 +1,6 @@
 from datetime import date
+from datetime import datetime
+from django.utils import timezone
 from difflib import context_diff
 from venv import logger
 from django.shortcuts import render,redirect
@@ -7,8 +9,7 @@ from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages,auth
 from django.http import HttpResponse
 from django.urls import reverse
-from .models import Employee, menus,hmenus,tables,Reservation,CustomUser,AddToCart,Payment
-from .forms import  YourForm
+from .models import Employee, menus,hmenus,CustomUser,AddToCart,Payment
 from django.contrib.auth import get_user_model
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -45,8 +46,6 @@ def login_page(request):
 #     # Your view logic here
 #     return render(request, 'booking_confirm.html')
 
-def payment(request):
-    return render(request,'payment.html')
 
 def menumore(request):
     Menus=menus.objects.all()
@@ -103,10 +102,13 @@ def userlogin(request):
         
         if user is not None:
             login(request, user)
-            if user.role == CustomUser.EMPLOYEE:
-                return redirect('emp_index')
+            if user.is_superadmin:
+                # Superuser is logged in, redirect to 'admin_index'
+                return redirect('admin_index')
+            elif user.role == CustomUser.EMPLOYEE:
+                return redirect('emp_index')   
             else:
-                return redirect('')  # Redirect to the custom dashboard for non-admin users
+                return redirect('/')     
         else:
             messages.error(request, "Invalid Login")
             return redirect('login-submit')
@@ -224,117 +226,124 @@ def menuMore(request):
     return render(request,'menumore2.html',{'Hmenus': Hmenus})
 
 # addtable
+# def add_table(request):
+#     if request.method == 'POST':
+#         # Get the data from the request
+#         tab_id = request.POST.get('tab_id')
+#         desc = request.POST.get('desc')
 
+#         # Create a new record in the 'tables' model
+#         tables.objects.create(tab_id=tab_id, desc=desc)
 
+#         # Add a success message
+#         messages.success(request, 'Data added successfully!')
 
-def add_table(request):
-    if request.method == 'POST':
-        # Get the data from the request
-        tab_id = request.POST.get('tab_id')
-        desc = request.POST.get('desc')
+#         # Redirect to the same page to display the success message
+#         return redirect('add_table')
 
-        # Create a new record in the 'tables' model
-        tables.objects.create(tab_id=tab_id, desc=desc)
+#     return render(request, 'add_table.html')
 
-        # Add a success message
-        messages.success(request, 'Data added successfully!')
-
-        # Redirect to the same page to display the success message
-        return redirect('add_table')
-
-    return render(request, 'add_table.html')
-
-# reservation
+# # reservation
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import Reservation
-from .models import tables  # Import the 'tables' model
-import uuid
+from .models import TableBooking
 from django.contrib.auth.decorators import login_required  # Import the login_required decorator
 from django.contrib.auth import get_user_model  # Import the get_user_model function
-
-
 from django.db.models import Q
 from django.shortcuts import render, redirect
-from django.contrib import messages
-from .models import Reservation, tables
 import uuid
 
 from django.db import transaction
 
 def add_reservation(request):
-    table_numbers = tables.objects.values_list('tab_id', flat=True)
-    
+    expired()
+    error_message = " "
+
     if request.method == 'POST':
+        user = request.user
+
         name = request.POST.get('name')
         email = request.POST.get('email')
         phone = request.POST.get('phone')
-        reservation_date = request.POST.get('reservation_date')
-        num_of_persons = request.POST.get('num_of_persons')
-        time_slot = request.POST.get('time_slot')  # Assuming you have added the time_slot field
+        date = request.POST.get('reservation_date')
+        table_name = request.POST.get('table_name')
+        table_num=request.POST.get('table_num')
+        start_time = request.POST.get('start_time')  # Assuming you have added the time_slot field
+        end_time=request.POST.get('end_time')
 
-        with transaction.atomic():
-            existing_reservation = Reservation.objects.filter(
-                reservation_date=reservation_date,
-                time_slot=time_slot
+
+        # Check if the slot is already booked within the specified time range
+        existing_booking = TableBooking.objects.filter(
+                date=date,
+                table_name=table_name,
+                table_num=table_num,
+                start_time__lte=start_time,  # Check if the existing start time is less than or equal to the new start time
+                end_time__gte=end_time,      # Check if the existing end time is greater than or equal to the new end time
             ).first()
 
-            if existing_reservation:
-                messages.error(request, 'Table already reserved for the selected date and time slot.')
-            else:
-                reservation = Reservation(
-                    reservation_id=str(uuid.uuid4()),
-                    name=name,
-                    email=email,
-                    phone=phone,
-                    reservation_date=reservation_date,
-                    num_of_persons=num_of_persons,
-                    time_slot=time_slot
-                )
-                reservation.save()
-                messages.success(request, 'Reservation added successfully!')
-                return redirect('booking_confirm')
+        if existing_booking:
+            error_message = "Table already booked"
+        else:
+                
+            post = TableBooking(
+                name=user,  # Assuming 'name' and 'email' are ForeignKey fields in 'booknow'
+                email=user,
+                phone=user,
+                date=date,
+                start_time=start_time,
+                end_time=end_time,
+                table_name=table_name,
+                table_num=table_num,
+                status = False
+            )
+            
+            post.save()
 
-    user = request.user
-    user_data = {
-        'name': user.name,
-        'email': user.email,
-        'phone': user.phone,
-    }
-
-    initial_time_slot = None
-    return render(request, 'book.html', {'table_numbers': table_numbers, 'user_data': user_data, 'initial_time_slot': initial_time_slot})
-
-from django.http import JsonResponse
-
-def get_total_persons(request):
-    selected_date = request.GET.get('date')
-    selected_time_slot = request.GET.get('time_slot')
-
-    total_persons = Reservation.objects.filter(reservation_date=selected_date, time_slot=selected_time_slot).aggregate(total_persons=Sum('num_of_persons'))['total_persons'] or 0
-
-    return JsonResponse({'totalPersons': total_persons})
+    return render(request, "book.html", {'error_message': error_message})
 
 
-def book_table(request):
-    if request.method == 'POST':
-        form = YourForm(request.POST)
-        if form.is_valid():
-            # Create a new Reservation object and save it to the database
-            reservation = form.save()
-            # Redirect to the booking confirmation page
-            return redirect('booking_confirm')
-    else:
-        form = YourForm()  # Create a new instance of your form
+def expired():
+    # Check for expired bookings and make slots available
+    now = datetime.now()
+    expired_bookings = TableBooking.objects.filter(Q(end_time__lt=now) & Q(del_status=False))
     
-    return render(request, 'book.html', {'form': form})
+    for booking in expired_bookings:
+        booking.del_status = True 
+        booking.save()
+        # Delete the expired booking
+        # booking.delete()
 
 
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404
-from .models import menus, Reservation
+# from django.http import JsonResponse
 
-@login_required
+# def get_total_persons(request):
+#     selected_date = request.GET.get('date')
+#     selected_time_slot = request.GET.get('time_slot')
+
+#     total_persons = Reservation.objects.filter(reservation_date=selected_date, time_slot=selected_time_slot).aggregate(total_persons=Sum('num_of_persons'))['total_persons'] or 0
+
+#     return JsonResponse({'totalPersons': total_persons})
+
+
+# def book_table(request):
+#     if request.method == 'POST':
+#         form = YourForm(request.POST)
+#         if form.is_valid():
+#             # Create a new Reservation object and save it to the database
+#             reservation = form.save()
+#             # Redirect to the booking confirmation page
+#             return redirect('booking_confirm')
+#     else:
+#         form = YourForm()  # Create a new instance of your form
+    
+#     return render(request, 'book.html', {'form': form})
+
+
+# from django.contrib.auth.decorators import login_required
+# from django.shortcuts import render, get_object_or_404
+# from .models import menus, Reservation
+
+# @login_required
 def booking_confirm(request, menu_id=None):
     if menu_id is not None:
         # Retrieve the menu item based on the menu_id parameter
@@ -344,90 +353,90 @@ def booking_confirm(request, menu_id=None):
         context = {'menu_item': menu_item}
     else:
         # Retrieve all bookings of the logged-in user
-        bookings = Reservation.objects.filter(email=request.user.email)
+        bookings = TableBooking.objects.filter(email=request.user.email)
         context = {'bookings': bookings}
 
     return render(request, 'booking_confirm.html', context)
 
-# views.py
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404
-from home.models import Reservation
+# # views.py
+# from django.http import HttpResponse, HttpResponseRedirect
+# from django.shortcuts import get_object_or_404
+# from home.models import Reservation
 
 
-def cancel_reservation(request, reservation_id):
-    booking = get_object_or_404(Reservation, reservation_id=reservation_id)
+# def cancel_reservation(request, reservation_id):
+#     booking = get_object_or_404(Reservation, reservation_id=reservation_id)
     
-    if request.method == "POST" and booking.is_active:
-        # Update the is_active status to False
-        booking.is_active = False
-        booking.save()
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))  # Redirect back to the previous page
+#     if request.method == "POST" and booking.is_active:
+#         # Update the is_active status to False
+#         booking.is_active = False
+#         booking.save()
+#         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))  # Redirect back to the previous page
     
-    return render(request, 'booking_confirm.html', {'booking': booking})
+#     return render(request, 'booking_confirm.html', {'booking': booking})
 
 
 
-from django.shortcuts import render, get_object_or_404, redirect
-from .models import Reservation,TimeSlot
+# from django.shortcuts import render, get_object_or_404, redirect
+# from .models import Reservation,TimeSlot
 
-from django.shortcuts import get_object_or_404, render, redirect
-from .models import Reservation, TimeSlot  # Import your models
+# from django.shortcuts import get_object_or_404, render, redirect
+# from .models import Reservation, TimeSlot  # Import your models
 
-def edit_reservation(request, reservation_id):
-    booking = get_object_or_404(Reservation, reservation_id=reservation_id)
-    table_numbers = tables.objects.values_list('tab_id', flat=True)
+# def edit_reservation(request, reservation_id):
+#     booking = get_object_or_404(Reservation, reservation_id=reservation_id)
+#     table_numbers = tables.objects.values_list('tab_id', flat=True)
 
-    # Fetch all available time slots from the database
-    all_time_slots = TimeSlot.objects.values_list('slot_time', flat=True)
-    # Set the initial_time_slot to the currently booked time slot
-    initial_time_slot = booking.time_slot
+#     # Fetch all available time slots from the database
+#     all_time_slots = TimeSlot.objects.values_list('slot_time', flat=True)
+#     # Set the initial_time_slot to the currently booked time slot
+#     initial_time_slot = booking.time_slot
 
-    if request.method == 'POST':
-        # Handle form submission for updating reservation details
-        booking.name = request.POST['name']
-        booking.phone = request.POST['phone']
-        booking.email = request.POST['email']
-        booking.num_of_persons = request.POST['num_of_persons']
-        booking.table_id = tables.objects.get(tab_id=request.POST['table_id'])
-        booking.reservation_date = request.POST['reservation_date']
+#     if request.method == 'POST':
+#         # Handle form submission for updating reservation details
+#         booking.name = request.POST['name']
+#         booking.phone = request.POST['phone']
+#         booking.email = request.POST['email']
+#         booking.num_of_persons = request.POST['num_of_persons']
+#         booking.table_id = tables.objects.get(tab_id=request.POST['table_id'])
+#         booking.reservation_date = request.POST['reservation_date']
 
-        # Update the time slot with the selected value from the form
-        booking.time_slot = request.POST['time_slot']
-        booking.save()
+#         # Update the time slot with the selected value from the form
+#         booking.time_slot = request.POST['time_slot']
+#         booking.save()
 
-        # Redirect back to the booking confirmation page or any other desired page
-        return redirect('booking_confirm')
+#         # Redirect back to the booking confirmation page or any other desired page
+#         return redirect('booking_confirm')
 
-    return render(request, 'edit_reservation.html', {'booking': booking, 'table_numbers': table_numbers, 'all_time_slots': all_time_slots, 'initial_time_slot': initial_time_slot})
+#     return render(request, 'edit_reservation.html', {'booking': booking, 'table_numbers': table_numbers, 'all_time_slots': all_time_slots, 'initial_time_slot': initial_time_slot})
 
-def res_list(request):
-    today = date.today()
-    res_lists = Reservation.objects.filter(is_active=True, reservation_date__gte=today)
-    return render(request,'admin_dashboard/tbl_booking_list.html',{'res_lists':res_lists})
+# def res_list(request):
+#     today = date.today()
+#     res_lists = Reservation.objects.filter(is_active=True, reservation_date__gte=today)
+#     return render(request,'admin_dashboard/tbl_booking_list.html',{'res_lists':res_lists})
 
-from django.shortcuts import render
-from datetime import date, timedelta
-from .models import Reservation  # Import your Reservation model
-def previous_reservations(request):
-    today = date.today()
-    one_day_ago = today - timedelta(days=1)  # Get yesterday's date
-    first_reservation = Reservation.objects.filter(reservation_date__lt=one_day_ago).order_by('reservation_date')
-    return render(request, 'admin_dashboard/previous_reservations.html', {'previous_reservations': first_reservation})
+# from django.shortcuts import render
+# from datetime import date, timedelta
+# from .models import Reservation  # Import your Reservation model
+# def previous_reservations(request):
+#     today = date.today()
+#     one_day_ago = today - timedelta(days=1)  # Get yesterday's date
+#     first_reservation = Reservation.objects.filter(reservation_date__lt=one_day_ago).order_by('reservation_date')
+#     return render(request, 'admin_dashboard/previous_reservations.html', {'previous_reservations': first_reservation})
 
-from django.shortcuts import redirect
-from .models import Reservation
-def approve_reservation(request, reservation_id):
-    # Retrieve the reservation from the database
-    reservation = Reservation.objects.get(reservation_id=reservation_id)
+# from django.shortcuts import redirect
+# from .models import Reservation
+# def approve_reservation(request, reservation_id):
+#     # Retrieve the reservation from the database
+#     reservation = Reservation.objects.get(reservation_id=reservation_id)
 
-    # Update the status to 'approved'
-    reservation.status = 'approved'
-    reservation.save()
-    return redirect('res_list')  # Change 'success_page' to your actual URL name
+#     # Update the status to 'approved'
+#     reservation.status = 'approved'
+#     reservation.save()
+#     return redirect('res_list')  # Change 'success_page' to your actual URL name
 
 def admin_login(request):
-    return render(request,'admin_dashboard/admin_login.html')
+    return render(request,'LoginVal.html')
 def admin_index(request):
     return render(request,'admin_dashboard/index.html')
 def ad_MenuAdd(request):
@@ -593,6 +602,7 @@ from .models import menus
 #         return JsonResponse({'message': 'Item added to cart successfully'})
 
 #     return JsonResponse({'message': 'Invalid request'}, status=400)
+
 def cart(request):
     return render(request,'cart.html')
 
@@ -704,15 +714,15 @@ def update_cart_item_quantity(request, item_id, new_quantity):
 @login_required
 def checkout(request):
     if not request.user.is_authenticated:
-        return redirect('login')  # Redirect to login page if the user is not authenticated
+        return redirect('login')  # Redirect to the login page if the user is not authenticated
 
     user = request.user
     cart_items = AddToCart.objects.filter(user=user)
     total_price = sum(item.menu.price * item.quantity for item in cart_items if item.status)
 
-
+    # Get the latest BillingInformation object for the user
     try:
-        billing_info = BillingInformation.objects.get(user=user)
+        billing_info = BillingInformation.objects.filter(user=user).latest('id')
     except BillingInformation.DoesNotExist:
         billing_info = None
 
@@ -721,26 +731,30 @@ def checkout(request):
         town = request.POST.get('town')
         zip_code = request.POST.get('zip')
 
-        if billing_info is None:
+        if address is not None and address.strip() != '':
+            # Create a new BillingInformation instance for each order
             billing_info = BillingInformation(user=user, address=address, town=town, zip_code=zip_code)
+            billing_info.amount = total_price
+            billing_info.save()
+
+            # Clear the products in the cart and add them to billing_info.menu
+            product_ids = [item.menu.id for item in cart_items]
+            products_to_add = menus.objects.filter(id__in=product_ids)
+
+            if billing_info is not None:
+                billing_info.menu.set(products_to_add)  # Set the related products in billing_info.menu
+
+            return redirect('payment', billing_id=billing_info.id)  # Redirect to a success page
         else:
-            billing_info.address = address
-            billing_info.town = town
-            billing_info.zip_code = zip_code
-
-        billing_info.amount = total_price
-        billing_info.save()
-
-        # Save the products from the cart to billing_info
-        product_ids = [item.menu.id for item in cart_items]
-        products_to_add = menus.objects.filter(id__in=product_ids)
-        
-
-        # Add the products to the billing_info
-        billing_info.menu.add(*products_to_add)
-
-        return redirect('payment', billing_id=billing_info.id)  # Redirect to a success page
-
+            error_message = "Address is required. Please provide a valid address."
+            context = {
+                'cart_items': cart_items,
+                'total_price': total_price,
+                'error_message': error_message,
+                'billing_info': billing_info,
+            }
+            return render(request, 'delAddress.html', context)
+    
     context = {
         'cart_items': cart_items,
         'total_price': total_price,
@@ -823,10 +837,11 @@ def paymenthandler(request, billing_id):
         payment.save()
 
         # Mark the cart items as inactive (status = 0)
-        cart_items.update(status=0)
+        cart_items.delete()
 
         # Render the success page on successful capture of payment.
-        return render(request, 'index.html')
+        user_id = user.id
+        return redirect(reverse('order_summary', args=[user_id]))
 
     else:
         billing = BillingInformation.objects.get(id=billing_id)
@@ -837,6 +852,9 @@ def paymenthandler(request, billing_id):
 
 from django.shortcuts import render
 from .models import AddToCart
+
+
+
 
 def display_cart_items(request):
     cart_items = AddToCart.objects.filter(user=request.user)
@@ -877,15 +895,31 @@ def view_cart(request):
 
 from django.shortcuts import render
 from .models import AddToCart, Payment
-def order_summary(request):
-    # Retrieve cart items for the user
-    cart_items = AddToCart.objects.filter(user=request.user, status=0)
-    total_price = sum(item.menu.price * item.quantity for item in cart_items)
-    # Filter payments with successful status
-    successful_payments = Payment.objects.filter(user=request.user, payment_status=Payment.PaymentStatusChoices.SUCCESSFUL)
 
-    return render(request, 'orderSummary.html', {'cart_items': cart_items, 'total_price':total_price, 'successful_payments': successful_payments})
 
+from django.shortcuts import render
+from .models import BillingInformation, Payment
+
+def order_summary(request, user_id):
+    user = get_object_or_404(CustomUser, id=user_id)
+
+    # Get the latest billing information for the user
+    billing_info = BillingInformation.objects.filter(user=user).order_by('-id').first()
+
+    # Get the latest payment associated with the user
+    latest_payment = Payment.objects.filter(user=user).order_by('-timestamp').first()
+
+    # Get all menu items associated with the latest billing information
+    purchased_items = billing_info.menu.all() if billing_info else []
+
+    context = {
+        'user': user,
+        'billing_info': billing_info,
+        'latest_payment': latest_payment,
+        'purchased_items': purchased_items,
+    }
+
+    return render(request, 'orderSummary.html', context)
 
 def emp_index(request):
     emp_count=CustomUser.objects.filter(role='2').count()
@@ -1106,7 +1140,13 @@ from django.shortcuts import render
 from .models import LeaveApplication
 
 def leave_list(request):
-    leave_applications = LeaveApplication.objects.all()
+    if request.user.is_authenticated:
+        # Filter the leave applications for the currently logged-in user
+        leave_applications = LeaveApplication.objects.filter(user=request.user)
+    else:
+        # If the user is not logged in, provide an empty queryset
+        leave_applications = LeaveApplication.objects.none()
+    
     return render(request, 'employee/leave_list.html', {'leave_applications': leave_applications})
 
 from django.shortcuts import redirect, get_object_or_404

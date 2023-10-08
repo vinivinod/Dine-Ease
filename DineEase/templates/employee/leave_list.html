@@ -58,7 +58,7 @@
 					<ul class="nav sidebar-inner" id="sidebar-menu">
 						<!-- Dashboard -->
 						<li class="">
-							<a class="sidenav-item-link" href="{% url 'admin_index' %}">
+							<a class="sidenav-item-link" href="{% url 'emp_index' %}">
 								<i class="mdi mdi-view-dashboard-outline"></i>
 								<span class="nav-text">Dashboard</span>
 							</a>
@@ -150,7 +150,7 @@
 						</li> -->
 
 						<!-- Products -->
-						<li class="has-sub active">
+						{% comment %} <li class="has-sub active">
 							<a class="sidenav-item-link" href="javascript:void(0)">
 								<!-- <i class="mdi mdi-palette-advanced"></i> -->
 								<i class="mdi mdi-package-variant-closed"></i>
@@ -173,15 +173,19 @@
 											<span class="nav-text">leave Taken</span>
 										</a>
 									</li>
-									{% comment %} <li class="">
+									 <li class="">
 										<a class="sidenav-item-link" href="product-detail.html">
 											<span class="nav-text">Product Detail</span>
 										</a>
-									</li> {% endcomment %}
+									</li> {
 								</ul>
 							</div>
+						</li> {% endcomment %}
+						<li class="active">
+							<a class="sidenav-item-link" href="{% url 'leave_list' %}" id="listLeave" name="leavelist">
+								<span class="nav-text">leave Taken</span>
+							</a>
 						</li>
-
 						<!-- Employees-->
 						{% comment %} <li class="has-sub">
 							<a class="sidenav-item-link" href="javascript:void(0)">
@@ -524,12 +528,12 @@
 				<div class="content">
 					<div class="breadcrumb-wrapper d-flex align-items-center justify-content-between">
 						<div>
-							<h1>Leave Taken</h1>
+							<h1 id="leaveh">Leave Taken</h1>
 							<p class="breadcrumbs"><span><a href="">Leave</a></span>
 								<span><i class="mdi mdi-chevron-right"></i></span>Leave Taken</p>
 						</div>
 						<div>
-							<a href="{% url 'apply_leave' %}" class="btn btn-primary"> Apply Leave</a>
+							<a href="{% url 'apply_leave' %}" class="btn btn-primary" id="leaveAppl"> Apply Leave</a>
 						</div>
 					</div>
 					<div class="row">

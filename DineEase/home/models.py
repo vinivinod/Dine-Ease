@@ -249,7 +249,7 @@ class TimeSlot(models.Model):
 from django.db import models
 
 class BillingInformation(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     address = models.TextField()
     town = models.CharField(max_length=50)
     zip_code = models.CharField(max_length=10)
@@ -261,7 +261,7 @@ class BillingInformation(models.Model):
         if self.user:
             return f"Billing info for {self.user.name}"
         return "Billing info (No associated user)"
-
+    
 class Payment(models.Model):
     class PaymentStatusChoices(models.TextChoices):
         PENDING = 'pending', 'Pending'
@@ -296,7 +296,7 @@ class Payment(models.Model):
 from django.db import models
 
 class LeaveApplication(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
     date = models.DateField()
     duration = models.CharField(max_length=20, choices=[('full-day', 'Full Day'), ('half-day-morning', 'Half Day (Morning)'), ('half-day-afternoon', 'Half Day (Afternoon)')])
     reason = models.TextField()
@@ -304,3 +304,21 @@ class LeaveApplication(models.Model):
 
     def __str__(self):
         return f"Leave Application for {self.user.username} on {self.date}"
+
+
+
+class TableBooking(models.Model):
+    name = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='bookings_by_name', null=True)
+    phone = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='bookings_by_phone', null=True)
+    email = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='bookings_by_email', null=True)
+    table_name = models.CharField(max_length=30,null=True,blank=True)
+    table_num = models.CharField(max_length=30,null=True,blank=True)
+    date = models.DateField(null=True)
+    start_time = models.TimeField(null=True)
+    end_time = models.TimeField(null=True)
+    status = models.BooleanField(default=False)
+    del_status = models.BooleanField(default=False)
+
+
+    def _str_(self):
+        return self.name

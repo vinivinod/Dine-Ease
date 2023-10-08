@@ -209,25 +209,43 @@
           </div>
         </header>
     </div><br>
-    <div class="container1">
-        <h1>Order Summary</h1>
-    
-        <ul class="order-details">
-            {% for item in cart_items %}
-                <li class="item">
-                    <strong>Item Name:</strong> {{ item.menu.name }}<br>
-                    <strong>Quantity:</strong> {{ item.quantity }}<br>
-                    {% comment %} <strong>Total Price:</strong> {{ item.menu.price * item.quantity }}<br> {% endcomment %}
-                </li>
-            {% endfor %}
-            {% for payment in successful_payments %}
-                <li class="payment">
-                    <strong>Date and Time of Payment:</strong> {{ payment.timestamp }}<br>
-                    <strong>Amount:</strong> {{ payment.amount }} {{ payment.currency }}<br>
-                    <strong>Payment Status:</strong> {{ payment.get_payment_status_display }}<br>
-                </li>
-            {% endfor %}
-        </ul>
-    </div>         
+    <div class="container">
+      <h1>Order Summary for {{ user.name }}</h1>
+  
+      <h2>Current Billing Information:</h2>
+      {% if billing_info %}
+          <ul>
+              <li>Address: {{ billing_info.address }}</li>
+              <li>Town: {{ billing_info.town }}</li>
+              <li>Zip Code: {{ billing_info.zip_code }}</li>
+              <li>Payment Status: {{ billing_info.get_payment_status_display }}</li>
+              <li>Amount: {{ billing_info.amount }}</li>
+              <h3>Purchased Items:</h3>
+              <ul>
+                  {% for item in purchased_items %}
+                      <li>{{ item.name }}</li>
+                  {% endfor %}
+              </ul>
+          </ul>
+      {% else %}
+          <p>No billing information available for this user.</p>
+      {% endif %}
+  
+      <h2>Latest Payment Information:</h2>
+      {% if latest_payment %}
+          <ul>
+              <li>Payment ID: {{ latest_payment.payment_id }}</li>
+              <li>Razorpay Order ID: {{ latest_payment.razorpay_order_id }}</li>
+              <li>Total Amount: {{ latest_payment.amount }}</li>
+              <li>Currency: {{ latest_payment.currency }}</li>
+              <li>Payment Status: {{ latest_payment.get_payment_status_display }}</li>
+              <li>Timestamp: {{ latest_payment.timestamp }}</li>
+          </ul>
+      {% else %}
+          <p>No payment information available for this user.</p>
+      {% endif %}
+  </div>  
+  
+  
 </body>
 </html>
