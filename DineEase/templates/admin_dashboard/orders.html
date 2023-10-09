@@ -73,7 +73,7 @@
 						</li>
 
 						<!-- Employee -->
-						<li class="has-sub active">
+						<li class="has-sub">
 							<a class="sidenav-item-link" href="{% url 'emp_list' %}" id="Listemp">
 								<i class="mdi mdi-account-multiple-outline"></i>
 								<span class="nav-text">Employees</span> 
@@ -159,7 +159,7 @@
 						</li>
 
 						<!-- Online Orders -->
-						<li class="has-sub">
+						<li class="has-sub active">
 							<a class="sidenav-item-link" href="{% url 'user_list' %}">
 								<i class="mdi mdi-account-multiple-outline"></i>
 								<span class="nav-text">Online Orders</span> 
@@ -521,12 +521,12 @@
 			<!-- CONTENT WRAPPER -->
 			<div class="ec-content-wrapper">
 				<div class="content">
-					<div class="row">
+					{% comment %} <div class="row">
 						<div class="col-xl-3 col-sm-6 p-b-15 lbl-card">
 							<div class="card card-mini dash-card card-1">
 								<div class="card-body">
-									<h2>{{ emp_count }}</h2>
-									<p>Registered Employees</p>
+									<h2>{{ successful_payments }}</h2>
+									<p>Successful Payments</p>
 									<span class="mdi mdi-account-arrow-left"></span>
 								</div>
 							</div>
@@ -540,15 +540,12 @@
 								</div>
 							</div>
 						</div>
-					</div>
+					</div> {% endcomment %}
 					<div class="breadcrumb-wrapper d-flex align-items-center justify-content-between">
 						<div>
-							<h1>All Employees</h1>
+							<h1>All Orders</h1>
 							<p class="breadcrumbs"><span><a href="index.html">Home</a></span>
-								<span><i class="mdi mdi-chevron-right"></i></span>Employee</p>
-						</div>
-						<div>
-							<a href="{% url 'emp_add' %}" class="btn btn-primary" id="addEmpl"> Add Employee</a>
+								<span><i class="mdi mdi-chevron-right"></i></span>Online Orders</p>
 						</div>
 					</div>
 					<div class="row">
@@ -558,45 +555,51 @@
 									<div class="table-responsive">
 										<table id="responsive-data-table" class="table" style="width:100%">
 											<thead>
-												<tr>
-													<th>ID</th> 
-													<th>Name</th>
-													<th>Email</th>
-													<th>Phone Number</th>
-													<th>Position</th>
-													<th>Years-of-Experience</th>
-													
-												</tr>
-											</thead>
-											<tbody>
-												{% for list_emp in emp_lists %}
-												{% if list_emp.active %}
-												{% comment %} {% if user.role == 2 %}  {% endcomment %}
-												<tr>
-													<td>#{{list_emp.id }}</td> 
-													<td>{{ list_emp.user.name }}</td>
-													<td>{{ list_emp.user.email }}</td>
-													<td>{{ list_emp.user.phone }}</td>
-													<td>{{ list_emp.position }}</td>
-													<td>{{ list_emp.years_of_experience }}</td>
-													<td>
-														<div class="btn-group mb-1">
-															<button type="button" class="btn btn-outline-success">Info</button>
-															<button type="button" class="btn btn-outline-success dropdown-toggle dropdown-toggle-split"
-																data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
-																<span class="sr-only">Info</span>
-															</button>
-															<div class="dropdown-menu">
-																<a class="dropdown-item" href="{% url 'emp_edit' list_emp.id %}">Edit</a>
-																<a class="dropdown-item" href="{% url 'delete_emp' list_emp.id %}">Delete</a>
-															</div>
-														</div>
-													</td>
-												</tr>
-												{% comment %} {% endif %}  {% endcomment %}
-												{% endif %}
-												{% endfor %}
-											</tbody>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Name</th>
+                                                    <th>Items</th>
+                                                    <th>Amount</th>
+                                                    <th>Payment Status</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for billing in billing_info %}
+                                                <tr>
+                                                    <td>{{ billing.id }}</td>
+                                                    <td>{{ billing.user.name }}</td>
+                                                    <td>
+                                                        {% for menu in billing.menu.all %}
+                                                            {{ menu.name }}<br>
+                                                        {% empty %}
+                                                            No menu ordered
+                                                        {% endfor %}
+                                                    </td>
+                                                    <td>{{ billing.amount }}</td>
+                                                    <td>
+                                                        {% with matching_payments=billing.payment_set.all %}
+                                                            {% if matching_payments %}
+                                                                {{ matching_payments.0.get_payment_status_display }}
+                                                            {% else %}
+                                                                Payment not found
+                                                            {% endif %}
+                                                        {% endwith %}
+                                                    </td>
+                                                    <td>
+                                                        <!-- Add a styled button to approve the order -->
+                                                        <button id="approve_{{ billing.id }}" class="approve-button" style="background-color: #4CAF50; color: white; border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 4px;">Approve</button>
+                                                    </td>
+                                                    
+                                                </tr>
+                                                {% empty %}
+                                                <tr>
+                                                    <td colspan="5">No billing information available</td>
+                                                </tr>
+                                                {% endfor %}
+
+                                            </tbody>
+                                            
 										</table>
 									</div>
 									</div>

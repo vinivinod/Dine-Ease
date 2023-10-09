@@ -853,9 +853,6 @@ def paymenthandler(request, billing_id):
 from django.shortcuts import render
 from .models import AddToCart
 
-
-
-
 def display_cart_items(request):
     cart_items = AddToCart.objects.filter(user=request.user)
     total_price = sum(item.menu.price * item.quantity for item in cart_items)
@@ -867,7 +864,36 @@ def display_cart_items(request):
     
     return render(request, 'checkout.html', context)
 
+from django.shortcuts import render
+from .models import BillingInformation, Payment
 
+def order_list(request):
+    # Retrieve the data you need from the models
+    billing_info = BillingInformation.objects.all()
+    payments = Payment.objects.all()
+
+    context = {
+        'billing_info': billing_info,
+        'payments': payments,
+    }
+
+    return render(request, 'admin_dashboard/orders.html', context)
+
+from django.shortcuts import render
+from .models import Payment
+
+def payment_counts(request):
+    successful_payments = Payment.objects.filter(payment_status='successful').count()
+    pending_payments = Payment.objects.filter(payment_status='pending').count()
+    failed_payments = Payment.objects.filter(payment_status='failed').count()
+
+    context = {
+        'successful_payments': successful_payments,
+        'pending_payments': pending_payments,
+        'failed_payments': failed_payments,
+    }
+
+    return render(request, 'orders.html', context)
 
 # # cart/views.py
 # from django.shortcuts import render, redirect
@@ -1157,3 +1183,39 @@ def approve_leave(request, leave_id):
     leave.status = 'approved'
     leave.save()
     return redirect('empLeave_list')  # Redirect to the leave list page or another appropriate page
+
+
+from django.shortcuts import render
+from .models import BillingInformation, Payment
+from datetime import date
+
+def orderlist_emp(request):
+    current_date = date.today()
+
+    # Filter data to include only records created today
+    billings_info = BillingInformation.objects.filter(payment__timestamp__date=current_date).distinct()
+    payments = Payment.objects.filter(timestamp__date=current_date)
+
+
+    context = {
+        'billings_info': billings_info,
+        'payments': payments,
+    }
+
+    return render(request, 'employee/orders-emp.html', context)
+
+
+from datetime import date, timedelta
+def history_orders(request):
+    yesterday = date.today() - timedelta(days=1)
+
+    # Filter data to include records up to yesterday
+    billings_info = BillingInformation.objects.filter(payment__timestamp__date__lte=yesterday).distinct()
+    payments = Payment.objects.filter(timestamp__date__lte=yesterday)
+    
+    context = {
+        'billings_info': billings_info,
+        'payments': payments,
+    }
+
+    return render(request, 'employee/history_orders.html', context)

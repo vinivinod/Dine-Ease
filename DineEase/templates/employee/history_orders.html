@@ -38,55 +38,94 @@
 
 <body id="body">
 
-	<!--  WRAPPER  -->
+	<!-- WRAPPER -->
 	<div class="wrapper">
-		
+
 		<!-- LEFT MAIN SIDEBAR -->
 		<div class="ec-left-sidebar ec-bg-sidebar">
 			<div id="sidebar" class="sidebar ec-sidebar-footer">
 
 				<div class="ec-brand">
-					<a href="admin_index ">
-						<!-- <img class="ec-brand-icon" src="{% static 'assets/img/logo/favicon.png' %}" alt="" /> -->
+					<a href="{% url 'admin_index' %}">
+						<img class="ec-brand-icon" src="{% static 'assets/img/logo/favicon.png' %}" alt="" />
 						<span class="ec-brand-name text-truncate">DineEase</span>
 					</a>
 				</div>
-				
+
 				<!-- begin sidebar scrollbar -->
 				<div class="ec-navigation" data-simplebar>
 					<!-- sidebar menu -->
 					<ul class="nav sidebar-inner" id="sidebar-menu">
+						<!-- Dashboard -->
 						<li class="">
-							<a class="sidenav-item-link" href="{% url 'admin_index' %}">
+							<a class="sidenav-item-link" href="{% url 'emp_index' %}">
 								<i class="mdi mdi-view-dashboard-outline"></i>
 								<span class="nav-text">Dashboard</span>
 							</a>
 							<hr>
 						</li>
 
-						<!-- Users -->
+                        <!-- Orders -->
+                        <li class="has-sub active">
+                            <a class="sidenav-item-link" href="{% url 'orderlist_emp' %}">
+                                <i class="mdi mdi-package-variant-closed"></i>
+                                <span class="nav-text">Orders</span> 
+                            </a>
+                        </li>
+						<!-- Leave -->
 						<li class="has-sub">
-							<a class="sidenav-item-link" href="{% url 'user_list' %}">
-								<i class="mdi mdi-account-multiple-outline"></i>
-								<span class="nav-text">Customers</span> 
+							<a class="sidenav-item-link" href="{% url 'leave_list' %}">
+								<i class="mdi mdi-package-variant-closed"></i>
+								<span class="nav-text">Leave</span> 
 							</a>
 						</li>
 
-						<!-- Employee -->
-						<li class="has-sub active">
-							<a class="sidenav-item-link" href="{% url 'emp_list' %}" id="Listemp">
-								<i class="mdi mdi-account-multiple-outline"></i>
-								<span class="nav-text">Employees</span> 
+						<!-- Vendors -->
+						{% comment %} <li class="has-sub">
+							<a class="sidenav-item-link" href="javascript:void(0)">
+								<i class="mdi mdi-briefcase-outline"></i>
+								<span class="nav-text">Reservation</span> <b class="caret"></b>
 							</a>
-							<hr>
-						</li>
-						{% comment %}<div class="collapse">
+							<div class="collapse">
+								<ul class="sub-menu" id="vendors" data-parent="#sidebar-menu">
+									<li class="">
+										<a class="sidenav-item-link" href="vendor-card.html">
+											<span class="nav-text">Vendor Grid</span>
+										</a>
+									</li> 
+
+									<li class="">
+										<a class="sidenav-item-link" href="{% url 'res_list' %}">
+											<span class="nav-text">Recent</span>
+										</a>
+									</li>
+									<li class="">
+										<a class="sidenav-item-link" href="{% url 'previous_reservations' %}">
+											<span class="nav-text">History</span>
+										</a>
+									</li> 
+									<li class="">
+										<a class="sidenav-item-link" href="add-vendor.html">
+											<span class="nav-text">Add Vendors</span>
+										</a>
+									</li> 
+								</ul>
+							</div>
+						</li>  {% endcomment %}
+
+						<!-- Users -->
+						{% comment %} <li class="has-sub">
+							<a class="sidenav-item-link" href="javascript:void(0)">
+								<i class="mdi mdi-account-multiple-outline"></i>
+								<span class="nav-text">Customers</span> <b class="caret"></b>
+							</a>
+							<div class="collapse">
 								<ul class="sub-menu" id="users" data-parent="#sidebar-menu">
 									 <li>
 										<a class="sidenav-item-link" href="user-card.html">
 											<span class="nav-text">User Grid</span>
 										</a>
-									</li>  
+									</li> 
 
 									<li class="">
 										<a class="sidenav-item-link" href="{% url 'user_list' %}">
@@ -125,91 +164,74 @@
 							</div>
 						</li> -->
 
-						<!-- Menu -->
-						<li class="has-sub">
+						<!-- Products -->
+						{% comment %} <li class="has-sub active">
 							<a class="sidenav-item-link" href="javascript:void(0)">
 								<!-- <i class="mdi mdi-palette-advanced"></i> -->
 								<i class="mdi mdi-package-variant-closed"></i>
-								<span class="nav-text">Menu</span> <b class="caret"></b>
+								<span class="nav-text">Leave</span> <b class="caret"></b>
 							</a>
-							<div class="collapse">
+							<div class="collapse show">
 								<ul class="sub-menu" id="products" data-parent="#sidebar-menu">
 									<li class="">
-										<a class="sidenav-item-link" href="{% url 'add_menu' %}">
-											<span class="nav-text">Add Menu</span>
+										<a class="sidenav-item-link" href="{% url 'apply_leave' %}">
+											<span class="nav-text">Apply Leave</span>
 										</a>
 									</li>
 									<li class="">
 										<a class="sidenav-item-link" href="{% url 'menu_list' %}">
-											<span class="nav-text">List Menu</span>
+											<span class="nav-text">Medical Leave</span>
 										</a>
 									</li>
-									<!-- <li class="">
-										<a class="sidenav-item-link" href="product-grid.html">
-											<span class="nav-text">Grid Product</span>
+									<li class="active">
+										<a class="sidenav-item-link" href="{% url 'leave_list' %}">
+											<span class="nav-text">leave Taken</span>
 										</a>
 									</li>
-									<li class="">
+									 <li class="">
 										<a class="sidenav-item-link" href="product-detail.html">
 											<span class="nav-text">Product Detail</span>
 										</a>
-									</li>  -->
+									</li> {
 								</ul>
 							</div>
-						</li>
-
-						<!-- Online Orders -->
-						<li class="has-sub">
-							<a class="sidenav-item-link" href="{% url 'user_list' %}">
-								<i class="mdi mdi-account-multiple-outline"></i>
-								<span class="nav-text">Online Orders</span> 
+						</li> 
+						<li class="active">
+							<a class="sidenav-item-link" href="{% url 'leave_list' %}" id="listLeave" name="leavelist">
+								<span class="nav-text">leave Taken</span>
 							</a>
-						</li>
+						</li>{% endcomment %}
 
-						<!-- Reservation -->
-						<li class="has-sub">
+						<!-- Employees-->
+						{% comment %} <li class="has-sub">
 							<a class="sidenav-item-link" href="javascript:void(0)">
-								<i class="mdi mdi-briefcase-outline"></i>
-								<span class="nav-text">Reservation</span> <b class="caret"></b>
+								<i class="mdi mdi-account-multiple-outline"></i>
+								<span class="nav-text">Employees</span> <b class="caret"></b>
 							</a>
 							<div class="collapse">
-								<ul class="sub-menu" id="vendors" data-parent="#sidebar-menu">
-									{% comment %} <li class="">
-										<a class="sidenav-item-link" href="vendor-card.html">
-											<span class="nav-text">Vendor Grid</span>
-										</a>
-									</li> {% endcomment %}
-
+								<ul class="sub-menu" id="orders" data-parent="#sidebar-menu">
 									<li class="">
-										<a class="sidenav-item-link" href="{% url '' %}">
-											<span class="nav-text">Recent</span>
+										<a class="sidenav-item-link" href="{% url 'emp_add' %}">
+											<span class="nav-text">Add Employee </span>
 										</a>
 									</li>
 									<li class="">
-										<a class="sidenav-item-link" href="{% url '' %}">
-											<span class="nav-text">History</span>
+										<a class="sidenav-item-link" href="{% url 'emp_list' %}">
+											<span class="nav-text">Employee List</span>
 										</a>
-									</li>
-									{% comment %} <li class="">
-										<a class="sidenav-item-link" href="add-vendor.html">
-											<span class="nav-text">Add Vendors</span>
-										</a>
-									</li>  {% endcomment %}
+									</li> 
+									
 								</ul>
 							</div>
-							<hr>
-						</li>
+						</li> {% endcomment %}
 
-						
-						<!-- Leave -->
-						<li class="has-sub">
-							<a class="sidenav-item-link" href="{% url 'empLeave_list' %}">
+						<!-- Invoice -->
+						<!-- <li class="has-sub">
+							<a class="sidenav-item-link" href="javascript:void(0)">
 								<i class="mdi mdi-receipt"></i>
-								<span class="nav-text">Leave Taken</span> 
+								<span class="nav-text">Invoice</span> <b class="caret"></b>
 							</a>
-						</li>
-
-							<!-- <div class="collapse">
+							<div class="collapse">
 								<ul class="sub-menu" id="authentication" data-parent="#sidebar-menu">
 									<li class="">
 										<a href="invoice.html">
@@ -234,7 +256,7 @@
 						</li> -->
 
 						<!-- Brands -->
-						<!-- <li>
+						<!-- <li class="">
 							<a class="sidenav-item-link" href="brand-list.html">
 								<i class="mdi mdi-tag-outline"></i>
 								<span class="nav-text">Brands</span>
@@ -292,7 +314,7 @@
 						</li> -->
 
 						<!-- Error page -->
-						<!-- <li>
+						<!-- <li class="">
 							<a class="sidenav-item-link" href="404.html">
 								<i class="mdi mdi-alert-circle-outline"></i>
 								<span class="nav-text">Error page</span>
@@ -302,7 +324,6 @@
 				</div>
 			</div>
 		</div>
-
 
 		<!-- PAGE WRAPPER -->
 		<div class="ec-page-wrapper">
@@ -521,35 +542,15 @@
 			<!-- CONTENT WRAPPER -->
 			<div class="ec-content-wrapper">
 				<div class="content">
-					<div class="row">
-						<div class="col-xl-3 col-sm-6 p-b-15 lbl-card">
-							<div class="card card-mini dash-card card-1">
-								<div class="card-body">
-									<h2>{{ emp_count }}</h2>
-									<p>Registered Employees</p>
-									<span class="mdi mdi-account-arrow-left"></span>
-								</div>
-							</div>
-						</div>
-						<div class="col-xl-3 col-sm-6 p-b-15 lbl-card">
-							<div class="card card-mini dash-card card-1">
-								<div class="card-body">
-									<h2>{{ active_emp }}</h2>
-									<p>Active Employees</p>
-									<span class="mdi mdi-account-arrow-left"></span>
-								</div>
-							</div>
-						</div>
-					</div>
 					<div class="breadcrumb-wrapper d-flex align-items-center justify-content-between">
 						<div>
-							<h1>All Employees</h1>
-							<p class="breadcrumbs"><span><a href="index.html">Home</a></span>
-								<span><i class="mdi mdi-chevron-right"></i></span>Employee</p>
+							<h1 id="leaveh">Online Orders</h1>
+							<p class="breadcrumbs"><span><a href="">Orders</a></span>
+								<span><i class="mdi mdi-chevron-right"></i></span>Online Orders</p>
 						</div>
 						<div>
-							<a href="{% url 'emp_add' %}" class="btn btn-primary" id="addEmpl"> Add Employee</a>
-						</div>
+							<a href="{% url 'orderlist_emp' %}" class="btn btn-primary">Orders</a>
+						</div> 
 					</div>
 					<div class="row">
 						<div class="col-12">
@@ -558,45 +559,57 @@
 									<div class="table-responsive">
 										<table id="responsive-data-table" class="table" style="width:100%">
 											<thead>
-												<tr>
-													<th>ID</th> 
-													<th>Name</th>
-													<th>Email</th>
-													<th>Phone Number</th>
-													<th>Position</th>
-													<th>Years-of-Experience</th>
-													
-												</tr>
-											</thead>
-											<tbody>
-												{% for list_emp in emp_lists %}
-												{% if list_emp.active %}
-												{% comment %} {% if user.role == 2 %}  {% endcomment %}
-												<tr>
-													<td>#{{list_emp.id }}</td> 
-													<td>{{ list_emp.user.name }}</td>
-													<td>{{ list_emp.user.email }}</td>
-													<td>{{ list_emp.user.phone }}</td>
-													<td>{{ list_emp.position }}</td>
-													<td>{{ list_emp.years_of_experience }}</td>
-													<td>
-														<div class="btn-group mb-1">
-															<button type="button" class="btn btn-outline-success">Info</button>
-															<button type="button" class="btn btn-outline-success dropdown-toggle dropdown-toggle-split"
-																data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
-																<span class="sr-only">Info</span>
-															</button>
-															<div class="dropdown-menu">
-																<a class="dropdown-item" href="{% url 'emp_edit' list_emp.id %}">Edit</a>
-																<a class="dropdown-item" href="{% url 'delete_emp' list_emp.id %}">Delete</a>
-															</div>
-														</div>
-													</td>
-												</tr>
-												{% comment %} {% endif %}  {% endcomment %}
-												{% endif %}
-												{% endfor %}
-											</tbody>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Name</th>
+                                                    <th>Items</th>
+                                                    <th>Amount</th>
+                                                    <th>Payment Status</th>
+                                                    <th>Date</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for billing in billings_info %}
+                                                <tr>
+                                                    <td>{{ billing.id }}</td>
+                                                    <td>{{ billing.user.name }}</td>
+                                                    <td>
+                                                        {% for menu in billing.menu.all %}
+                                                            {{ menu.name }}<br>
+                                                        {% empty %}
+                                                            No menu ordered
+                                                        {% endfor %}
+                                                    </td>
+                                                    <td>{{ billing.amount }}</td>
+                                                    <td>
+                                                        {% with matching_payments=billing.payment_set.all %}
+                                                            {% if matching_payments %}
+                                                                {{ matching_payments.0.get_payment_status_display }}
+                                                            {% else %}
+                                                                Payment not found
+                                                            {% endif %}
+                                                        {% endwith %}
+                                                    </td>
+                                                    <td>
+                                                        {% for payment in billing.payment_set.all %}
+                                                            {{ payment.timestamp|date:"Y-m-d" }}<br>
+                                                            {{ payment.timestamp|time:"H:i:s" }}<br>
+                                                        {% endfor %}
+                                                    </td>
+                                                    <td>
+                                                        <!-- Add a styled button to approve the order -->
+                                                        <button id="approve_{{ billing.id }}" class="approve-button" style="background-color: #4CAF50; color: white; border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 4px;">Approve</button>
+                                                    </td>
+                                                    
+                                                </tr>
+                                                {% empty %}
+                                                <tr>
+                                                    <td colspan="5">No billing information available</td>
+                                                </tr>
+                                                {% endfor %}
+
+                                            </tbody>
 										</table>
 									</div>
 									</div>
