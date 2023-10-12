@@ -272,19 +272,22 @@ def add_reservation(request):
         end_time=request.POST.get('end_time')
 
 
-        # Check if the slot is already booked within the specified time range
-        existing_booking = TableBooking.objects.filter(
+        if not name or not email or not phone or not date or not table_name or not table_num or not start_time or not end_time:
+            error_message = "Please fill in all required fields."
+        else:
+            # Check if the slot is already booked within the specified time range
+            existing_booking = TableBooking.objects.filter(
                 date=date,
                 table_name=table_name,
                 table_num=table_num,
-                start_time__lte=start_time,  # Check if the existing start time is less than or equal to the new start time
-                end_time__gte=end_time,      # Check if the existing end time is greater than or equal to the new end time
+                start_time__lte=start_time,
+                end_time__gte=end_time,
             ).first()
 
         if existing_booking:
             error_message = "Table already booked"
         else:
-                
+
             post = TableBooking(
                 name=user,  # Assuming 'name' and 'email' are ForeignKey fields in 'booknow'
                 email=user,

@@ -190,30 +190,37 @@
                   <label for="end-time">End Time</label>
                   <input type="time" id="end-time" name="end_time" class="form-control form-control-lg" readonly />
                 </div>
-              <div>
-                <label for="table-type">Select Table Type</label>
-                <select class="form-control" name="table_name" required>
-                  <option value="Two-Top">Two-Top </option>
-                  <option value="Four-Top">Four-Top </option>
-                  <option value="Six-Top">Six-Top</option>
-                  <option value="Eight-Top">Eight-Top </option>
-                  <option value="Large Party">Large Party Table (for ten people)</option>
-                </select>
-                <span id="available_seats" class="text-success"></span>
-                <div id="error_message" class="text-danger"></div>
-              </div>
-              <div>
-                <label for="table-num">Select Table Number</label>
-                <select class="form-control" name="table_num" required>
-                  <option value="Table 1">Table 1</option>
-                  <option value="Table 2">Table 2</option>
-                  <option value="Table 3">Table 3</option>
-                  <option value="Table 4">Table 4</option>
-                </select>
-                <span id="available_seats" class="text-success"></span>
-                <div id="error_message" class="text-danger"></div>
-              </div>
-                       
+                <label for="table-type" class="form-label">Table Type</label>
+    <select class="form-control" name="table_type" id="table-type">
+        <option value="">Select a table type</option>
+        <optgroup label="Two-Top">
+            <option value="Table 1">Two-Top (1)</option>
+            <option value="Table 2">Two-Top (2)</option>
+            <option value="Table 3">Two-Top (3)</option>
+        </optgroup>
+        <optgroup label="Four-Top">
+            <option value="Table 4">Four-Top (1)</option>
+            <option value="Table 5">Four-Top (2)</option>
+            <option value="Table 6">Four-Top (3)</option>
+        </optgroup>
+        <optgroup label="Six-Top">
+          <option value="Table 4">Six-Top (1)</option>
+          <option value="Table 5">Six-Top (2)</option>
+          <option value="Table 6">Six-Top (3)</option>
+        </optgroup>
+        <optgroup label="Eight-Top">
+          <option value="Table 4">Eight-Top (1)</option>
+          <option value="Table 5">Eight-Top (2)</option>
+          <option value="Table 6">Eight-Top (3)</option>
+        </optgroup>
+        <optgroup label="Large Party (10 persons)">
+          <option value="Table 4">Large Party (1)</option>
+          <option value="Table 5">Large Party (2)</option>
+          <option value="Table 6">Large Party (3)</option>
+        </optgroup>
+    </select>
+                      
+              
 
                <!-- Use 'name' attribute -->
             </div>
@@ -463,7 +470,8 @@
                                 
 </script> {% endcomment %}
 
-<script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js">
+
    document.getElementById("start-time").addEventListener("input", function () {
     var selectedTime = this.value;
     var selectedHour = parseInt(selectedTime.split(":")[0]);
@@ -556,6 +564,65 @@
             event.preventDefault();
         };
     }
+});
+
+document.getElementById("reservationForm").addEventListener("submit", function (event) {
+  var form = event.target;
+  var fields = form.querySelectorAll("input, select");
+  var emptyFields = [];
+
+  fields.forEach(function (field) {
+      if (field.value.trim() === "") {
+          emptyFields.push(field);
+      }
+  });
+
+  if (emptyFields.length > 0) {
+      event.preventDefault(); // Prevent form submission
+      var errorMessage = "Please fill in all required fields.";
+      document.getElementById("error_message").textContent = errorMessage;
+  }
+});
+
+$(document).ready(function() {
+  $('#table-type').on('change', function() {
+      var selectedTableType = $(this).val();
+      var $tableNumSelect = $('#table-num');
+      
+      $tableNumSelect.find('option').remove();
+      $tableNumSelect.append($('<option>', {
+          value: '',
+          text: 'Select a table number'
+      }));
+      
+      if (selectedTableType === 'Two-Top') {
+          $tableNumSelect.append($('<option>', {
+              value: 'Table 1',
+              text: 'Table 1'
+          }));
+          $tableNumSelect.append($('<option>', {
+              value: 'Table 2',
+              text: 'Table 2'
+          }));
+          $tableNumSelect.append($('<option>', {
+              value: 'Table 3',
+              text: 'Table 3'
+          }));
+      } else if (selectedTableType === 'Four-Top') {
+          $tableNumSelect.append($('<option>', {
+              value: 'Table 4',
+              text: 'Table 4'
+          }));
+          $tableNumSelect.append($('<option>', {
+              value: 'Table 5',
+              text: 'Table 5'
+          }));
+          $tableNumSelect.append($('<option>', {
+              value: 'Table 6',
+              text: 'Table 6'
+          }));
+      } // Add similar conditions for other table types
+  });
 });
   </script>
 

@@ -336,7 +336,7 @@
 						<img src="{% static 'assets/img/icons/clops.png' %}" alt="">
 					</button>
 					<!-- search form -->
-					<div class="search-form d-lg-inline-block">
+					<!-- <div class="search-form d-lg-inline-block">
 						<div class="input-group">
 							<input type="text" name="query" id="search-input" class="form-control"
 								placeholder="search.." autofocus autocomplete="off" />
@@ -347,36 +347,63 @@
 						<div id="search-results-container">
 							<ul id="search-results"></ul>
 						</div>
-					</div>
+					</div> -->
 
 					<!-- navbar right -->
 					<div class="navbar-right">
 						<ul class="nav navbar-nav">
+							{% comment %} <form method="post" action="{% url 'login-submit' %}">
+								{% csrf_token %}
+								<button type="submit" class="btn btn-primary" style="margin-left: 850px;">Logout</button> 
+							</form> {% endcomment %}
 							<!-- User Account -->
-							{% comment %} <li class="dropdown user-menu">
-								<button class="dropdown-toggle nav-link ec-drop" data-bs-toggle="dropdown"
-									aria-expanded="false">
-									<img src="{% static 'assets/img/user/user-1.png' %}" class="user-image" alt="User Image" />
+							<li class="dropdown user-menu">
+								<button class="dropdown-toggle nav-link ec-drop" data-bs-toggle="dropdown" aria-expanded="false" style="margin-left: 850px;">
+									<img src="{% static 'assets/img/user/user2.jpeg' %}" class="user-image" alt="User Image" />
 								</button>
 								<ul class="dropdown-menu dropdown-menu-right ec-dropdown-menu">
-									<!-- User image -->
-									<li class="dropdown-header">
-										<div class="d-inline-block">
-											<h5>Alex Dor</h5>
-											<p class="pt-2">demo@gmail.com</p>
-										</div>
-									</li>
-									<li>
-										<a href="user-profile.html">
-											<i class="mdi mdi-account"></i> My Profile
-										</a>
-									</li>
-									<li class="dropdown-footer">
-										<a href="{% static 'index.html' %}"> <i class="mdi mdi-logout"></i> Log Out </a>
-									</li>
+									{% if user.is_authenticated %}
+										<!-- User is logged in -->
+										{% if user.role == 2 %}
+										<li class="dropdown-header">
+											<div class="d-inline-block">
+												<h5>{{ user.name }}</h5>
+												<p class="pt-2">{{ user.email }}</p>
+											</div>
+										</li>
+										{% endif %}
+										<li>
+											<a href="{% url 'employee_profile' %}">
+												<i class="mdi mdi-account"></i> My Profile
+											</a>
+										</li>
+										<li>
+											<a href="{% url 'emp_profile' %}">
+												<i class="mdi mdi-account"></i> Edit Profile
+											</a>
+										</li>
+										<li>
+											<a href="{% url 'change_pswrd' %}">
+												<i class="mdi mdi-account"></i> Change Password
+											</a>
+										</li>
+										<li class="dropdown-footer">
+											<a href="{% url 'login' %}"> <i class="mdi mdi-logout"></i> Log Out </a>
+										</li>
+									{% else %}
+										<!-- User is not logged in -->
+										<li>
+											<a href="{% url 'login' %}">
+												<i class="mdi mdi-login"></i> Log In
+											</a>
+										</li>
+									{% endif %}
 								</ul>
 							</li>
-							<li class="dropdown notifications-menu custom-dropdown">
+							
+							
+
+							<!-- <li class="dropdown notifications-menu custom-dropdown">
 								<button class="dropdown-toggle notify-toggler custom-dropdown-toggler">
 									<i class="mdi mdi-bell-ring-outline"></i>
 								</button>
@@ -490,9 +517,9 @@
 											</ul>
 										</div>
 									</div>
-								</div>
+								</div> -->
 
-								<ul class="dropdown-menu dropdown-menu-right d-none">
+								<!-- <ul class="dropdown-menu dropdown-menu-right d-none">
 									<li class="dropdown-header">You have 5 notifications</li>
 									<li>
 										<a href="#">
@@ -532,10 +559,10 @@
 									<li class="dropdown-footer">
 										<a class="text-center" href="#"> View All </a>
 									</li>
-								</ul>
+								</ul> -->
 							</li>
 						</ul>
-					</div> {% endcomment %}
+					</div>
 				</nav>
 			</header>
 

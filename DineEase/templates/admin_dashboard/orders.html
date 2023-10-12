@@ -561,7 +561,7 @@
                                                     <th>Items</th>
                                                     <th>Amount</th>
                                                     <th>Payment Status</th>
-                                                    <th>Status</th>
+                                                    <th>Date</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -586,11 +586,13 @@
                                                             {% endif %}
                                                         {% endwith %}
                                                     </td>
-                                                    <td>
-                                                        <!-- Add a styled button to approve the order -->
-                                                        <button id="approve_{{ billing.id }}" class="approve-button" style="background-color: #4CAF50; color: white; border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 4px;">Approve</button>
-                                                    </td>
-                                                    
+												</td>
+												<td>
+													{% for payment in billing.payment_set.all %}
+														{{ payment.timestamp|date:"Y-m-d" }}<br>
+														{{ payment.timestamp|time:"H:i:s" }}<br>
+													{% endfor %}
+												</td>
                                                 </tr>
                                                 {% empty %}
                                                 <tr>

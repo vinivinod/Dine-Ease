@@ -308,11 +308,41 @@ class LeaveApplication(models.Model):
 
 
 class TableBooking(models.Model):
+
     name = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='bookings_by_name', null=True)
     phone = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='bookings_by_phone', null=True)
     email = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='bookings_by_email', null=True)
-    table_name = models.CharField(max_length=30,null=True,blank=True)
-    table_num = models.CharField(max_length=30,null=True,blank=True)
+     # Define choices for table_name
+    TABLE_NAME_CHOICES = [
+        ('Two-Top', 'Two-Top'),
+        ('Four-Top', 'Four-Top'),
+        ('Six-Top', 'Six-Top'),
+        ('Eight-Top', 'Eight-Top'),
+        ('Large Party', 'Large Party Table (for ten people)'),
+    ]
+
+    table_name = models.CharField(max_length=30, null=True, blank=True, choices=TABLE_NAME_CHOICES)
+
+     # Define choices for table_num
+    TABLE_NUM_CHOICES = [
+        ('Two-Top 1', 'Two-Top 1'),
+        ('Two-Top 2', 'Two-Top 2'),
+        ('Two-Top 3', 'Two-Top 3'),
+        ('Four-Top 1', 'Four-Top 1'),
+        ('Four-Top 2', 'Four-Top 2'),
+        ('Four-Top 3', 'Four-Top 3'),
+        ('Six-Top 1', 'Six-Top 1'),
+        ('Six-Top 2', 'Six-Top 2'),
+        ('Six-Top 3', 'Six-Top 3'),
+        ('Eight-Top 1', 'Eight-Top 1'),
+        ('Eight-Top 2', 'Eight-Top 2'),
+        ('Eight-Top 3', 'Eight-Top 3'),
+        ('Large Party 1', 'Large Party 1'),
+        ('Large Party 2', 'Large Party 2'),
+        ('Large Party 3', 'Large Party 3'),
+    ]
+    table_num = models.CharField(max_length=30, null=True, blank=True, choices=TABLE_NUM_CHOICES)
+
     date = models.DateField(null=True)
     start_time = models.TimeField(null=True)
     end_time = models.TimeField(null=True)
