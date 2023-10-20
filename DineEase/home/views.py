@@ -255,55 +255,60 @@ import uuid
 
 from django.db import transaction
 
+from django.utils import timezone
+from django.http import HttpResponse
+
+from django.utils import timezone
+from django.http import HttpResponse
+from django.utils.dateparse import parse_date, parse_time
+
 def add_reservation(request):
     expired()
-    error_message = " "
+    error_message = ""
+    user = request.user
 
-    if request.method == 'POST':
-        user = request.user
+    if request.method == "POST":
+        name = request.POST.get("name")
+        email = request.POST.get("email")
+        phone = request.POST.get("phone")
+        date_str = request.POST.get("reservation_date")
+        table_name = request.POST.get("table_name")
+        start_time_str = request.POST.get("start_time")
+        end_time_str = request.POST.get("end_time")
 
-        name = request.POST.get('name')
-        email = request.POST.get('email')
-        phone = request.POST.get('phone')
-        date = request.POST.get('reservation_date')
-        table_name = request.POST.get('table_name')
-        table_num=request.POST.get('table_num')
-        start_time = request.POST.get('start_time')  # Assuming you have added the time_slot field
-        end_time=request.POST.get('end_time')
+        # Convert date, start_time, and end_time strings to datetime.date and datetime.time objects
+        date = parse_date(date_str)
+        start_time = parse_time(start_time_str)
+        end_time = parse_time(end_time_str)
 
+        # Create datetime objects from date and time components
+        start_datetime = timezone.make_aware(timezone.datetime.combine(date, start_time))
+        end_datetime = timezone.make_aware(timezone.datetime.combine(date, end_time))
 
-        if not name or not email or not phone or not date or not table_name or not table_num or not start_time or not end_time:
-            error_message = "Please fill in all required fields."
-        else:
-            # Check if the slot is already booked within the specified time range
-            existing_booking = TableBooking.objects.filter(
-                date=date,
-                table_name=table_name,
-                table_num=table_num,
-                start_time__lte=start_time,
-                end_time__gte=end_time,
-            ).first()
+        existing_booking = TableBooking.objects.filter(
+            date=date,
+            table_name=table_name,
+            start_time__lt=end_datetime,
+            end_time__gt=start_datetime,
+        ).first()
 
         if existing_booking:
-            error_message = "Table already booked"
+            error_message = "The table is already booked. Please select another table or time or date"
         else:
-
             post = TableBooking(
-                name=user,  # Assuming 'name' and 'email' are ForeignKey fields in 'booknow'
+                name=user,
                 email=user,
                 phone=user,
                 date=date,
                 start_time=start_time,
                 end_time=end_time,
                 table_name=table_name,
-                table_num=table_num,
-                status = False
+                status=False
             )
-            
             post.save()
+            error_message = "Reservation saved successfully"
 
-    return render(request, "book.html", {'error_message': error_message})
-
+    return render(request, "book.html", {"error_message": error_message})
 
 def expired():
     # Check for expired bookings and make slots available

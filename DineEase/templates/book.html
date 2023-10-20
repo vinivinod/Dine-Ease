@@ -163,6 +163,7 @@
         {% if error_message %}
         <p class="error text-danger">{{ error_message }}</p>
       {% endif %}
+      
       </div>
       <div class="row">
         <div class="col-md-6">
@@ -190,35 +191,35 @@
                   <label for="end-time">End Time</label>
                   <input type="time" id="end-time" name="end_time" class="form-control form-control-lg" readonly />
                 </div>
-                <label for="table-type" class="form-label">Table Type</label>
-    <select class="form-control" name="table_type" id="table-type">
-        <option value="">Select a table type</option>
-        <optgroup label="Two-Top">
-            <option value="Table 1">Two-Top (1)</option>
-            <option value="Table 2">Two-Top (2)</option>
-            <option value="Table 3">Two-Top (3)</option>
-        </optgroup>
-        <optgroup label="Four-Top">
-            <option value="Table 4">Four-Top (1)</option>
-            <option value="Table 5">Four-Top (2)</option>
-            <option value="Table 6">Four-Top (3)</option>
-        </optgroup>
-        <optgroup label="Six-Top">
-          <option value="Table 4">Six-Top (1)</option>
-          <option value="Table 5">Six-Top (2)</option>
-          <option value="Table 6">Six-Top (3)</option>
-        </optgroup>
-        <optgroup label="Eight-Top">
-          <option value="Table 4">Eight-Top (1)</option>
-          <option value="Table 5">Eight-Top (2)</option>
-          <option value="Table 6">Eight-Top (3)</option>
-        </optgroup>
-        <optgroup label="Large Party (10 persons)">
-          <option value="Table 4">Large Party (1)</option>
-          <option value="Table 5">Large Party (2)</option>
-          <option value="Table 6">Large Party (3)</option>
-        </optgroup>
-    </select>
+                <label for="table-type">Table Type</label>
+                  <select class="form-control" name="table_name" id="table-type">
+                      <option value="">Select a table type</option>
+                      <optgroup label="Two-Top">
+                          <option value="Two-Top (1)">Two-Top (1)</option>
+                          <option value="Two-Top (2)">Two-Top (2)</option>
+                          <option value="Two-Top (3)">Two-Top (3)</option>
+                      </optgroup>
+                      <optgroup label="Four-Top">
+                          <option value="Four-Top (1)">Four-Top (1)</option>
+                          <option value="Four-Top (2)">Four-Top (2)</option>
+                          <option value="Four-Top (3)">Four-Top (3)</option>
+                      </optgroup>
+                          <optgroup label="Six-Top">
+                            <option value="Six-Top (1)">Six-Top (1)</option>
+                            <option value="Six-Top (2)">Six-Top (2)</option>
+                            <option value="Six-Top (3)">Six-Top (3)</option>
+                          </optgroup>
+                          <optgroup label="Eight-Top">
+                            <option value="Eight-Top (1)">Eight-Top (1)</option>
+                            <option value="Eight-Top (2)">Eight-Top (2)</option>
+                            <option value="Eight-Top (3)">Eight-Top (3)</option>
+                          </optgroup>
+                          <optgroup label="Large Party (10 persons)">
+                            <option value="Large Party (1)">Large Party (1)</option>
+                            <option value="Large Party (2)">Large Party (2)</option>
+                            <option value="Large Party (3)">Large Party (3)</option>
+                          </optgroup>
+                      </select>
                       
               
 
@@ -469,8 +470,8 @@
   document.getElementById("reservation_date").addEventListener("change", populateTimeSlots);
                                 
 </script> {% endcomment %}
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
 
    document.getElementById("start-time").addEventListener("input", function () {
     var selectedTime = this.value;
@@ -584,46 +585,7 @@ document.getElementById("reservationForm").addEventListener("submit", function (
   }
 });
 
-$(document).ready(function() {
-  $('#table-type').on('change', function() {
-      var selectedTableType = $(this).val();
-      var $tableNumSelect = $('#table-num');
-      
-      $tableNumSelect.find('option').remove();
-      $tableNumSelect.append($('<option>', {
-          value: '',
-          text: 'Select a table number'
-      }));
-      
-      if (selectedTableType === 'Two-Top') {
-          $tableNumSelect.append($('<option>', {
-              value: 'Table 1',
-              text: 'Table 1'
-          }));
-          $tableNumSelect.append($('<option>', {
-              value: 'Table 2',
-              text: 'Table 2'
-          }));
-          $tableNumSelect.append($('<option>', {
-              value: 'Table 3',
-              text: 'Table 3'
-          }));
-      } else if (selectedTableType === 'Four-Top') {
-          $tableNumSelect.append($('<option>', {
-              value: 'Table 4',
-              text: 'Table 4'
-          }));
-          $tableNumSelect.append($('<option>', {
-              value: 'Table 5',
-              text: 'Table 5'
-          }));
-          $tableNumSelect.append($('<option>', {
-              value: 'Table 6',
-              text: 'Table 6'
-          }));
-      } // Add similar conditions for other table types
-  });
-});
+
   </script>
 
 </body>
