@@ -423,7 +423,7 @@ def booking_list(request):
         # Retrieve all bookings for the logged-in user or filter as needed
         bookings = TableBooking.objects.filter(name=request.user)
 
-    return render(request, 'booking_confirm.html', {'bookings': bookings})
+    return render(request, 'booking_list.html', {'bookings': bookings})
 
 
 # from django.http import JsonResponse

@@ -159,6 +159,12 @@
             width:100%;
             background-color:black;
         }
+        .payment-status.paid {
+            color: green;
+        }
+        .payment-status.not-paid {
+            color: red; /* You can change 'red' to the desired color for not paid status */
+        }
     </style>        
     
 </head>
@@ -194,9 +200,9 @@
                     <li class="nav-item">
                       <a class="nav-link" href="{% url 'add_reservation' %}">Book Table</a>
                     </li>
-                    {% comment %} <li class="nav-item active">
-                      <a class="nav-link" href="{% url 'booking_confirm'  %}">Bookings <span class="sr-only">(current)</span></a>
-                    </li> {% endcomment %}
+                    <li class="nav-item active">
+                      <a class="nav-link" href="{% url 'booking_list'  %}">Bookings</a>
+                    </li>
                     <li class="nav-item">
                       <a class="nav-link" href="{% url 'loggout' %}">Logout</a>
                        </li>
@@ -284,19 +290,48 @@
     
 
     <div class="container">
-    <h2>Booking Details</h2>
-
-    <h1>Table Booking Summary</h1>
-    <p><strong>Table Name:</strong> {{ booking.table_name }}</p>
-    <p><strong>Booking Date:</strong> {{ booking.date }}</p>
-    <p><strong>Start Time:</strong> {{ booking.start_time }}</p>
-    <p><strong>End Time:</strong> {{ booking.end_time }}</p>
-    <p><strong>Selected Items:</strong> {{ booking.selected_items }}</p>
-    <p><strong>Total Price:</strong> ${{ booking.total_price }}</p>
-
-    <!-- Add a link with the booking_id as a query parameter -->
-    <a href="{% url 'table_booking_payment' booking.id %}" class="btn btn-primary">Pay Now</a>
-</div>
+    
+        <h1 style="text-align:center; color:#f7be00; font-weight:bold">Table Booking Summary</h1><br>
+    
+        {% if bookings %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Booking Date</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Table Name</th>
+                        <th>Selected Items</th>
+                        <th>Total Price</th>
+                        <th>Payment Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                        <tr>
+                            <td>{{ booking.date }}</td>
+                            <td>{{ booking.start_time }}</td>
+                            <td>{{ booking.end_time }}</td>
+                            <td>{{ booking.table_name }}</td>
+                            <td>{{ booking.selected_items }}</td>
+                            <td>₹ {{ booking.total_price }}</td>
+                            <td class="payment-status {% if booking.payments.first %}paid{% else %}not-paid{% endif %}">
+                                {% if booking.payments.first %}
+                                    {{ booking.payments.first.payment_status }}
+                                {% else %}
+                                    Not Paid
+                                {% endif %}
+                            </td>
+                            </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No bookings found for this user.</p>
+        {% endif %}
+    </div>
+    
+    
 
     {% comment %} <script>
         function confirmCancellation() {

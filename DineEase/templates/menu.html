@@ -209,8 +209,8 @@
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'add_reservation' %}">Book Table</a>
                 </li>
-                <li class="nav-item active">
-                      <a class="nav-link" href="{% url 'booking_list'  %}">Bookings <span class="sr-only">(current)</span></a>
+                <li class="nav-item">
+                      <a class="nav-link" href="{% url 'booking_list'  %}">Bookings</a>
                     </li>
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'loggout' %}">Logout</a>
@@ -486,9 +486,6 @@
                                   {% comment %} <span class="wishlist-icon" data-item-id="{{ menu_item.id }}">
                                   <i class="fa fa-heart"></i>
                                   </span>  &ensp; {% endcomment %}
-                                  <a href="{% url 'booking_confirm' %}">
-                                    <i class="fa fa-cutlery" aria-hidden="true" style="color: black;"></i>
-                                  </a>
                                   &ensp;
                                   <a href="{% url 'add_to_cart' menu_item.id %}">
                                     <i class="fa fa-cart-plus" aria-hidden="true" style="color: black;"></i> 

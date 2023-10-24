@@ -31,6 +31,62 @@
   <!-- responsive style -->
   <link href="{% static 'css/responsive.css' %}" rel="stylesheet" />
 
+  <style>
+    .menu-items-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr); /* Three equal columns */
+      gap: 10px;
+  }
+  
+    /* Style the menu items container */
+.menu-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* Style each menu item */
+.menu-item {
+    display: flex;
+    align-items: center;
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 200px;
+}
+
+/* Hover effect */
+.menu-item:hover {
+    background-color: #e0e0e0;
+}
+
+/* Style the label for the checkbox */
+.menu-item-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+/* Style the checkbox */
+.menu-item-checkbox {
+    margin-right: 10px;
+}
+
+/* Style the quantity input */
+.menu-item-quantity {
+    width: 40px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+}
+
+/* Additional styles as needed */
+
+
+  </style>
 </head>
 
 <body class="sub_page">
@@ -221,34 +277,48 @@
                           </optgroup>
                       </select>
             </div>
-            <h3>Select Menu Items:</h3>
+            {% comment %} <h3>Select Menu Items:</h3>
             <div class="menu-items">
                 {% for menu_item in menu_items %}
                 <div class="menu-item">
                     <label for="menu_item_{{ menu_item.id }}">
                         <input type="checkbox" id="menu_item_{{ menu_item.id }}" name="menu_items" value="{{ menu_item.id }}" class="menu-item-checkbox">
-                        {{ menu_item.name }}
+                        {{ menu_item.name }}&ensp;
+                        ₹ {{ menu_item.price }}
                     </label>
                     <input type="number" name="menu_item_quantity_{{ menu_item.id }}" value="1" min="1" class="menu-item-quantity">
                 </div>
                 {% endfor %}
-            </div>
-    
-            <div class="total-price">
-                <label for="total-price">Total Price: $<span id="total-price">0.00</span></label>
-            </div>
+            </div> {% endcomment %}
+  
             <div class="btn_box">
                 <button type="submit" class="btn btn-primary">Book Now</button>
             </div>
         </form>
           </div>
         </div>
-        <div class="col-md-6">
-          <div class="map_container">
+          {% comment %} <div class="map_container">
             <!-- Replace this div with the Google Maps iframe -->
             <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d62955.28227692174!2d76.77796412085486!3d9.53432592814221!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b0635e244723219%3A0x67bf6074c37dfc5f!2sTharavadu%20The%20multi%20Cuisine%20Restaurant!5e0!3m2!1sen!2sin!4v1696702743268!5m2!1sen!2sin" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-          </div>
+          </div> {% endcomment %}
+          <div class="col-md-6">
+            <h3>Select Menu Items:</h3>
+            <div class="menu-items">
+                <div class="menu-items-grid">
+                    {% for menu_item in menu_items %}
+                        <div class="menu-item">
+                            <label for="menu_item_{{ menu_item.id }}" class="menu-item-label">
+                                <input type="checkbox" id="menu_item_{{ menu_item.id }}" name="menu_items" value="{{ menu_item.id }}" class="menu-item-checkbox">
+                                {{ menu_item.name }}&ensp;
+                                ₹{{ menu_item.price }}&ensp;
+                            </label>
+                            <input type="number" name="menu_item_quantity_{{ menu_item.id }}" value="1" min="1" class="menu-item-quantity">
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
+        
         
       </div>
       <br>
