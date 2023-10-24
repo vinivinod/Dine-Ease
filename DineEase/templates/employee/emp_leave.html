@@ -155,7 +155,9 @@
             background-color: #007BFF;
             color: white;
         }
-
+		.text-danger {
+			color: red;
+		}
     </style>
 
 </head>
@@ -200,7 +202,7 @@
 						<!-- Leave -->
 						<li class="has-sub active">
 							<a class="sidenav-item-link" href="{% url 'leave_list' %}">
-								<i class="mdi mdi-package-variant-closed"></i>
+								<i class="mdi mdi-receipt"></i>
 								<span class="nav-text">Leave</span> 
 							</a>
 						</li>
@@ -734,9 +736,10 @@
                                                 </select>
                                             </div>
                                             <div class="form-group col-md-4">
-                                                <label for="leaveReason">Reason:</label>
-                                                <textarea id="leaveReason" name="leaveReason" class="form-control" required></textarea>
-                                            </div>
+												<label for="leaveReason">Reason:</label>
+												<textarea id="leaveReason" name="leaveReason" class="form-control" required></textarea>
+												<span id="reasonError" class="text-danger"></span>
+											</div>
                                             <div class="form-group col-md-2">
                                                 <button type="button" class="btn btn-apply" id="applyButton">Apply</button>
                                             </div>
@@ -804,6 +807,57 @@
             document.getElementById("leaveForm").submit();
         });
     </script>
+	<script>
+		// Get the date input element
+		const leaveDateInput = document.getElementById('leaveDate');
+	
+		// Calculate today's date
+		const today = new Date();
+	
+		// Calculate 7 days before today
+		const sevenDaysBeforeToday = new Date();
+		sevenDaysBeforeToday.setDate(sevenDaysBeforeToday.getDate() - 7);
+	
+		// Set the minimum and maximum date for the date input
+		leaveDateInput.setAttribute('min', sevenDaysBeforeToday.toISOString().split('T')[0]);
+		leaveDateInput.setAttribute('max', today.toISOString().split('T')[0]);
+
+		const leaveReasonInput = document.getElementById('leaveReason');
+    const reasonError = document.getElementById('reasonError');
+
+
+	const leaveDateInput = document.getElementById('leaveDate');
+    const leaveDurationInput = document.getElementById('leaveDuration');
+    const leaveReasonInput = document.getElementById('leaveReason');
+    const reasonError = document.getElementById('reasonError');
+    const applyButton = document.getElementById('applyButton');
+    
+    applyButton.addEventListener('click', () => {
+        const dateValue = leaveDateInput.value.trim();
+        const durationValue = leaveDurationInput.value;
+        const reasonValue = leaveReasonInput.value.trim();
+
+        if (dateValue && durationValue && reasonValue && /^[a-zA-Z\s]*$/.test(reasonValue)) {
+            // All fields are filled, and the reason is valid
+            // You can save or submit the form here
+            document.getElementById('leaveForm').submit();
+        } else {
+            reasonError.textContent = 'Please fill in all fields correctly.';
+        }
+    });
+
+    leaveReasonInput.addEventListener('input', () => {
+        const reasonValue = leaveReasonInput.value.trim();
+        if (/^[a-zA-Z\s]*$/.test(reasonValue)) {
+            reasonError.textContent = '';
+        } else {
+            reasonError.textContent = 'Please enter only alphabetic characters.';
+        }
+    });
+
+	</script>
+	
+	
     
 </body>
 
