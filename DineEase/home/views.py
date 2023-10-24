@@ -1175,7 +1175,12 @@ def emp_booking_lists(request):
         # Retrieve all bookings for the logged-in user or filter as needed
     bookings = TableBooking.objects.all() # Retrieve all booking details and related payments
     return render(request, 'employee/booking-list.html', {'bookings': bookings})
-    
+
+def ad_booking_lists(request):
+        # Retrieve all bookings for the logged-in user or filter as needed
+    bookings = TableBooking.objects.all() # Retrieve all booking details and related payments
+    return render(request, 'admin_dashboard/tbl_booking_list.html', {'bookings': bookings})
+
 
 def emp_list(request):
     emp_lists = Employee.objects.all()  # Retrieve all menu items from the database

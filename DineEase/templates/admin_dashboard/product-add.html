@@ -50,7 +50,7 @@
 				<div class="ec-navigation" data-simplebar>
 					<!-- sidebar menu -->
 					<ul class="nav sidebar-inner" id="sidebar-menu">
-						<li class="active">
+						<li class="">
 							<a class="sidenav-item-link" href="{% url 'admin_index' %}">
 								<i class="mdi mdi-view-dashboard-outline"></i>
 								<span class="nav-text">Dashboard</span>
@@ -120,10 +120,10 @@
 						</li> -->
 
 						<!-- Menu -->
-						<li class="has-sub">
+						<li class="has-sub active">
 							<a class="sidenav-item-link" href="javascript:void(0)">
 								<!-- <i class="mdi mdi-palette-advanced"></i> -->
-								<i class="mdi mdi-package-variant-closed"></i>
+								<i class="mdi mdi-food mdi-36px"></i>&ensp;
 								<span class="nav-text">Menu</span> <b class="caret"></b>
 							</a>
 							<div class="collapse">
@@ -154,46 +154,20 @@
 
 						<!-- Online Orders -->
 						<li class="has-sub">
-							<a class="sidenav-item-link" href="{% url 'user_list' %}">
-								<i class="mdi mdi-account-multiple-outline"></i>
+							<a class="sidenav-item-link" href="{% url 'order_list' %}">
+								<i class="mdi mdi-cart-outline mdi-34px"></i>
 								<span class="nav-text">Online Orders</span> 
 							</a>
 						</li>
 
 						<!-- Reservation -->
 						<li class="has-sub">
-							<a class="sidenav-item-link" href="javascript:void(0)">
-								<i class="mdi mdi-briefcase-outline"></i>
-								<span class="nav-text">Reservation</span> <b class="caret"></b>
+							<a class="sidenav-item-link" href="{% url 'ad_booking_lists' %}">
+								<i class="mdi mdi-food-variant mdi-36px"></i>&ensp;
+								<span class="nav-text">Reservations</span> 
 							</a>
-							<div class="collapse">
-								<ul class="sub-menu" id="vendors" data-parent="#sidebar-menu">
-									{% comment %} <li class="">
-										<a class="sidenav-item-link" href="vendor-card.html">
-											<span class="nav-text">Vendor Grid</span>
-										</a>
-									</li> {% endcomment %}
-
-									<li class="">
-										<a class="sidenav-item-link" href="{% url '' %}">
-											<span class="nav-text">Recent</span>
-										</a>
-									</li>
-									<li class="">
-										<a class="sidenav-item-link" href="{% url '' %}">
-											<span class="nav-text">History</span>
-										</a>
-									</li>
-									{% comment %} <li class="">
-										<a class="sidenav-item-link" href="add-vendor.html">
-											<span class="nav-text">Add Vendors</span>
-										</a>
-									</li>  {% endcomment %}
-								</ul>
-							</div>
-							<hr>
 						</li>
-
+						<hr>
 						
 						<!-- Leave -->
 						<li class="has-sub">

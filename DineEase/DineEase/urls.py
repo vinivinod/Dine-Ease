@@ -20,7 +20,7 @@ from home.views import userlogin,register,loggout,login_page
 
 from home.views import index,menu,about,menumore,add_reservation,booking_confirm,predict_image,booking_list
 from home.views import billing_payment,table_booking_payment,paymenthandler,cart,add_to_cart,view_cart,remove_from_cart,update_cart_item_quantity,checkout,display_cart_items,order_summary
-from home.views import admin_login,admin_index,add_menu,user_list,ad_MenuList,menu_list,menu_edit,delete_menu_item,employee_count,empLeave_list,order_list,payment_counts
+from home.views import admin_login,admin_index,add_menu,user_list,ad_MenuList,menu_list,menu_edit,delete_menu_item,employee_count,empLeave_list,order_list,payment_counts,ad_booking_lists
 from home.views import emp_index,emp_add,emp_profile,emp_list,emp_edit,products_by_category,filtered_menus,emp_registration,save_employee_details,employee_profile,delete_emp,change_pswrd,orderlist_emp,history_orders
 from home.views import apply_leave,leave_list,approve_leave,emp_booking_lists
 from django.views.generic import TemplateView
@@ -93,6 +93,8 @@ urlpatterns = [
     path('empLeave_list/', empLeave_list, name='empLeave_list'),
     path('order_list/',order_list,name='order_list'),
     path('payment_counts/',payment_counts,name='payment_counts'),
+    path('ad_booking_lists/', ad_booking_lists, name='ad_booking_lists'),
+
 
     path('emp_registration',emp_registration,name='emp_registration'),
     path('emp_index/',emp_index, name='emp_index'),

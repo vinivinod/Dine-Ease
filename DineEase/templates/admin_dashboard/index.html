@@ -125,7 +125,7 @@
 						<li class="has-sub">
 							<a class="sidenav-item-link" href="javascript:void(0)">
 								<!-- <i class="mdi mdi-palette-advanced"></i> -->
-								<i class="mdi mdi-package-variant-closed"></i>
+								<i class="mdi mdi-food mdi-36px"></i>&ensp;
 								<span class="nav-text">Menu</span> <b class="caret"></b>
 							</a>
 							<div class="collapse">
@@ -164,38 +164,12 @@
 
 						<!-- Reservation -->
 						<li class="has-sub">
-							<a class="sidenav-item-link" href="javascript:void(0)">
-								<i class="mdi mdi-briefcase-outline"></i>
-								<span class="nav-text">Reservation</span> <b class="caret"></b>
+							<a class="sidenav-item-link" href="{% url 'ad_booking_lists' %}">
+								<i class="mdi mdi-food-variant mdi-36px"></i>&ensp;
+								<span class="nav-text">Reservations</span> 
 							</a>
-							{% comment %} <div class="collapse">
-								<ul class="sub-menu" id="vendors" data-parent="#sidebar-menu">
-									{% comment %} <li class="">
-										<a class="sidenav-item-link" href="vendor-card.html">
-											<span class="nav-text">Vendor Grid</span>
-										</a>
-									</li> 
-
-									<li class="">
-										<a class="sidenav-item-link" href="{% url '' %}">
-											<span class="nav-text">Recent</span>
-										</a>
-									</li>
-									<li class="">
-										<a class="sidenav-item-link" href="{% url '' %}">
-											<span class="nav-text">History</span>
-										</a>
-									</li>
-									 <li class="">
-										<a class="sidenav-item-link" href="add-vendor.html">
-											<span class="nav-text">Add Vendors</span>
-										</a>
-									</li>  
-								</ul>
-							</div> {% endcomment %}
-							<hr>
 						</li>
-
+						<hr>
 						
 						<!-- Leave -->
 						<li class="has-sub">
