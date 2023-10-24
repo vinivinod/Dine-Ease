@@ -43,7 +43,7 @@ def login_page(request):
     return render(request, 'LoginVal.html')
 
 # def booking_confirm(request):
-#     # Your view logic here
+#     Your view logic here
 #     return render(request, 'booking_confirm.html')
 
 
@@ -262,10 +262,63 @@ from django.utils import timezone
 from django.http import HttpResponse
 from django.utils.dateparse import parse_date, parse_time
 
+# def add_reservation(request):
+#     expired()
+#     error_message = ""
+#     user = request.user
+
+#     if request.method == "POST":
+#         name = request.POST.get("name")
+#         email = request.POST.get("email")
+#         phone = request.POST.get("phone")
+#         date_str = request.POST.get("reservation_date")
+#         table_name = request.POST.get("table_name")
+#         start_time_str = request.POST.get("start_time")
+#         end_time_str = request.POST.get("end_time")
+
+#         # Convert date, start_time, and end_time strings to datetime.date and datetime.time objects
+#         date = parse_date(date_str)
+#         start_time = parse_time(start_time_str)
+#         end_time = parse_time(end_time_str)
+
+#         # Create datetime objects from date and time components
+#         start_datetime = timezone.make_aware(timezone.datetime.combine(date, start_time))
+#         end_datetime = timezone.make_aware(timezone.datetime.combine(date, end_time))
+
+#         existing_booking = TableBooking.objects.filter(
+#             date=date,
+#             table_name=table_name,
+#             start_time__lt=end_datetime,
+#             end_time__gt=start_datetime,
+#         ).first()
+
+#         if existing_booking:
+#             error_message = "The table is already booked. Please select another table or time or date"
+#         else:
+#             post = TableBooking(
+#                 name=user,
+#                 email=user,
+#                 phone=user,
+#                 date=date,
+#                 start_time=start_time,
+#                 end_time=end_time,
+#                 table_name=table_name,
+#                 status=False
+#             )
+#             post.save()
+#             error_message = "Reservation saved successfully"
+
+#     return render(request, "book.html", {"error_message": error_message})
+
+from django.db import transaction  # Import transaction module
+
+from django.shortcuts import render, redirect
+from .models import TableBooking
+
 def add_reservation(request):
-    expired()
     error_message = ""
     user = request.user
+    t_price = 0
 
     if request.method == "POST":
         name = request.POST.get("name")
@@ -276,12 +329,10 @@ def add_reservation(request):
         start_time_str = request.POST.get("start_time")
         end_time_str = request.POST.get("end_time")
 
-        # Convert date, start_time, and end_time strings to datetime.date and datetime.time objects
         date = parse_date(date_str)
         start_time = parse_time(start_time_str)
         end_time = parse_time(end_time_str)
 
-        # Create datetime objects from date and time components
         start_datetime = timezone.make_aware(timezone.datetime.combine(date, start_time))
         end_datetime = timezone.make_aware(timezone.datetime.combine(date, end_time))
 
@@ -295,6 +346,23 @@ def add_reservation(request):
         if existing_booking:
             error_message = "The table is already booked. Please select another table or time or date"
         else:
+            selected_menu_items = request.POST.getlist("menu_items")
+            selected_menu_items_info = []
+
+            for menu_item_id in selected_menu_items:
+                menu_item = menus.objects.get(id=menu_item_id)
+                quantity = int(request.POST.get(f"menu_item_quantity_{menu_item.id}", 1))
+                price = menu_item.price
+
+                item_total_price = price * quantity
+                t_price += item_total_price
+
+                item_info = f"{menu_item.name} - {quantity}"
+                selected_menu_items_info.append(item_info)
+
+            selected_items = ", ".join(selected_menu_items_info)
+
+            # Create a new TableBooking instance with t_price saved to the total_price field
             post = TableBooking(
                 name=user,
                 email=user,
@@ -303,12 +371,27 @@ def add_reservation(request):
                 start_time=start_time,
                 end_time=end_time,
                 table_name=table_name,
-                status=False
+                status=False,
+                selected_items=selected_items,
+                total_price=t_price + 200,  # Save t_price to the total_price field
             )
-            post.save()
-            error_message = "Reservation saved successfully"
 
-    return render(request, "book.html", {"error_message": error_message})
+            with transaction.atomic():
+                post.save()  # Save the instance within a transaction
+
+            error_message = "Reservation saved successfully"
+            print("Total Price:", t_price)
+
+            # Redirect to the booking summary page with the ID of the saved booking
+            return redirect('booking_confirm', booking_id=post.id)
+
+    menu_items = menus.objects.filter(active=True)
+
+    return render(request, "book.html", {
+        "error_message": error_message,
+        "menu_items": menu_items,
+    })
+
 
 def expired():
     # Check for expired bookings and make slots available
@@ -320,6 +403,27 @@ def expired():
         booking.save()
         # Delete the expired booking
         # booking.delete()
+
+
+
+from django.shortcuts import render, get_object_or_404
+from .models import TableBooking
+@login_required
+def booking_confirm(request, booking_id):
+    # Use get_object_or_404 to handle cases where the booking doesn't exist
+    booking = get_object_or_404(TableBooking, id=booking_id)
+    return render(request, 'booking_confirm.html', {'booking': booking})
+
+
+from django.shortcuts import render
+from .models import TableBooking  # Import your model
+
+def booking_list(request):
+    if request.user.is_authenticated:
+        # Retrieve all bookings for the logged-in user or filter as needed
+        bookings = TableBooking.objects.filter(name=request.user)
+
+    return render(request, 'booking_confirm.html', {'bookings': bookings})
 
 
 # from django.http import JsonResponse
@@ -351,20 +455,7 @@ def expired():
 # from django.shortcuts import render, get_object_or_404
 # from .models import menus, Reservation
 
-# @login_required
-def booking_confirm(request, menu_id=None):
-    if menu_id is not None:
-        # Retrieve the menu item based on the menu_id parameter
-        menu_item = get_object_or_404(menus, id=menu_id)
 
-        # Pass the menu item to the 'booking_confirm' HTML template
-        context = {'menu_item': menu_item}
-    else:
-        # Retrieve all bookings of the logged-in user
-        bookings = TableBooking.objects.filter(email=request.user.email)
-        context = {'bookings': bookings}
-
-    return render(request, 'booking_confirm.html', context)
 
 # # views.py
 # from django.http import HttpResponse, HttpResponseRedirect
@@ -752,7 +843,7 @@ def checkout(request):
             if billing_info is not None:
                 billing_info.menu.set(products_to_add)  # Set the related products in billing_info.menu
 
-            return redirect('payment', billing_id=billing_info.id)  # Redirect to a success page
+            return redirect('billing_payment', billing_id=billing_info.id)  # Redirect to a success page
         else:
             error_message = "Address is required. Please provide a valid address."
             context = {
@@ -771,37 +862,77 @@ def checkout(request):
 
     return render(request, 'delAddress.html', context)
 
-def payment(request, billing_id):
-    billing = BillingInformation.objects.get(pk=billing_id)
-    user = request.user
+# def payment(request, billing_id):
+#     billing = BillingInformation.objects.get(pk=billing_id)
+#     user = request.user
 
-    # For Razorpay integration
+#     # For Razorpay integration
+#     currency = 'INR'
+#     amount = billing.amount 
+#     amount_in_paise = int(amount * 100)
+
+#     # Create a Razorpay Order
+#     razorpay_order = razorpay_client.order.create(dict(
+#         amount=amount_in_paise,
+#         currency=currency,
+#         payment_capture='0'  # Capture payment manually after verifying it
+#     ))
+
+#     # Order ID of the newly created order
+#     razorpay_order_id = razorpay_order['id']
+#     callback_url = reverse('paymenthandler', args=[billing_id])
+
+#     # Create a Payment record
+#     payment = Payment.objects.create(
+#         user=request.user,
+#         razorpay_order_id=razorpay_order_id,
+#         amount=billing.amount,
+#         currency=currency,
+#         payment_status=Payment.PaymentStatusChoices.PENDING,
+#     )
+#     payment.billing_info.add(billing)
+
+#     # Prepare the context data
+#     context = {
+#         'user': request.user,
+#         'billing': billing,
+#         'razorpay_order_id': razorpay_order_id,
+#         'razorpay_merchant_key': settings.RAZOR_KEY_ID,
+#         'razorpay_amount': amount,
+#         'currency': currency,
+#         'amount': billing.amount,
+#         'callback_url': callback_url,
+#     }
+
+#     return render(request, 'confirm_payment.html', context)
+
+def billing_payment(request, billing_id):
+    billing = BillingInformation.objects.get(pk=billing_id)
+
     currency = 'INR'
-    amount = billing.amount 
+    amount = billing.amount
     amount_in_paise = int(amount * 100)
 
-    # Create a Razorpay Order
     razorpay_order = razorpay_client.order.create(dict(
         amount=amount_in_paise,
         currency=currency,
-        payment_capture='0'  # Capture payment manually after verifying it
+        payment_capture='0'
     ))
 
-    # Order ID of the newly created order
     razorpay_order_id = razorpay_order['id']
-    callback_url = reverse('paymenthandler', args=[billing_id])
+    callback_url = reverse('billing_paymenthandler', args=[billing_id])
 
-    # Create a Payment record
     payment = Payment.objects.create(
         user=request.user,
         razorpay_order_id=razorpay_order_id,
         amount=billing.amount,
         currency=currency,
         payment_status=Payment.PaymentStatusChoices.PENDING,
+        billing_info=billing
     )
-    payment.billing_info.add(billing)
 
-    # Prepare the context data
+    
+
     context = {
         'user': request.user,
         'billing': billing,
@@ -815,11 +946,51 @@ def payment(request, billing_id):
 
     return render(request, 'confirm_payment.html', context)
 
+def table_booking_payment(request, booking_id):
+    booking = TableBooking.objects.get(pk=booking_id)
+
+    currency = 'INR'
+    amount = booking.total_price  # Adjust this as needed
+    amount_in_paise = int(amount * 100)
+
+    razorpay_order = razorpay_client.order.create(dict(
+        amount=amount_in_paise,
+        currency=currency,
+        payment_capture='0'
+    ))
+
+    razorpay_order_id = razorpay_order['id']
+    callback_url_booking = reverse('table_booking_paymenthandler', args=[booking_id])
+
+
+    payment = Payment.objects.create(
+        user=request.user,
+        razorpay_order_id=razorpay_order_id,
+        amount=amount,
+        currency=currency,
+        payment_status=Payment.PaymentStatusChoices.PENDING,
+        table_booking=booking
+    )
+
+    
+
+    context = {
+        'user': request.user,
+        'booking': booking,
+        'razorpay_order_id': razorpay_order_id,
+        'razorpay_merchant_key': settings.RAZOR_KEY_ID,
+        'razorpay_amount': amount,
+        'currency': currency,
+        'amount': amount,
+        'callback_url': callback_url_booking,
+    }
+
+    return render(request, 'booking_payment.html', context)
+
 @csrf_exempt
-def paymenthandler(request, billing_id):
-    # Only accept POST requests.
+def paymenthandler(request, booking_id=None, billing_id=None):
+    print(billing_id)
     if request.method == "POST":
-        # Get the required parameters from the POST request.
         payment_id = request.POST.get('razorpay_payment_id', '')
         razorpay_order_id = request.POST.get('razorpay_order_id', '')
         signature = request.POST.get('razorpay_signature', '')
@@ -828,35 +999,73 @@ def paymenthandler(request, billing_id):
             'razorpay_payment_id': payment_id,
             'razorpay_signature': signature
         }
-        # Verify the payment signature.
         result = razorpay_client.utility.verify_payment_signature(params_dict)
         user = request.user
         cart_items = AddToCart.objects.filter(user=user)
-        payment = Payment.objects.get(razorpay_order_id=razorpay_order_id)
-        amount = int(payment.amount * 100)  # Convert Decimal to paise
 
-        # Capture the payment.
-        razorpay_client.payment.capture(payment_id, amount)
         payment = Payment.objects.get(razorpay_order_id=razorpay_order_id)
-
-        # Update the order with payment ID and change status to "Successful."
+        amount = int(payment.amount * 100)
         payment.payment_id = payment_id
         payment.payment_status = Payment.PaymentStatusChoices.SUCCESSFUL
         payment.save()
+        # Handle billing payment success, e.g., mark billing as paid
 
-        # Mark the cart items as inactive (status = 0)
-        cart_items.delete()
+        if billing_id is not None:
+            billing = BillingInformation.objects.get(id=billing_id)
+            billing.status = True
+            cart_items.delete()
+            billing.save()
+        elif booking_id is not None:
+            booking = TableBooking.objects.get(id=booking_id)
+            booking.status = True
+        
+        return redirect('/')  # Adjust the URL as needed
 
-        # Render the success page on successful capture of payment.
-        user_id = user.id
-        return redirect(reverse('order_summary', args=[user_id]))
+    return HttpResponseBadRequest()
 
-    else:
-        billing = BillingInformation.objects.get(id=billing_id)
-        billing.status = False
-        billing.save()
-        # If other than POST request is made.
-        return HttpResponseBadRequest()
+
+# @csrf_exempt
+# def paymenthandler(request, billing_id):
+#     # Only accept POST requests.
+#     if request.method == "POST":
+#         # Get the required parameters from the POST request.
+#         payment_id = request.POST.get('razorpay_payment_id', '')
+#         razorpay_order_id = request.POST.get('razorpay_order_id', '')
+#         signature = request.POST.get('razorpay_signature', '')
+#         params_dict = {
+#             'razorpay_order_id': razorpay_order_id,
+#             'razorpay_payment_id': payment_id,
+#             'razorpay_signature': signature
+#         }
+#         # Verify the payment signature.
+#         result = razorpay_client.utility.verify_payment_signature(params_dict)
+#         user = request.user
+#         cart_items = AddToCart.objects.filter(user=user)
+#         payment = Payment.objects.get(razorpay_order_id=razorpay_order_id)
+#         amount = int(payment.amount * 100)  # Convert Decimal to paise
+
+#         # Capture the payment.
+#         razorpay_client.payment.capture(payment_id, amount)
+#         payment = Payment.objects.get(razorpay_order_id=razorpay_order_id)
+
+#         # Update the order with payment ID and change status to "Successful."
+#         payment.payment_id = payment_id
+#         payment.payment_status = Payment.PaymentStatusChoices.SUCCESSFUL
+#         payment.save()
+
+#         # Mark the cart items as inactive (status = 0)
+#         cart_items.delete()
+
+#         # Render the success page on successful capture of payment.
+#         user_id = user.id
+#         return redirect(reverse('order_summary', args=[user_id]))
+
+#     else:
+#         billing = BillingInformation.objects.get(id=billing_id)
+#         billing.status = False
+#         billing.save()
+#         # If other than POST request is made.
+#         return HttpResponseBadRequest()
 
 from django.shortcuts import render
 from .models import AddToCart
@@ -1227,3 +1436,71 @@ def history_orders(request):
     }
 
     return render(request, 'employee/history_orders.html', context)
+
+
+from django.shortcuts import render, redirect
+from .forms import ImageUploadForm
+from .models import PredictedImage
+import os
+import tensorflow as tf
+import numpy as np
+from PIL import Image
+from django.conf import settings
+
+# Load the saved model
+loaded_model = tf.keras.models.load_model("models\your_model (1).h5")
+
+# Function to preprocess and predict an image with a threshold
+def predict_food(image_path, model, threshold=0.3):
+    # Load and preprocess the image
+    img = Image.open(image_path)
+    img = img.resize((224, 224))  # Resize to the model's input shape
+    img = img.convert("RGB")  # Convert to RGB (3 channels)
+
+    img = np.array(img) / 255.0  # Normalize the image (assuming you trained the model with normalized data)
+    img = np.expand_dims(img, axis=0)  # Add a batch dimension
+
+    # Make predictions
+    predictions = model.predict(img)
+    class_idx = np.argmax(predictions)
+    confidence = predictions[0][class_idx]
+
+    # Check if confidence is above the threshold
+    if confidence >= threshold:
+        return class_idx, confidence
+    else:
+        return None, None  # No class found if confidence is below the threshold
+
+def predict_image(request):
+    if request.method == 'POST':
+        form = ImageUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            # Save the uploaded image
+            instance = form.save()
+            image_path = os.path.join(settings.MEDIA_ROOT, instance.image.name)
+
+            # Perform prediction
+            predicted_class_idx, confidence = predict_food(image_path, loaded_model, threshold=0.5)
+
+            if predicted_class_idx is not None:
+                # Assuming you have a class mapping from your training data
+                class_names = {0: 'Beefroast', 1: 'Biryani', 2: 'Falafel', 3: 'Mandi', 4: 'Naan', 5: 'Shawarma', 6: 'burger',
+                               7: 'butter_naan', 8: 'chapati', 9: 'chicken_noodles', 10: 'chillychicken', 11: 'chole_bhature', 12: 'dal',
+                               13: 'dal_makhani', 14: 'dhokla', 15: 'dosa', 16: 'fishcurry', 17: 'fried_rice', 18: 'gobimanchurian', 19: 'idli',
+                               20: 'jalebi', 21: 'kaathi_rolls', 22: 'kadai_paneer', 23: 'kebab', 24: 'kulfi', 25: 'masala_dosa', 26: 'momos', 
+                               27: 'paani_puri', 28: 'pakode', 29: 'pav_bhaji', 30: 'pizza', 31: 'porotta', 32: 'samosa', 33: 'tea'}
+                predicted_class_name = class_names.get(predicted_class_idx, "Unknown Class")
+                instance.predicted_class = predicted_class_name
+                instance.confidence = confidence
+                instance.save()
+
+                # Print the prediction result to the terminal
+                print(f"Predicted class: {predicted_class_name}")
+                print(f"Confidence: {confidence:.2f}")
+
+            return redirect('predict_image')
+
+    else:
+        form = ImageUploadForm()
+
+    return render(request, 'upload.html', {'form': form})

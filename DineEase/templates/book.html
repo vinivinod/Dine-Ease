@@ -220,19 +220,27 @@
                             <option value="Large Party (3)">Large Party (3)</option>
                           </optgroup>
                       </select>
-                      
-              
-
-               <!-- Use 'name' attribute -->
             </div>
-              <form method="POST" action="{% url 'menu' %}">
-                {% csrf_token %}
-                <!-- Your form fields here -->
-                <div class="btn_box">
-                    <button type="submit" class="btn btn-primary">Book Now</button>
+            <h3>Select Menu Items:</h3>
+            <div class="menu-items">
+                {% for menu_item in menu_items %}
+                <div class="menu-item">
+                    <label for="menu_item_{{ menu_item.id }}">
+                        <input type="checkbox" id="menu_item_{{ menu_item.id }}" name="menu_items" value="{{ menu_item.id }}" class="menu-item-checkbox">
+                        {{ menu_item.name }}
+                    </label>
+                    <input type="number" name="menu_item_quantity_{{ menu_item.id }}" value="1" min="1" class="menu-item-quantity">
                 </div>
-                </form>           
-            </form>
+                {% endfor %}
+            </div>
+    
+            <div class="total-price">
+                <label for="total-price">Total Price: $<span id="total-price">0.00</span></label>
+            </div>
+            <div class="btn_box">
+                <button type="submit" class="btn btn-primary">Book Now</button>
+            </div>
+        </form>
           </div>
         </div>
         <div class="col-md-6">
@@ -358,6 +366,39 @@
       {% endfor %}
   </ul>
 {% endif %}
+
+
+<script>
+  // Parse the menu item data from the template
+  const menuItemsData = {{ menu_items_data|safe }};
+  
+  const menuItems = document.querySelectorAll('.menu-item-checkbox');
+  const quantities = document.querySelectorAll('.menu-item-quantity');
+  const totalPriceElement = document.getElementById('total-price');
+
+  // Update the total price when the state of checkboxes or quantities change
+  function updateTotalPrice() {
+      let total = 0;
+      for (let i = 0; i < menuItems.length; i++) {
+          if (menuItems[i].checked) {
+              const quantity = parseInt(quantities[i].value, 10);
+              const price = parseFloat(menuItemsData[i].price);
+              total += quantity * price;
+          }
+      }
+      totalPriceElement.textContent = total.toFixed(2);
+  }
+
+  menuItems.forEach((checkbox, index) => {
+      checkbox.addEventListener('change', updateTotalPrice);
+      quantities[index].addEventListener('input', updateTotalPrice);
+  });
+
+  // Initial calculation
+  updateTotalPrice();
+</script>
+
+
 {% comment %} <script>
   document.addEventListener('DOMContentLoaded', function () {
       const dateInput = document.getElementById('reservation_date');

@@ -18,8 +18,8 @@ from django.contrib import admin
 from django.urls import path,include
 from home.views import userlogin,register,loggout,login_page
 
-from home.views import index,menu,about,menumore,add_reservation,booking_confirm
-from home.views import payment,paymenthandler,cart,add_to_cart,view_cart,remove_from_cart,update_cart_item_quantity,checkout,display_cart_items,order_summary
+from home.views import index,menu,about,menumore,add_reservation,booking_confirm,predict_image,booking_list
+from home.views import billing_payment,table_booking_payment,paymenthandler,cart,add_to_cart,view_cart,remove_from_cart,update_cart_item_quantity,checkout,display_cart_items,order_summary
 from home.views import admin_login,admin_index,add_menu,user_list,ad_MenuList,menu_list,menu_edit,delete_menu_item,employee_count,empLeave_list,order_list,payment_counts
 from home.views import emp_index,emp_add,emp_profile,emp_list,emp_edit,products_by_category,filtered_menus,emp_registration,save_employee_details,employee_profile,delete_emp,change_pswrd,orderlist_emp,history_orders
 from home.views import apply_leave,leave_list,approve_leave
@@ -52,8 +52,8 @@ urlpatterns = [
     path('home/',include('home.urls')),
     # path('add_table/', add_table, name='add_table'),
     path('add_reservation/', add_reservation, name='add_reservation'),
-    path('booking_confirm/',booking_confirm, name='booking_confirm'),
-    path('booking_confirm/<int:menu_id>/',booking_confirm, name='booking_confirm'),
+    path('booking_list/', booking_list, name='booking_list'),
+    path('booking_confirm/<int:booking_id>/',booking_confirm, name='booking_confirm'),
     # path('cancel_reservation/<str:reservation_id>/', cancel_reservation, name='cancel_reservation'),
     # path('edit_reservation/<str:reservation_id>/', edit_reservation, name='edit_reservation'),
     # path('res_list/',res_list,name='res_list'),
@@ -67,10 +67,16 @@ urlpatterns = [
     path('view_cart/', view_cart, name='view_cart'),
     path('order_summary/<int:user_id>/',order_summary, name='order_summary'),
     path('checkout/',checkout,name='checkout'),
-    path('payment/<int:billing_id>/', payment, name='payment'),
-    path('paymenthandler/<int:billing_id>/', paymenthandler, name='paymenthandler'),
     path('display_cart_items',display_cart_items,name='display_cart_items'),
-    
+
+    # Billing Payment URLs
+    path('billing/payment/<int:billing_id>/', billing_payment, name='billing_payment'),
+    path('paymenthandler/<int:billing_id>/', paymenthandler, name='billing_paymenthandler'),
+
+    # Table Booking Payment URLs
+    path('booking/payment/<int:booking_id>/', table_booking_payment, name='table_booking_payment'),
+    path('paymenthandler/<int:booking_id>/', paymenthandler, name='table_booking_paymenthandler'),
+
 
     path('admin_login/',admin_login,name='admin_login'),
     path('admin_index/',admin_index,name='admin_index'),
@@ -106,6 +112,9 @@ urlpatterns = [
 
     path('products/<str:category_name>/', products_by_category, name='products_by_category'),
     path('filtered-menus/<str:category>/<str:submenu>/<str:sub_submenu>/', filtered_menus, name='filtered_menus'),
+
+    path('upload/', predict_image, name='upload_image'),
+    # path('result/', prediction_result, name='prediction_result'),
 
 ]
 

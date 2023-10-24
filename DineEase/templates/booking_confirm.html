@@ -195,7 +195,7 @@
                       <a class="nav-link" href="{% url 'add_reservation' %}">Book Table</a>
                     </li>
                     <li class="nav-item active">
-                      <a class="nav-link" href="{% url 'booking_confirm'  %}">Bookings <span class="sr-only">(current)</span></a>
+                      <a class="nav-link" href="{% url 'booking_list'  %}">Bookings <span class="sr-only">(current)</span></a>
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" href="{% url 'loggout' %}">Logout</a>
@@ -284,56 +284,21 @@
     
 
     <div class="container">
-        <h2>Booking Details</h2>
-
-        <!-- Display all bookings of the logged-in user -->
-    {% comment %} {% if bookings %} {% endcomment %}
-        <!-- Display all bookings of the logged-in user -->
-        {% comment %} {% for booking in bookings %}
-        {% if booking.is_active %}
-        <div class="booking-card">
-            <div class="booking-details">
-                <strong>Name:</strong> {{ booking.name }}<br>
-                <strong>Email:</strong> {{ booking.email }}<br>
-                <strong>Phone:</strong> {{ booking.phone }}<br>
-                <strong>Reservation Date:</strong> {{ booking.reservation_date }}<br>
-                <strong>Time Slot:</strong> {{ booking.time_slot }}<br>
-                <strong>Number of Persons:</strong> {{ booking.num_of_persons }}<br>
-                <strong>Table Number:</strong> {{ booking.table_id }}<br>
-                <strong>Booking Status:</strong> {{ booking.status }}<br><br>
-                {% if booking.menu_item %}
-                            <h2>Menu Item Details</h2><br>
-                            <h3>Name: {{ booking.menu_item.name }}</h3><br> {% endcomment %}
-                            {% comment %} <p>Description: {{ booking.menu_item.desc }}</p><br> {% endcomment %}
-                            {% comment %} <p>Price: Rs. {{ booking.menu_item.price }}</p><br>
-                {% endif %}
-                
-            </div><br>
-            <div class="btn-group" role="group">
-                <a href="{% url 'edit_reservation' booking.reservation_id %}" class="btn btn-primary">Edit</a>
-                <form method="post" action="{% url 'cancel_reservation' booking.reservation_id %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="reservation_id" value="{{ booking.reservation_id }}">
-                    <button type="button" class="btn btn-danger" onclick="confirmCancellation()">Cancel Booking</button>
-                </form> {% endcomment %}
-                <!-- Button to move to the payment page -->
-                {% comment %} <a href="{% url '' %}" class="btn-primary2">Pay Now</a>
-            </div>
-        </div>
-        {% endif %}
-        {% endfor %}
-        <p>Thank you for choosing our restaurant. We look forward to serving you!</p>
-                <!-- Button to go back to the booking page --> {% endcomment %}
-                {% comment %} <a href="{% url 'add_reservation' %}" class="btn-primary2">Book Table</a>
-
-                
-        {% else %}
-        <!-- If there are no bookings, display "No booking yet" -->
-        <p>No booking yet</p>
-        <p>Please click the button to Book Your Table</p>
-    {% endif %}
-    </div> {% endcomment %}
-    <script>
+      <h2>Booking Details</h2>
+  
+      <h1>Table Booking Summary</h1>
+      <p><strong>Table Name:</strong> {{ booking.table_name }}</p>
+      <p><strong>Booking Date:</strong> {{ booking.date }}</p>
+      <p><strong>Start Time:</strong> {{ booking.start_time }}</p>
+      <p><strong>End Time:</strong> {{ booking.end_time }}</p>
+      <p><strong>Selected Items:</strong> {{ booking.selected_items }}</p>
+      <p><strong>Total Price:</strong> ${{ booking.total_price }}</p>
+  
+      <!-- Add a link with the booking_id as a query parameter -->
+      <a href="{% url 'table_booking_payment' booking.id %}" class="btn btn-primary">Pay Now</a>
+  </div>
+  
+    {% comment %} <script>
         function confirmCancellation() {
             if (confirm("Are you sure you want to cancel this booking?")) {
                 // User confirmed, submit the form
@@ -342,7 +307,7 @@
                 // User canceled, do nothing
             }
         }
-        </script>        
+        </script>         {% endcomment %}
         
 </body>
 </html>

@@ -262,51 +262,6 @@ class BillingInformation(models.Model):
         if self.user:
             return f"Billing info for {self.user.name}"
         return "Billing info (No associated user)"
-    
-class Payment(models.Model):
-    class PaymentStatusChoices(models.TextChoices):
-        PENDING = 'pending', 'Pending'
-        SUCCESSFUL = 'successful', 'Successful'
-        FAILED = 'failed', 'Failed'
-        
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)  # Link the payment to a user
-    razorpay_order_id = models.CharField(max_length=255)  # Razorpay order ID
-    payment_id = models.CharField(max_length=255)  # Razorpay payment ID
-    amount = models.DecimalField(max_digits=8, decimal_places=2)  # Amount paid
-    currency = models.CharField(max_length=3)  # Currency code (e.g., "INR")
-    timestamp = models.DateTimeField(auto_now_add=True)  # Timestamp of the payment
-    payment_status = models.CharField(max_length=20, choices=PaymentStatusChoices.choices, default=PaymentStatusChoices.PENDING)
-    billing_info = models.ManyToManyField(BillingInformation)
-
-    def str(self):
-        return f"Order for {self.user.name}"
-
-    class Meta:
-        ordering = ['-timestamp']
-
-#Update Status not implemented
-    def update_status(self):
-        # Calculate the time difference in minutes
-        time_difference = (timezone.now() - self.timestamp).total_seconds() / 60
-
-        if self.payment_status == self.PaymentStatusChoices.PENDING and time_difference > 1:
-            # Update the status to "Failed"
-            self.payment_status = self.PaymentStatusChoices.FAILED
-            self.save()
-
-from django.db import models
-
-class LeaveApplication(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
-    date = models.DateField()
-    duration = models.CharField(max_length=20, choices=[('full-day', 'Full Day'), ('half-day-morning', 'Half Day (Morning)'), ('half-day-afternoon', 'Half Day (Afternoon)')])
-    reason = models.TextField()
-    status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('approved', 'Approved'), ('rejected', 'Rejected')])
-
-    def __str__(self):
-        return f"Leave Application for {self.user.username} on {self.date}"
-
-
 
 class TableBooking(models.Model):
 
@@ -338,7 +293,59 @@ class TableBooking(models.Model):
     end_time = models.TimeField(null=True)
     status = models.BooleanField(default=False)
     del_status = models.BooleanField(default=False)
-    menu = models.ManyToManyField(menus, blank=True)
+    selected_items = models.TextField(blank=True, null=True)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     def _str_(self):
         return self.name
+      
+class Payment(models.Model):
+    class PaymentStatusChoices(models.TextChoices):
+        PENDING = 'pending', 'Pending'
+        SUCCESSFUL = 'successful', 'Successful'
+        FAILED = 'failed', 'Failed'
+        
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)  # Link the payment to a user
+    razorpay_order_id = models.CharField(max_length=255)  # Razorpay order ID
+    payment_id = models.CharField(max_length=255)  # Razorpay payment ID
+    amount = models.DecimalField(max_digits=8, decimal_places=2)  # Amount paid
+    currency = models.CharField(max_length=3)  # Currency code (e.g., "INR")
+    timestamp = models.DateTimeField(auto_now_add=True)  # Timestamp of the payment
+    payment_status = models.CharField(max_length=20, choices=PaymentStatusChoices.choices, default=PaymentStatusChoices.PENDING)
+    billing_info = models.ForeignKey(BillingInformation, on_delete=models.CASCADE, null=True, blank=True)
+    table_booking = models.ForeignKey(TableBooking, on_delete=models.CASCADE, related_name='payments', null=True, blank=True)
+
+
+    def str(self):
+        return f"Order for {self.user.name}"
+
+    class Meta:
+        ordering = ['-timestamp']
+
+#Update Status not implemented
+    def update_status(self):
+        # Calculate the time difference in minutes
+        time_difference = (timezone.now() - self.timestamp).total_seconds() / 60
+
+        if self.payment_status == self.PaymentStatusChoices.PENDING and time_difference > 1:
+            # Update the status to "Failed"
+            self.payment_status = self.PaymentStatusChoices.FAILED
+            self.save()
+
+from django.db import models
+
+class LeaveApplication(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
+    date = models.DateField()
+    duration = models.CharField(max_length=20, choices=[('full-day', 'Full Day'), ('half-day-morning', 'Half Day (Morning)'), ('half-day-afternoon', 'Half Day (Afternoon)')])
+    reason = models.TextField()
+    status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('approved', 'Approved'), ('rejected', 'Rejected')])
+
+    def __str__(self):
+        return f"Leave Application for {self.user.username} on {self.date}"
+
+    
+class PredictedImage(models.Model):
+    image = models.ImageField(upload_to='images/')
+    predicted_class = models.CharField(max_length=100, null=True, blank=True)
+    confidence = models.FloatField(null=True, blank=True)
