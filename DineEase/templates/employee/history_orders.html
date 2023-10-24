@@ -68,7 +68,7 @@
                         <!-- Orders -->
                         <li class="has-sub active">
                             <a class="sidenav-item-link" href="{% url 'orderlist_emp' %}">
-                                <i class="mdi mdi-cart-outline mdi-36px"></i>&ensp;
+                                <i class="mdi mdi-cart-outline mdi-34px"></i>
                                 <span class="nav-text">Orders</span> 
                             </a>
                         </li>
@@ -391,11 +391,11 @@
 												<i class="mdi mdi-account"></i> Edit Profile
 											</a>
 										</li>
-										<li>
+										{% comment %} <li>
 											<a href="{% url 'change_pswrd' %}">
 												<i class="mdi mdi-account"></i> Change Password
 											</a>
-										</li>
+										</li> {% endcomment %}
 										<li class="dropdown-footer">
 											<a href="{% url 'login' %}"> <i class="mdi mdi-logout"></i> Log Out </a>
 										</li>

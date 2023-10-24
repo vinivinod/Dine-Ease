@@ -157,7 +157,7 @@
 						<!-- Online Orders -->
 						<li class="has-sub">
 							<a class="sidenav-item-link" href="{% url 'order_list' %}">
-								<i class="mdi mdi-account-multiple-outline"></i>
+								<i class="mdi mdi-cart-outline mdi-34px"></i>
 								<span class="nav-text">Online Orders</span> 
 							</a>
 						</li>
@@ -168,13 +168,13 @@
 								<i class="mdi mdi-briefcase-outline"></i>
 								<span class="nav-text">Reservation</span> <b class="caret"></b>
 							</a>
-							<div class="collapse">
+							{% comment %} <div class="collapse">
 								<ul class="sub-menu" id="vendors" data-parent="#sidebar-menu">
 									{% comment %} <li class="">
 										<a class="sidenav-item-link" href="vendor-card.html">
 											<span class="nav-text">Vendor Grid</span>
 										</a>
-									</li> {% endcomment %}
+									</li> 
 
 									<li class="">
 										<a class="sidenav-item-link" href="{% url '' %}">
@@ -186,13 +186,13 @@
 											<span class="nav-text">History</span>
 										</a>
 									</li>
-									{% comment %} <li class="">
+									 <li class="">
 										<a class="sidenav-item-link" href="add-vendor.html">
 											<span class="nav-text">Add Vendors</span>
 										</a>
-									</li>  {% endcomment %}
+									</li>  
 								</ul>
-							</div>
+							</div> {% endcomment %}
 							<hr>
 						</li>
 
