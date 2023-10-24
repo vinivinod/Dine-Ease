@@ -66,13 +66,22 @@
 						</li>
 
 						<!-- Orders -->
+                        <li class="has-sub">
+                            <a class="sidenav-item-link" href="{% url 'orderlist_emp' %}">
+                                <i class="mdi mdi-cart-outline mdi-36px"></i>&ensp;
+                                <span class="nav-text">Orders</span> 
+                            </a>
+                        </li>
+
+		
+						<!-- booking -->
 						<li class="has-sub">
-							<a class="sidenav-item-link" href="{% url 'orderlist_emp' %}">
+							<a class="sidenav-item-link" href="{% url 'emp_booking_lists' %}">
 								<i class="mdi mdi-food mdi-36px"></i>&ensp;
-								<span class="nav-text">Orders</span> 
+								<span class="nav-text">Reservations</span> 
 							</a>
 						</li>
-						
+
 						<!-- Leave -->
 						<li class="has-sub active">
 							<a class="sidenav-item-link" href="{% url 'leave_list' %}">
