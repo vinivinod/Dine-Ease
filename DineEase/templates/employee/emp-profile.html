@@ -1111,6 +1111,27 @@
 	<!-- custom js -->
 	<script src="{% static 'assets/js/custom.js' %}"></script>
 
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			const photoInput = document.getElementById("photo");
+	
+			photoInput.addEventListener("change", function () {
+				if (validateFileType(this) === false) {
+					this.value = ''; // Clear the file input
+					alert("Only image files (JPG, JPEG, PNG, GIF) are allowed.");
+				}
+			});
+	
+			function validateFileType(input) {
+				const allowedExtensions = ["jpg", "jpeg", "png", "gif"];
+				const filePath = input.value;
+				const fileExtension = filePath.split('.').pop().toLowerCase();
+	
+				return allowedExtensions.includes(fileExtension);
+			}
+		});
+	</script>
+	
 </body>
 
 

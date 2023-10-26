@@ -288,7 +288,7 @@
 						<img src="{% static 'assets/img/icons/clops.png' %}" alt="">
 					</button>
 					<!-- search form -->
-					<div class="search-form d-lg-inline-block">
+					{% comment %} <div class="search-form d-lg-inline-block">
 						<div class="input-group">
 							<input type="text" name="query" id="search-input" class="form-control"
 								placeholder="search.." autofocus autocomplete="off" />
@@ -299,11 +299,15 @@
 						<div id="search-results-container">
 							<ul id="search-results"></ul>
 						</div>
-					</div>
+					</div> {% endcomment %}
 
 					<!-- navbar right -->
 					<div class="navbar-right">
 						<ul class="nav navbar-nav">
+							<form method="post" action="{% url 'admin_login' %}">
+								{% csrf_token %}
+								<button type="submit" class="btn btn-primary" style="margin-left: 850px;">Logout</button>
+							</form>
 							<!-- User Account -->
 							{% comment %} <li class="dropdown user-menu">
 								<button class="dropdown-toggle nav-link ec-drop" data-bs-toggle="dropdown"

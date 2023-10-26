@@ -56,7 +56,7 @@
 				<div class="ec-navigation" data-simplebar>
 					<!-- sidebar menu -->
 					<ul class="nav sidebar-inner" id="sidebar-menu">
-						<li class="active">
+						<li class="">
 							<a class="sidenav-item-link" href="{% url 'admin_index' %}">
 								<i class="mdi mdi-view-dashboard-outline"></i>
 								<span class="nav-text">Dashboard</span>
@@ -129,7 +129,7 @@
 						<li class="has-sub">
 							<a class="sidenav-item-link" href="javascript:void(0)">
 								<!-- <i class="mdi mdi-palette-advanced"></i> -->
-								<i class="mdi mdi-package-variant-closed"></i>
+								<i class="mdi mdi-food mdi-36px"></i>&ensp;
 								<span class="nav-text">Menu</span> <b class="caret"></b>
 							</a>
 							<div class="collapse">
@@ -160,49 +160,23 @@
 
 						<!-- Online Orders -->
 						<li class="has-sub">
-							<a class="sidenav-item-link" href="{% url 'user_list' %}">
-								<i class="mdi mdi-account-multiple-outline"></i>
+							<a class="sidenav-item-link" href="{% url 'order_list' %}">
+								<i class="mdi mdi-cart-outline mdi-34px"></i>
 								<span class="nav-text">Online Orders</span> 
 							</a>
 						</li>
 
 						<!-- Reservation -->
 						<li class="has-sub">
-							<a class="sidenav-item-link" href="javascript:void(0)">
-								<i class="mdi mdi-briefcase-outline"></i>
-								<span class="nav-text">Reservation</span> <b class="caret"></b>
+							<a class="sidenav-item-link" href="{% url 'ad_booking_lists' %}">
+								<i class="mdi mdi-food-variant mdi-36px"></i>&ensp;
+								<span class="nav-text">Reservations</span> 
 							</a>
-							<div class="collapse">
-								<ul class="sub-menu" id="vendors" data-parent="#sidebar-menu">
-									{% comment %} <li class="">
-										<a class="sidenav-item-link" href="vendor-card.html">
-											<span class="nav-text">Vendor Grid</span>
-										</a>
-									</li> {% endcomment %}
-
-									<li class="">
-										<a class="sidenav-item-link" href="{% url '' %}">
-											<span class="nav-text">Recent</span>
-										</a>
-									</li>
-									<li class="">
-										<a class="sidenav-item-link" href="{% url '' %}">
-											<span class="nav-text">History</span>
-										</a>
-									</li>
-									{% comment %} <li class="">
-										<a class="sidenav-item-link" href="add-vendor.html">
-											<span class="nav-text">Add Vendors</span>
-										</a>
-									</li>  {% endcomment %}
-								</ul>
-							</div>
-							<hr>
 						</li>
-
+						<hr>
 						
 						<!-- Leave -->
-						<li class="has-sub">
+						<li class="has-sub active">
 							<a class="sidenav-item-link" href="{% url 'empLeave_list' %}">
 								<i class="mdi mdi-receipt"></i>
 								<span class="nav-text">Leave Taken</span> 
@@ -314,7 +288,7 @@
 						<img src="{% static 'assets/img/icons/clops.png' %}" alt="">
 					</button>
 					<!-- search form -->
-					<div class="search-form d-lg-inline-block">
+					{% comment %} <div class="search-form d-lg-inline-block">
 						<div class="input-group">
 							<input type="text" name="query" id="search-input" class="form-control"
 								placeholder="search.." autofocus autocomplete="off" />
@@ -325,11 +299,15 @@
 						<div id="search-results-container">
 							<ul id="search-results"></ul>
 						</div>
-					</div>
+					</div> {% endcomment %}
 
 					<!-- navbar right -->
 					<div class="navbar-right">
 						<ul class="nav navbar-nav">
+							<form method="post" action="{% url 'admin_login' %}">
+								{% csrf_token %}
+								<button type="submit" class="btn btn-primary" style="margin-left: 850px;">Logout</button>
+							</form>
 							<!-- User Account -->
 							{% comment %} <li class="dropdown user-menu">
 								<button class="dropdown-toggle nav-link ec-drop" data-bs-toggle="dropdown"

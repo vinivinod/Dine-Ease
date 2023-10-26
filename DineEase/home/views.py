@@ -314,7 +314,7 @@ from django.db import transaction  # Import transaction module
 
 from django.shortcuts import render, redirect
 from .models import TableBooking
-
+@login_required
 def add_reservation(request):
     error_message = ""
     user = request.user
@@ -417,7 +417,7 @@ def booking_confirm(request, booking_id):
 
 from django.shortcuts import render
 from .models import TableBooking  # Import your model
-
+@login_required
 def booking_list(request):
     if request.user.is_authenticated:
         # Retrieve all bookings for the logged-in user or filter as needed
