@@ -207,6 +207,9 @@
               <li class="nav-item">
                 {% if user.is_authenticated %}
                 <li class="nav-item">
+                  <a class="nav-link" href="{% url 'upload_image' %}">Image Search</a>
+                </li> 
+                <li class="nav-item">
                   <a class="nav-link" href="{% url 'add_reservation' %}">Book Table</a>
                 </li>
                 <li class="nav-item">
@@ -417,7 +420,7 @@
                 </div>
               </div>
             </div>
-            <div class="submenu-item">Rolls & Grills
+            {% comment %} <div class="submenu-item">Rolls & Grills
               <div class="sub-submenu">
                 <div class="sub-submenu-item">
                   <a href="{% url 'filtered_menus' 'Arabian' 'rollsNgrills' 'Vegetarian' %}" style="color: black;">Veg</a>
@@ -426,7 +429,7 @@
                   <a href="{% url 'filtered_menus' 'Arabian' 'rollsNgrills' 'Non-Vegetarian' %}" style="color: black;">Non-Veg</a>
                 </div>
               </div>
-            </div>
+            </div> {% endcomment %}
             <div class="submenu-item">Main Course
               <div class="sub-submenu">
                 <div class="sub-submenu-item"><a href="{% url 'filtered_menus' 'Arabian' 'Main Course' 'Vegetarian' %}" style="color: black;">Veg</a>

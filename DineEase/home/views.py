@@ -311,7 +311,6 @@ from django.utils.dateparse import parse_date, parse_time
 #     return render(request, "book.html", {"error_message": error_message})
 
 from django.db import transaction  # Import transaction module
-
 from django.shortcuts import render, redirect
 from .models import TableBooking
 @login_required
@@ -593,25 +592,32 @@ def products_by_category(request, category_name):
 
 from django.shortcuts import render
 from .models import menus
+from django.db.models import Q
 
 def filtered_menus(request, category=None, submenu=None, sub_submenu=None):
-    # Filter menus based on the selected choices
+    # Create a base query
     filtered_menus = menus.objects.all()
 
+    # Build the filter condition based on selected choices
+    filter_condition = Q()
+
     if category:
-        filtered_menus = filtered_menus.filter(category=category)
+        filter_condition &= Q(category=category)
 
     if submenu:
-        filtered_menus = filtered_menus.filter(submenu=submenu)
+        filter_condition &= Q(submenu=submenu)
 
     if sub_submenu:
-        filtered_menus = filtered_menus.filter(sub_submenu=sub_submenu)
+        filter_condition &= Q(sub_submenu=sub_submenu)
+
+    filtered_menus = filtered_menus.filter(filter_condition)
 
     context = {
         'filtered_menus': filtered_menus,
     }
 
     return render(request, 'filtered_menus.html', context)
+
 
 
 from django.shortcuts import render
@@ -1480,7 +1486,48 @@ def predict_food(image_path, model, threshold=0.3):
         return class_idx, confidence
     else:
         return None, None  # No class found if confidence is below the threshold
+import re
 
+
+
+# def predict_image(request):
+#     if request.method == 'POST':
+#         form = ImageUploadForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             # Save the uploaded image
+#             instance = form.save()
+#             image_path = os.path.join(settings.MEDIA_ROOT, instance.image.name)
+
+#             # Perform prediction
+#             predicted_class_idx, confidence = predict_food(image_path, loaded_model, threshold=0.5)
+
+#             if predicted_class_idx is not None:
+#                 # Assuming you have a class mapping from your training data
+#                 class_names = {0: 'Beefroast', 1: 'Biryani', 2: 'Falafel', 3: 'Mandi', 4: 'Naan', 5: 'Shawarma', 6: 'burger',
+#                                7: 'butter_naan', 8: 'chapati', 9: 'chicken_noodles', 10: 'chillychicken', 11: 'chole_bhature', 12: 'dal',
+#                                13: 'dal_makhani', 14: 'dhokla', 15: 'dosa', 16: 'fishcurry', 17: 'fried_rice', 18: 'gobimanchurian', 19: 'idli',
+#                                20: 'jalebi', 21: 'kaathi_rolls', 22: 'kadai_paneer', 23: 'kebab', 24: 'kulfi', 25: 'masala_dosa', 26: 'momos', 
+#                                27: 'paani_puri', 28: 'pakode', 29: 'pav_bhaji', 30: 'pizza', 31: 'porotta', 32: 'samosa', 33: 'tea'}
+#                 predicted_class_name = class_names.get(predicted_class_idx, "Unknown Class")
+#                 instance.predicted_class = predicted_class_name
+#                 instance.confidence = confidence
+#                 instance.save()
+
+#                 # Print the prediction result to the terminal
+#                 print(f"Predicted class: {predicted_class_name}")
+#                 print(f"Confidence: {confidence:.2f}")
+
+#             return redirect('predict_image')
+
+#     else:
+#         form = ImageUploadForm()
+
+#     return render(request, 'upload.html', {'form': form})
+def clean_text(text):
+    # Convert to lowercase and remove special characters
+    cleaned_text = re.sub(r'[^a-zA-Z0-9\s _]', '', text).lower()
+    return cleaned_text
+    
 def predict_image(request):
     if request.method == 'POST':
         form = ImageUploadForm(request.POST, request.FILES)
@@ -1493,24 +1540,48 @@ def predict_image(request):
             predicted_class_idx, confidence = predict_food(image_path, loaded_model, threshold=0.5)
 
             if predicted_class_idx is not None:
-                # Assuming you have a class mapping from your training data
-                class_names = {0: 'Beefroast', 1: 'Biryani', 2: 'Falafel', 3: 'Mandi', 4: 'Naan', 5: 'Shawarma', 6: 'burger',
-                               7: 'butter_naan', 8: 'chapati', 9: 'chicken_noodles', 10: 'chillychicken', 11: 'chole_bhature', 12: 'dal',
-                               13: 'dal_makhani', 14: 'dhokla', 15: 'dosa', 16: 'fishcurry', 17: 'fried_rice', 18: 'gobimanchurian', 19: 'idli',
-                               20: 'jalebi', 21: 'kaathi_rolls', 22: 'kadai_paneer', 23: 'kebab', 24: 'kulfi', 25: 'masala_dosa', 26: 'momos', 
-                               27: 'paani_puri', 28: 'pakode', 29: 'pav_bhaji', 30: 'pizza', 31: 'porotta', 32: 'samosa', 33: 'tea'}
+                # Class mapping
+                class_names = {
+                    0: 'Beef Roast', 1: 'Biryani', 2: 'Falafel', 3: 'Mandi', 4: 'Naan',
+                    5: 'Shawarma', 6: 'burger', 7: 'Butter Naan', 8: 'Chapati',
+                    9: 'Chicken Noodles', 10: 'Chilly Chicken', 11: 'Chole Bhature', 12: 'dal',
+                    13: 'Dal Makhani', 14: 'dhokla', 15: 'Dosa', 16: 'Fish Curry',
+                    17: 'fried_rice', 18: 'Gobi Manchurian', 19: 'Idli', 20: 'jalebi',
+                    21: 'Kaathi Rolls', 22: 'Kadai Paneer', 23: 'Kebab', 24: 'kulfi',
+                    25: 'masala_dosa', 26: 'momos', 27: 'Paani Puri', 28: 'pakode',
+                    29: 'Paav Bhaji', 30: 'pizza', 31: 'porotta', 32: 'samosa', 33: 'tea'
+                }
+
                 predicted_class_name = class_names.get(predicted_class_idx, "Unknown Class")
+                cleaned_predicted_class_name = clean_text(predicted_class_name)
                 instance.predicted_class = predicted_class_name
                 instance.confidence = confidence
                 instance.save()
 
                 # Print the prediction result to the terminal
-                print(f"Predicted class: {predicted_class_name}")
+                print(f"Predicted class: {cleaned_predicted_class_name}")
                 print(f"Confidence: {confidence:.2f}")
 
-            return redirect('predict_image')
+
+                # Find menus matching the cleaned class name
+                matched_menus = menus.objects.filter(name__icontains=cleaned_predicted_class_name)
+
+                if matched_menus:
+                    # Display matched menus with details
+                    return render(request, 'pred_menu.html', {'matched_menus': matched_menus})
+                else:
+                    # If no matched menus, return to pred_menu.html with a message
+                    return render(request, 'pred_menu.html', {'message': 'This food is not available in our menu.'})
+
+            # If the prediction is "Unknown Class," return to pred_menu.html with a message
+            return render(request, 'pred_menu.html', {'message': 'Not available in our menu.'})
 
     else:
         form = ImageUploadForm()
 
     return render(request, 'upload.html', {'form': form})
+
+from .models import menus
+def pred_menu(request):
+    pred_menus = menus.objects.all()
+    return render(request, 'pred_menu.html',{'pred_menus': pred_menus})

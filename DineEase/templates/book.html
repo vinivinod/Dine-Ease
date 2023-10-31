@@ -124,7 +124,7 @@
                 <a class="nav-link" href="{% url 'about' %}">Book Table <span class="sr-only">(current)</span> </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'booking_list'  %}">Bookings </a>
+                <a class="nav-link" href="{% url 'booking_list'  %}" id="idBookings">Bookings </a>
               </li>
               <li class="nav-item">
                 {% if user.is_authenticated %}
@@ -292,7 +292,7 @@
             </div> {% endcomment %}
   
             <div class="btn_box">
-                <button type="submit" class="btn btn-primary">Book Now</button>
+                <button type="submit" id="btnBook" class="btn btn-primary">Book Now</button>
             </div>
         </form>
           </div>

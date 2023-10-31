@@ -184,12 +184,15 @@
               <li class="nav-item">
                 <a class="nav-link" href="{% url '' %}">Home </a>
               </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'about' %}">About</a>
+              </li>
               <li class="nav-item active">
                 <a class="nav-link" href="{% url 'menu' %}">Menu <span class="sr-only">(current)</span> </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'about' %}">About</a>
-              </li>
+                <a class="nav-link" href="{% url 'upload_image' %}">Image Search</a>
+              </li> 
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'add_reservation' %}">Book Table</a>
               </li>
@@ -399,7 +402,7 @@
                 </div>
               </div>
             </div>
-            <div class="submenu-item">Rolls & Grills
+            {% comment %} <div class="submenu-item">Rolls & Grills
               <div class="sub-submenu">
                 <div class="sub-submenu-item">
                   <a href="{% url 'filtered_menus' 'Arabian' 'rollsNgrills' 'Vegetarian' %}" style="color: black;">Veg</a>
@@ -408,7 +411,7 @@
                   <a href="{% url 'filtered_menus' 'Arabian' 'rollsNgrills' 'Non-Vegetarian' %}" style="color: black;">Non-Veg</a>
                 </div>
               </div>
-            </div>
+            </div> {% endcomment %}
             <div class="submenu-item">Main Course
               <div class="sub-submenu">
                 <div class="sub-submenu-item"><a href="{% url 'filtered_menus' 'Arabian' 'Main Course' 'Vegetarian' %}" style="color: black;">Veg</a>
@@ -473,10 +476,6 @@
                     Rs. {{ Menu.price }}
                     </h6>
                     <div class="button-container">
-                      <a href="{% url 'booking_confirm' %}">
-                        <i class="fa fa-cutlery" aria-hidden="true" style="color: black;"></i>
-                      </a>
-                      &ensp;
                       <a href="{% url 'add_to_cart' Menu.id %}">
                         <i class="fa fa-cart-plus" aria-hidden="true" style="color: black;"></i>
                     </a>

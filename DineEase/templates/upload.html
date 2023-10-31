@@ -183,9 +183,9 @@
                   <i class="fa fa-search" aria-hidden="true"></i>
                 </button>
               </form> {% endcomment %}
-              <a href="" class="order_online">
+              {% comment %} <a href="" class="order_online">
                 Order Online
-              </a>
+              </a> {% endcomment %}
             </div>
           </div>
         </nav>
@@ -319,6 +319,23 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCh39n5U-4IoWpsVGUHWdqB6puEkhRLdmI&callback=myMap">
 </script>
 <!-- End Google Map -->
+
+<script>
+  function validateForm() {
+      const fileInput = document.getElementById('imageUpload');
+      if (fileInput.files.length === 0) {
+          alert("Please select an image file.");
+          return false;
+      }
+      // Check if the selected file is an image based on its MIME type
+      const acceptedTypes = ["image/jpeg", "image/png", "image/gif"];
+      if (!acceptedTypes.includes(fileInput.files[0].type)) {
+          alert("Please select a valid image file (JPEG, PNG, or GIF).");
+          return false;
+      }
+      return true;
+  }
+  </script>
 
 </body>
 
