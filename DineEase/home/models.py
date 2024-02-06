@@ -354,11 +354,23 @@ class PredictedImage(models.Model):
 
 class Review(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)  # Assuming you have a CustomUser model
-    menu_items = models.ManyToManyField(menus)
+    billing_information = models.ForeignKey('BillingInformation', on_delete=models.CASCADE, related_name='reviews', null=True)
     rating = models.FloatField()
     comment = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
-    status = models.IntegerField(default=0)
 
     def __str__(self):
         return f"Review by {self.user.name} on {self.timestamp}"
+    
+# from django.db import models
+# from .models import CustomUser
+
+# class ReviewRating(models.Model):  # Renamed the class to ReviewRating
+#     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+#     billing_information = models.ForeignKey('BillingInformation', on_delete=models.CASCADE, related_name='reviews')
+#     rating = models.PositiveIntegerField(choices=((1, '1'), (2, '2'), (3, '3'), (4, '4'), (5, '5')))
+#     comment = models.TextField()
+#     created_at = models.DateTimeField(auto_now_add=True)
+
+#     def __str__(self):
+#         return f"Review by {self.user.username} for Order #{self.billing_information.id}"

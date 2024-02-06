@@ -173,17 +173,8 @@
     <div class="container">
         <h1 style="text-align: center; color: white; margin-bottom: 30px;">Add Review and Rating</h1>
 
-        <form method="post" action="{% url 'add_review' %}" onsubmit="return validateRating();" style="max-width: 400px; margin: 0 auto;">
+        <form method="post" action="{% url 'add_review' billing_info.id %}" onsubmit="return validateRating();" style="max-width: 400px; margin: 0 auto;">
             {% csrf_token %}
-            
-            <div style="margin-bottom: 15px;">
-              <label style="display: block; margin-bottom: 5px;">Menu Items:</label>
-              {% for menu_item in menu_items %}
-                  <label style="margin-right: 10px;">
-                      <input type="radio" name="menu_items" value="{{ menu_item.id }}"> {{ menu_item.name }}
-                  </label>
-              {% endfor %}
-          </div>
           
           <div style="margin-bottom: 15px;">
             <label for="rating" style="display: block; margin-bottom: 5px;">Rating:</label>

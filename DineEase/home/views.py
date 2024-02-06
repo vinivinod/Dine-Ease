@@ -36,6 +36,7 @@ def menu(request):
     menu_items = all_menu_items[:9]
     return render(request, 'menu.html', {'menu_items': menu_items})
 
+
 def about(request):
     return render(request,'about.html')
 
@@ -1875,43 +1876,24 @@ def review(request, order_id):
 
 
 
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .models import Review, menus
-from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Review, BillingInformation
 
-@login_required
 def add_review(request):
     if request.method == 'POST':
-        menu_item_id = request.POST.get('menu_items')
-
-        # Check if a review for this order already exists
-        existing_review = Review.objects.filter(user=request.user, menu_items=menu_item_id).first()
-
-        if existing_review:
-            messages.warning(request, 'Review for this order already submitted!')
-            return redirect('orders_lists')  # Redirect to orders_lists or wherever you want
-
         rating = request.POST.get('rating')
         comment = request.POST.get('comment')
+        billing_id = request.POST.get('billing_id')  # Retrieve billing_id from form data
 
-        # Validate rating here if needed
+        # Retrieve the BillingInformation object based on billing_id
+        billing_info = get_object_or_404(BillingInformation, id=billing_id)
 
-        # Create and save the Review instance
-        review = Review(
-            user=request.user,
-            rating=rating,
-            comment=comment,
-        )
-        review.save()
+        # Assuming users are authenticated, you can access the user object like this
+        user = request.user
+        # Create and save the review
+        review = Review.objects.create(user=user, billing_information=billing_info, rating=rating, comment=comment)
+        
+        # Redirect the user to a thank you page or any other appropriate page
+        return redirect('orders_lists')  # Replace 'thank_you_page' with the appropriate URL name
 
-        # Add the selected menu item to the ManyToManyField using the menu_item_id
-        review.menu_items.add(menu_item_id)
-
-        messages.success(request, 'Review submitted successfully!')
-        return redirect('orders_lists')  # Redirect to a success page or wherever you want
-
-    # Render the form template for GET requests
-    menu_items = menus.objects.all()
-    return render(request, 'review.html', {'menu_items': menu_items})
-
+    return render(request, 'review.html')
