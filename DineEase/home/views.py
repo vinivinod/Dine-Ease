@@ -1120,7 +1120,7 @@ from .models import BillingInformation, Payment
 
 def order_list(request):
     # Retrieve the data you need from the models
-    billing_info = BillingInformation.objects.all()
+    billing_info = BillingInformation.objects.prefetch_related('reviews').all()
     payments = Payment.objects.all()
 
     context = {
@@ -1129,6 +1129,7 @@ def order_list(request):
     }
 
     return render(request, 'admin_dashboard/orders.html', context)
+
 
 from django.shortcuts import render
 from .models import Payment
@@ -1625,15 +1626,15 @@ def orders_lists(request):
     user = request.user
     billing_info = BillingInformation.objects.filter(user=user)
     payments = Payment.objects.filter(billing_info__user=user)
-    today = date.today()
+    # Get the current date
+    current_date = date.today()
 
     context = {
         'billing_info': billing_info,
         'payments': payments,
-        'today' : today,
+        'current_date': current_date,
     }
     return render(request, 'orders_list.html', context)
-
 
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone

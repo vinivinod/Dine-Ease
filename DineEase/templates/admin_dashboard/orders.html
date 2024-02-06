@@ -533,55 +533,72 @@
 									<div class="table-responsive">
 										<table id="responsive-data-table" class="table" style="width:100%">
 											<thead>
-                                                <tr>
-                                                    <th>ID</th>
-                                                    <th>Name</th>
-                                                    <th>Items</th>
-                                                    <th>Amount</th>
-                                                    <th>Payment Status</th>
-                                                    <th>Date</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {% for billing in billing_info %}
-                                                <tr>
-                                                    <td>{{ billing.id }}</td>
-                                                    <td>{{ billing.user.name }}</td>
-                                                    <td>
-                                                        {% for menu in billing.menu.all %}
-                                                            {{ menu.name }}<br>
-                                                        {% empty %}
-                                                            No menu ordered
-                                                        {% endfor %}
-                                                    </td>
-                                                    <td>{{ billing.amount }}</td>
-                                                    <td>
-                                                        {% with matching_payments=billing.payment_set.all %}
-                                                            {% if matching_payments %}
-                                                                {{ matching_payments.0.get_payment_status_display }}
-                                                            {% else %}
-                                                                Payment not found
-                                                            {% endif %}
-                                                        {% endwith %}
-                                                    </td>
-												</td>
-												<td>
-													{% for payment in billing.payment_set.all %}
-														{{ payment.timestamp|date:"Y-m-d" }}<br>
-														{{ payment.timestamp|time:"H:i:s" }}<br>
-													{% endfor %}
-												</td>
-                                                </tr>
-                                                {% empty %}
-                                                <tr>
-                                                    <td colspan="5">No billing information available</td>
-                                                </tr>
-                                                {% endfor %}
-
-                                            </tbody>
-                                            
+												<tr>
+													<th>ID</th>
+													<th>Name</th>
+													<th>Items</th>
+													<th>Amount</th>
+													<th>Payment Status</th>
+													<th>Date</th>
+													<th>Status</th>
+													<th>Rating</th>
+													<th>Review</th>
+												</tr>
+											</thead>
+											<tbody>
+												{% for billing in billing_info %}
+												<tr>
+													<td>{{ billing.id }}</td>
+													<td>{{ billing.user.name }}</td>
+													<td>
+														{% for menu in billing.menu.all %}
+															{{ menu.name }}<br>
+														{% empty %}
+															No menu ordered
+														{% endfor %}
+													</td>
+													<td>{{ billing.amount }}</td>
+													<td>
+														{% with matching_payments=billing.payment_set.all %}
+															{% if matching_payments %}
+																{{ matching_payments.0.get_payment_status_display }}
+															{% else %}
+																Payment not found
+															{% endif %}
+														{% endwith %}
+													</td>
+													<td>
+														{% for payment in billing.payment_set.all %}
+															{{ payment.timestamp|date:"Y-m-d" }}<br>
+															{{ payment.timestamp|time:"H:i:s" }}<br>
+														{% endfor %}
+													</td>
+													<td>
+														{% if billing.status == 0 %}
+															<span style="color: red;">Cancelled</span>
+														{% else %}
+															<span style="color: green;">Not Cancelled</span>
+														{% endif %}
+													</td>
+													<td>
+														{% for review in billing.reviews.all %}
+															{{ review.rating }} / 5<br>
+														{% endfor %}
+													</td>
+													<td>
+														{% for review in billing.reviews.all %}
+															{{ review.comment }}<br>
+														{% endfor %}
+													</td>
+												</tr>
+												{% empty %}
+												<tr>
+													<td colspan="5">No billing information available</td>
+												</tr>
+												{% endfor %}
+											</tbody>
 										</table>
-									</div>
+									</div>									
 									</div>
 								</div>
 							</div>

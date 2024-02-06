@@ -315,9 +315,9 @@
                       <th>Item Names</th>
                       <th>Amount</th>
                       <th>Payment Status</th>
-                      <th></th>
-                      <th></th>
-                      <th></th>  <!-- New column for Review Link -->
+                      <th>Status</th>
+                      <th>Invoice</th>
+                      <th>Review & Rating</th>  <!-- New column for Review Link -->
                   </tr>
               </thead>
               <tbody>
@@ -346,21 +346,21 @@
                               {% endfor %}
                           </td>
                           <td>
-                              {% if info.status == 1 %}
-                                  {% if info.timestamp.date == current_date %}
-                                      <form method="post" action="{% url 'cancel_order' info.id %}"
-                                          onsubmit="return confirmCancellation('{{ info.id }}')">
-                                          {% csrf_token %}
-                                          <button type="submit" class="btn btn-danger"
-                                              style="background-color: #ff6347; color: #fff; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer;">Cancel</button>
-                                      </form>
-                                  {% else %}
-                                      Active
-                                  {% endif %}
+                            {% if info.status == 1 and info.timestamp.date == current_date %}
+                              <form method="post" action="{% url 'cancel_order' info.id %}"
+                                  onsubmit="return confirmCancellation('{{ info.id }}')">
+                                  {% csrf_token %}
+                                  <button type="submit" class="btn btn-danger"
+                                      style="background-color: #ff6347; color: #fff; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer;">Cancel</button>
+                              </form>
                               {% else %}
-                                  Cancelled
+                              {% if info.status == 1 %}
+                                
+                              {% else %}
+                                Cancelled
                               {% endif %}
-                          </td>
+                            {% endif %}
+                        </td>
                           <td>
                               <form method="post" action="{% url 'download_pdf' info.id %}" target="_blank">
                                   {% csrf_token %}
