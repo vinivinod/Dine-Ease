@@ -539,6 +539,13 @@
 																{% endfor %}
 															
 														</td>  <!-- Display payment_status from the related Payment model -->
+														<td>
+															{% if booking.status %}
+															<span style="color: red;">Cancelled</span>
+															{% else %}
+																<span style="color: green;">Not Cancelled</span>
+															{% endif %}
+														</td>
 													</tr>
 												{% endfor %}
 											</tbody>
