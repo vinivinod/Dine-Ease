@@ -598,10 +598,12 @@
                                                 <tr>
                                                     <th>ID</th>
                                                     <th>Name</th>
+													<th>Email</th>
                                                     <th>Items</th>
                                                     <th>Amount</th>
                                                     <th>Payment Status</th>
                                                     <th>Date</th>
+
                                                     {% comment %} <th>Status</th> {% endcomment %}
                                                 </tr>
                                             </thead>
@@ -610,6 +612,7 @@
                                                 <tr>
                                                     <td>{{ billing.id }}</td>
                                                     <td>{{ billing.user.name }}</td>
+													<td>{{ billing.user.email }}</td>
                                                     <td>
                                                         {% for menu in billing.menu.all %}
                                                             {{ menu.name }}<br>
@@ -637,7 +640,19 @@
                                                         <!-- Add a styled button to approve the order -->
                                                         <button id="approve_{{ billing.id }}" class="approve-button" style="background-color: #4CAF50; color: white; border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 4px;">Approve</button>
                                                     </td> {% endcomment %}
-                                                    
+                                                    <td>
+														<div class="btn-group mb-1">
+															<button type="button" class="btn btn-outline-success">Info</button>
+															<button type="button" class="btn btn-outline-success dropdown-toggle dropdown-toggle-split"
+																data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+																<span class="sr-only">Info</span>
+															</button>
+															<div class="dropdown-menu">
+																<a class="dropdown-item" href="{% url '' %}">Ready To Deliver</a>
+																<a class="dropdown-item" href="{% url '' %}">Order Delivered</a>
+															</div>
+														</div>
+													</td>
                                                 </tr>
                                                 {% empty %}
                                                 <tr>

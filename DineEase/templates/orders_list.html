@@ -12,6 +12,8 @@
     <meta name="description" content="" />
     <meta name="author" content="" />
     <link rel="shortcut icon" href="images/favicon.png" type="">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha384-wsFVwOX+Li0FQK8xF3R5F83h9o/nG/HN8IK1Fk+dJwwN5I3tC2RR8iRSKbmcJ49e" crossorigin="anonymous">
+
 
     <title> DineEase </title>
 
@@ -159,6 +161,22 @@
             width:100%;
             background-color:black;
         }
+        .payment-status.paid {
+            color: green;
+        }
+        .payment-status.not-paid {
+            color: red; /* You can change 'red' to the desired color for not paid status */
+        }
+
+        .cancelled-row {
+          color: red;
+      }
+      .btn-success{
+        background-color: white;
+        border-color: grey;
+        color: black;
+        
+      }
     </style>        
     
 </head>
@@ -194,9 +212,12 @@
                     <li class="nav-item">
                       <a class="nav-link" href="{% url 'add_reservation' %}">Book Table</a>
                     </li>
-                    {% comment %} <li class="nav-item active">
-                      <a class="nav-link" href="{% url 'booking_confirm'  %}">Bookings <span class="sr-only">(current)</span></a>
-                    </li> {% endcomment %}
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'booking_list'  %}">Bookings</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{% url 'orders_lists' %}">Orders </a>
+                      </li>
                     <li class="nav-item">
                       <a class="nav-link" href="{% url 'loggout' %}">Logout</a>
                        </li>
@@ -268,10 +289,10 @@
                     <button class="btn  my-2 my-sm-0 nav_search-btn" type="submit">
                       <i class="fa fa-search" aria-hidden="true"></i>
                     </button>
-                  </form> {% endcomment %}
+                  </form> 
                   <a href="" class="order_online">
                     Order Online
-                  </a>
+                  </a> {% endcomment %}
                 </div>
               </div>
             </nav>
@@ -284,19 +305,91 @@
     
 
     <div class="container">
-    <h2>Booking Details</h2>
-
-    <h1>Table Booking Summary</h1>
-    <p><strong>Table Name:</strong> {{ booking.table_name }}</p>
-    <p><strong>Booking Date:</strong> {{ booking.date }}</p>
-    <p><strong>Start Time:</strong> {{ booking.start_time }}</p>
-    <p><strong>End Time:</strong> {{ booking.end_time }}</p>
-    <p><strong>Selected Items:</strong> {{ booking.selected_items }}</p>
-    <p><strong>Total Price:</strong> ₹{{ booking.total_price }}</p>
-
-    <!-- Add a link with the booking_id as a query parameter -->
-    <a href="{% url 'table_booking_payment' booking.id %}" class="btn btn-primary">Pay Now</a>
-</div>
+      <h1 style="text-align:center; color:#f7be00; font-weight:bold">Order History</h1><br>
+  
+      {% if billing_info %}
+          <table class="table table-bordered">
+              <thead>
+                  <tr>
+                      <th>Date</th>
+                      <th>Item Names</th>
+                      <th>Amount</th>
+                      <th>Payment Status</th>
+                      <th></th>
+                      <th></th>
+                      <th></th>  <!-- New column for Review Link -->
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for info in billing_info %}
+                      <tr class="{% if info.status == 0 %}cancelled-row{% endif %}">
+                          <td>
+                              {% for payment in payments %}
+                                  {% if payment.billing_info_id == info.id %}
+                                      {{ payment.timestamp|date:"Y-m-d" }}
+                                  {% endif %}
+                              {% endfor %}
+                          </td>
+                          <td>
+                              <ul>
+                                  {% for menu_item in info.menu.all %}
+                                      <li>{{ menu_item.name }}</li>
+                                  {% endfor %}
+                              </ul>
+                          </td>
+                          <td>₹ {{ info.amount }}</td>
+                          <td>
+                              {% for payment in payments %}
+                                  {% if payment.billing_info_id == info.id %}
+                                      {{ payment.get_payment_status_display }}
+                                  {% endif %}
+                              {% endfor %}
+                          </td>
+                          <td>
+                              {% if info.status == 1 %}
+                                  {% if info.timestamp.date == current_date %}
+                                      <form method="post" action="{% url 'cancel_order' info.id %}"
+                                          onsubmit="return confirmCancellation('{{ info.id }}')">
+                                          {% csrf_token %}
+                                          <button type="submit" class="btn btn-danger"
+                                              style="background-color: #ff6347; color: #fff; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer;">Cancel</button>
+                                      </form>
+                                  {% else %}
+                                      Active
+                                  {% endif %}
+                              {% else %}
+                                  Cancelled
+                              {% endif %}
+                          </td>
+                          <td>
+                              <form method="post" action="{% url 'download_pdf' info.id %}" target="_blank">
+                                  {% csrf_token %}
+                                  <button type="submit" class="btn btn-primary">Bill</button>
+                              </form>
+                          </td>
+                          <td>
+                            <a href="{% url 'review' order_id=info.id %}" class="btn btn-success">Review</a>
+                          </td>
+                      </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
+      {% else %}
+          <p>No orders available.</p>
+      {% endif %}
+  </div>
+  
+    
+    <script>
+      function confirmCancellation(orderId) {
+          var confirmation = confirm("Are you sure you want to cancel this order?");
+          if (confirmation) {
+              // If 'Yes' is clicked, update the status field
+              document.getElementById('cancelForm' + orderId).submit();
+          }
+          return false; // Prevent the form submission if 'No' is clicked
+      }
+      </script>
 
     {% comment %} <script>
         function confirmCancellation() {
@@ -308,6 +401,88 @@
             }
         }
         </script>         {% endcomment %}
+
         
+      <!-- footer section -->
+        <footer class="footer_section">
+          <div class="container">
+            <div class="row">
+              <div class="col-md-4 footer-col">
+                <div class="footer_contact">
+                  <h4>
+                    Contact Us
+                  </h4>
+                  <div class="contact_link_box">
+                    <a href="">
+                      <i class="fa fa-map-marker" aria-hidden="true"></i>
+                      <span>
+                        Kanjirapally
+                      </span>
+                    </a>
+                    <a href="">
+                      <i class="fa fa-phone" aria-hidden="true"></i>
+                      <span>
+                        Call +91 8113023079
+                      </span>
+                    </a>
+                    <a href="">
+                      <i class="fa fa-envelope" aria-hidden="true"></i>
+                      <span>
+                        dineease@gmail.com
+                      </span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 footer-col">
+                <div class="footer_detail">
+                  <a href="" class="footer-logo">
+                    DineEase
+                  </a>
+                  <p>
+                    Necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 english words, combined with
+                  </p>
+                  <div class="footer_social">
+                    <a href="">
+                      <i class="fa fa-facebook" aria-hidden="true"></i>
+                    </a>
+                    <a href="">
+                      <i class="fa fa-twitter" aria-hidden="true"></i>
+                    </a>
+                    <a href="">
+                      <i class="fa fa-linkedin" aria-hidden="true"></i>
+                    </a>
+                    <a href="">
+                      <i class="fa fa-instagram" aria-hidden="true"></i>
+                    </a>
+                    <a href="">
+                      <i class="fa fa-pinterest" aria-hidden="true"></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 footer-col">
+                <h4>
+                  Opening Hours
+                </h4>
+                <p>
+                  Everyday
+                </p>
+                <p>
+                  8.00 Am -11.00 Pm
+                </p>
+              </div>
+            </div>
+            <div class="footer-info">
+              <p>
+                &copy; <span id="displayYear"></span> All Rights Reserved By
+                <a href="https://html.design/">DineEase</a><br><br>
+                &copy; <span id="displayYear"></span> Distributed By
+                <a href="https://themewagon.com/" target="_blank">DineEase</a>
+              </p>
+            </div>
+          </div>
+        </footer>
+        <!-- footer section -->
 </body>
 </html>

@@ -77,7 +77,7 @@
 
 /* Style the quantity input */
 .menu-item-quantity {
-    width: 40px;
+    width: 50px;
     padding: 5px;
     border: 1px solid #ddd;
     border-radius: 3px;
@@ -125,6 +125,9 @@
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'booking_list'  %}" id="idBookings">Bookings </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'orders_lists' %}">Orders </a>
               </li>
               <li class="nav-item">
                 {% if user.is_authenticated %}
@@ -197,10 +200,10 @@
                 <button class="btn  my-2 my-sm-0 nav_search-btn" type="submit">
                   <i class="fa fa-search" aria-hidden="true"></i>
                 </button>
-              </form> {% endcomment %}
+              </form> 
               <a href="" class="order_online">
                 Orders
-              </a>
+              </a> {% endcomment %}
             </div>
           </div>
         </nav>
@@ -226,7 +229,7 @@
           <div class="form_container">
             <form method="POST"> <!-- Specify the HTTP method as POST -->
               {% csrf_token %} <!-- Include a CSRF token for form security -->
-              <div>
+              {% comment %} <div>
                 <input type="text" class="form-control" name="name" placeholder="Your Name" value="{{ user.name }}" readonly required/> <!-- Use 'name' attribute -->
               </div>
               <div>
@@ -234,12 +237,12 @@
               </div>
               <div>
                 <input type="email" class="form-control" name="email" placeholder="Your Email" value="{{ user.email }}" readonly required /> <!-- Use 'name' attribute -->
-              </div>
+              </div> {% endcomment %}
               <input type="date" class="form-control" name="reservation_date" id="reservation_date" />
                 <div id="date_error" class="text-danger"></div>
               <div>
                 <div class="form-group">
-                  <label for="start-time">Start Time (Between 10 AM and 11 PM)</label>
+                  <label for="start-time">Start Time (Between 10 AM and 10 PM)</label>
                   <input type="time" id="start-time" name="start_time" class="form-control form-control-lg" required />
                 </div>
                 
@@ -303,7 +306,7 @@
           </div> {% endcomment %}
           <div class="col-md-6">
             <h3>Select Menu Items:</h3>
-            <div class="menu-items">
+            <div class="menu-items" style="height: 380px; width: 650px; overflow-y: auto;">
                 <div class="menu-items-grid">
                     {% for menu_item in menu_items %}
                         <div class="menu-item">
@@ -312,14 +315,12 @@
                                 {{ menu_item.name }}&ensp;
                                 ₹{{ menu_item.price }}&ensp;
                             </label>
-                            <input type="number" name="menu_item_quantity_{{ menu_item.id }}" value="1" min="1" class="menu-item-quantity">
+                            <input type="number" name="menu_item_quantity_{{ menu_item.id }}" value="1" min="1" max="20" class="menu-item-quantity" oninput="this.value = Math.max(parseInt(this.value) || 0, 0); this.value = Math.min(this.value, 20);">
                         </div>
                     {% endfor %}
                 </div>
             </div>
         </div>
-        
-        
       </div>
       <br>
       </div>
@@ -466,6 +467,23 @@
 
   // Initial calculation
   updateTotalPrice();
+
+  const quantityInputs = document.querySelectorAll('.menu-item-quantity');
+
+  // Add event listener to each input field
+  quantityInputs.forEach(input => {
+      input.addEventListener('change', function() {
+          const value = parseInt(this.value);
+          if (value < 1 || value > 20 || isNaN(value)) {
+              this.value = Math.min(20, Math.max(1, value)); // Limit the value between 1 and 20
+              this.nextElementSibling.style.display = 'block'; // Show the error message
+          } else {
+              this.nextElementSibling.style.display = 'none'; // Hide the error message
+          }
+      });
+  });
+
+
 </script>
 
 
@@ -654,15 +672,18 @@
 
     // Check if the selected start time is within the allowed range
     if (selectedStartTime >= allowedStartTime && selectedStartTime <= allowedEndTime) {
-        // Check if the selected start time is after the existing booking
-        var existingEndTime = new Date("1970-01-01T11:59");  // Replace with the actual existing end time
-        if (selectedStartTime < existingEndTime) {
-            // Display an error message
-            document.getElementById("error_message").textContent = "Table already booked. Next available time: 11:59 AM";
-            // Disable the form submission
-            document.querySelector("form").onsubmit = function(event) {
-                event.preventDefault();
-            };
+      // Check if the selected start time is after the existing booking
+      var existingEndTime = new Date("1970-01-01T11:59");  // Replace with the actual existing end time
+      var existingBookingStatus = 0;  // Replace with the actual status of the existing booking
+
+      // Check if the existing booking has status value as 0
+      if (existingBookingStatus === 0 && selectedStartTime < existingEndTime) {
+          // Display an error message
+          document.getElementById("error_message").textContent = "Table already booked. Next available time: 11:59 AM";
+          // Disable the form submission
+          document.querySelector("form").onsubmit = function(event) {
+              event.preventDefault();
+          };
         } else {
             // Clear the error message and enable form submission
             document.getElementById("error_message").textContent = "";
@@ -695,6 +716,8 @@ document.getElementById("reservationForm").addEventListener("submit", function (
       document.getElementById("error_message").textContent = errorMessage;
   }
 });
+
+
 
 
   </script>

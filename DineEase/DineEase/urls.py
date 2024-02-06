@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path,include
 from home.views import userlogin,register,loggout,login_page
 
-from home.views import index,menu,about,menumore,add_reservation,booking_confirm,predict_image,pred_menu,booking_list
+from home.views import index,menu,about,menumore,add_reservation,booking_confirm,predict_image,pred_menu,booking_list,orders_lists,cancel_booking,download_pdf,download_bill,cancel_order,review,add_review
 from home.views import billing_payment,table_booking_payment,paymenthandler,cart,add_to_cart,view_cart,remove_from_cart,update_cart_item_quantity,checkout,display_cart_items,order_summary
 from home.views import admin_login,admin_index,add_menu,user_list,ad_MenuList,menu_list,menu_edit,delete_menu_item,employee_count,empLeave_list,order_list,payment_counts,ad_booking_lists
 from home.views import emp_index,emp_add,emp_profile,emp_list,emp_edit,products_by_category,filtered_menus,emp_registration,save_employee_details,employee_profile,delete_emp,change_pswrd,orderlist_emp,history_orders
@@ -53,6 +53,7 @@ urlpatterns = [
     # path('add_table/', add_table, name='add_table'),
     path('add_reservation/', add_reservation, name='add_reservation'),
     path('booking_list/', booking_list, name='booking_list'),
+    path('cancel_booking/<int:booking_id>/', cancel_booking, name='cancel_booking'),
     path('booking_confirm/<int:booking_id>/',booking_confirm, name='booking_confirm'),
     # path('cancel_reservation/<str:reservation_id>/', cancel_reservation, name='cancel_reservation'),
     # path('edit_reservation/<str:reservation_id>/', edit_reservation, name='edit_reservation'),
@@ -68,6 +69,12 @@ urlpatterns = [
     path('order_summary/<int:user_id>/',order_summary, name='order_summary'),
     path('checkout/',checkout,name='checkout'),
     path('display_cart_items',display_cart_items,name='display_cart_items'),
+    path('cancel_order/<int:order_id>/', cancel_order, name='cancel_order'),
+    path('orders_lists/', orders_lists, name='orders_lists'),
+    path('download_pdf/<int:billing_info_id>/', download_pdf, name='download_pdf'),
+    path('download_bill/<int:booking_id>/', download_bill, name='download_bill'),
+    path('review/<int:order_id>/', review, name='review'),
+    path('add_review/', add_review, name='add_review'),
 
     # Billing Payment URLs
     path('billing/payment/<int:billing_id>/', billing_payment, name='billing_payment'),

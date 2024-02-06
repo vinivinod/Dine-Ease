@@ -256,6 +256,7 @@ class BillingInformation(models.Model):
     payment_status = models.BooleanField(default=True)
     amount = models.DecimalField(max_digits=8, decimal_places=2)
     menu = models.ManyToManyField(menus, blank=True)
+    status = models.IntegerField(default=1)
     
 
     def __str__(self):
@@ -349,3 +350,15 @@ class PredictedImage(models.Model):
     image = models.ImageField(upload_to='images/')
     predicted_class = models.CharField(max_length=100, null=True, blank=True)
     confidence = models.FloatField(null=True, blank=True)
+
+
+class Review(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)  # Assuming you have a CustomUser model
+    menu_items = models.ManyToManyField(menus)
+    rating = models.FloatField()
+    comment = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    status = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"Review by {self.user.name} on {self.timestamp}"

@@ -204,6 +204,9 @@
                       <a class="nav-link" href="{% url 'booking_list'  %}">Bookings</a>
                     </li>
                     <li class="nav-item">
+                      <a class="nav-link" href="{% url 'orders_lists' %}">Orders </a>
+                    </li>
+                    <li class="nav-item">
                       <a class="nav-link" href="{% url 'loggout' %}">Logout</a>
                        </li>
                        <a href="#" class="nav-item nav-link" style="color: white; font-weight: bold;">Welcome, {{user.name}}
@@ -274,10 +277,10 @@
                     <button class="btn  my-2 my-sm-0 nav_search-btn" type="submit">
                       <i class="fa fa-search" aria-hidden="true"></i>
                     </button>
-                  </form> {% endcomment %}
+                  </form> 
                   <a href="" class="order_online">
                     Order Online
-                  </a>
+                  </a> {% endcomment %}
                 </div>
               </div>
             </nav>
@@ -291,7 +294,7 @@
 
     <div class="container">
     
-        <h1 style="text-align:center; color:#f7be00; font-weight:bold">Table Booking Summary</h1><br>
+        <h1 style="text-align:center; color:#f7be00; font-weight:bold">Table Booking History</h1><br>
     
         {% if bookings %}
             <table class="table table-bordered">
@@ -304,33 +307,98 @@
                         <th>Selected Items</th>
                         <th>Total Price</th>
                         <th>Payment Status</th>
+                        <th></th>
+                        {% comment %} <th>Bill</th> {% endcomment %}
                     </tr>
                 </thead>
                 <tbody>
-                    {% for booking in bookings %}
-                        <tr>
-                            <td>{{ booking.date }}</td>
-                            <td>{{ booking.start_time }}</td>
-                            <td>{{ booking.end_time }}</td>
-                            <td>{{ booking.table_name }}</td>
-                            <td>{{ booking.selected_items }}</td>
-                            <td>₹ {{ booking.total_price }}</td>
-                            <td class="payment-status {% if booking.payments.first %}paid{% else %}not-paid{% endif %}">
-                                {% if booking.payments.first %}
-                                    {{ booking.payments.first.payment_status }}
-                                {% else %}
-                                    Not Paid
-                                {% endif %}
-                            </td>
-                            </tr>
-                    {% endfor %}
-                </tbody>
+                  {% for booking in bookings %}
+                      {% if not booking.status %}
+                          <tr>
+                              <form method="post" action="{% url 'cancel_booking' booking.id %}">
+                                  {% csrf_token %}
+                                  <td>{{ booking.date }}</td>
+                                  <td>{{ booking.start_time }}</td>
+                                  <td>{{ booking.end_time }}</td>
+                                  <td>{{ booking.table_name }}</td>
+                                  <td>{{ booking.selected_items }}</td>
+                                  <td>₹ {{ booking.total_price }}</td>
+                                  <td class="payment-status {% if booking.payments.first %}paid{% else %}not-paid{% endif %}">
+                                      {% if booking.payments.first %}
+                                          {{ booking.payments.first.payment_status }}
+                                      {% else %}
+                                          Not Paid
+                                      {% endif %}
+                                  </td>
+                                  <td>
+                                    {% if booking.date >= current_date %}
+                                        <button type="button" class="cancel-btn" data-booking-id="{{ booking.id }}" style="background-color: #ff6347; color: #fff; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer;">Cancel</button>
+                                    {% endif %}
+                                  </td> 
+                                  
+                              </form>
+                          </tr>
+                      {% else %}
+                          <tr style="color: #ff6347;">
+                              <td>{{ booking.date }}</td>
+                              <td>{{ booking.start_time }}</td>
+                              <td>{{ booking.end_time }}</td>
+                              <td>{{ booking.table_name }}</td>
+                              <td>{{ booking.selected_items }}</td>
+                              <td>₹ {{ booking.total_price }}</td>
+                              <td class="payment-status {% if booking.payments.first %}paid{% else %}not-paid{% endif %}" style="color: red;">
+                                  {% if booking.payments.first %}
+                                      {{ booking.payments.first.payment_status }}
+                                  {% else %}
+                                      Not Paid
+                                  {% endif %}
+                              </td>
+                              <td>Canceled</td>
+                          </tr>
+                      {% endif %}
+                  {% endfor %}
+              </tbody>                         
             </table>
         {% else %}
             <p>No bookings found for this user.</p>
         {% endif %}
     </div>
     
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+          var cancelButtons = document.querySelectorAll('.cancel-btn');
+  
+          cancelButtons.forEach(function (btn) {
+              btn.addEventListener('click', function () {
+                  var bookingId = btn.getAttribute('data-booking-id');
+                  var isConfirmed = window.confirm('Are you sure you want to cancel this booking?');
+  
+                  if (isConfirmed) {
+                      var form = document.createElement('form');
+                      form.method = 'post';
+                      form.action = "/cancel_booking/" + bookingId + "/";
+                      form.style.display = 'hidden';
+  
+                      var csrfTokenInput = document.createElement('input');
+                      csrfTokenInput.type = 'hidden';
+                      csrfTokenInput.name = 'csrfmiddlewaretoken';
+                      csrfTokenInput.value = '{{ csrf_token }}';
+  
+                      form.appendChild(csrfTokenInput);
+  
+                      document.body.appendChild(form);
+                      form.submit();
+                  }
+              });
+          });
+      });
+  </script>
+  
+  
+  
+    
+  
+  
     
 
     {% comment %} <script>
@@ -343,6 +411,88 @@
             }
         }
         </script>         {% endcomment %}
-        
+  
+      <!-- footer section -->
+        <footer class="footer_section">
+          <div class="container">
+            <div class="row">
+              <div class="col-md-4 footer-col">
+                <div class="footer_contact">
+                  <h4>
+                    Contact Us
+                  </h4>
+                  <div class="contact_link_box">
+                    <a href="">
+                      <i class="fa fa-map-marker" aria-hidden="true"></i>
+                      <span>
+                        Kanjirapally
+                      </span>
+                    </a>
+                    <a href="">
+                      <i class="fa fa-phone" aria-hidden="true"></i>
+                      <span>
+                        Call +91 8113023079
+                      </span>
+                    </a>
+                    <a href="">
+                      <i class="fa fa-envelope" aria-hidden="true"></i>
+                      <span>
+                        dineease@gmail.com
+                      </span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 footer-col">
+                <div class="footer_detail">
+                  <a href="" class="footer-logo">
+                    DineEase
+                  </a>
+                  <p>
+                    Necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 english words, combined with
+                  </p>
+                  <div class="footer_social">
+                    <a href="">
+                      <i class="fa fa-facebook" aria-hidden="true"></i>
+                    </a>
+                    <a href="">
+                      <i class="fa fa-twitter" aria-hidden="true"></i>
+                    </a>
+                    <a href="">
+                      <i class="fa fa-linkedin" aria-hidden="true"></i>
+                    </a>
+                    <a href="">
+                      <i class="fa fa-instagram" aria-hidden="true"></i>
+                    </a>
+                    <a href="">
+                      <i class="fa fa-pinterest" aria-hidden="true"></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 footer-col">
+                <h4>
+                  Opening Hours
+                </h4>
+                <p>
+                  Everyday
+                </p>
+                <p>
+                  8.00 Am -11.00 Pm
+                </p>
+              </div>
+            </div>
+            <div class="footer-info">
+              <p>
+                &copy; <span id="displayYear"></span> All Rights Reserved By
+                <a href="https://html.design/">DineEase</a><br><br>
+                &copy; <span id="displayYear"></span> Distributed By
+                <a href="https://themewagon.com/" target="_blank">DineEase</a>
+              </p>
+            </div>
+          </div>
+        </footer>
+        <!-- footer section -->
+    
 </body>
 </html>

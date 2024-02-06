@@ -206,15 +206,18 @@
               </li>
               <li class="nav-item">
                 {% if user.is_authenticated %}
-                <li class="nav-item">
+                {% comment %} <li class="nav-item">
                   <a class="nav-link" href="{% url 'upload_image' %}">Image Search</a>
-                </li> 
+                </li>  {% endcomment %}
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'add_reservation' %}">Book Table</a>
                 </li>
                 <li class="nav-item">
                       <a class="nav-link" href="{% url 'booking_list'  %}">Bookings</a>
                     </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'orders_lists' %}">Orders </a>
+                </li>
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'loggout' %}">Logout</a>
                    </li>
@@ -286,10 +289,10 @@
                 <button class="btn  my-2 my-sm-0 nav_search-btn" type="submit">
                   <i class="fa fa-search" aria-hidden="true"></i>
                 </button>
-              </form> {% endcomment %}
+              </form> 
               <a href="" class="order_online">
                 Order Online
-              </a>
+              </a> {% endcomment %}
             </div>
           </div>
         </nav>

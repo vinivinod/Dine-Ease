@@ -342,7 +342,7 @@ def add_reservation(request):
             end_time__gt=start_datetime,
         ).first()
 
-        if existing_booking:
+        if existing_booking and existing_booking.status == 0:
             error_message = "The table is already booked. Please select another table or time or date"
         else:
             selected_menu_items = request.POST.getlist("menu_items")
@@ -404,6 +404,20 @@ def expired():
         # booking.delete()
 
 
+from django.shortcuts import get_object_or_404, redirect
+from .models import TableBooking
+
+def cancel_booking(request, booking_id):
+    try:
+        booking = get_object_or_404(TableBooking, id=booking_id, status=0)
+        if request.method == 'POST':
+            booking.status = 1
+            booking.save()
+    except TableBooking.DoesNotExist:
+        pass  # Handle the case where the booking does not exist or is already canceled
+
+    return redirect('booking_list')  # Replace 'booking_list' with the actual URL name of your booking list page
+
 
 from django.shortcuts import render, get_object_or_404
 from .models import TableBooking
@@ -421,8 +435,9 @@ def booking_list(request):
     if request.user.is_authenticated:
         # Retrieve all bookings for the logged-in user or filter as needed
         bookings = TableBooking.objects.filter(name=request.user)
+        current_date = date.today()
 
-    return render(request, 'booking_list.html', {'bookings': bookings})
+    return render(request, 'booking_list.html', {'bookings': bookings, 'current_date': current_date})
 
 
 # from django.http import JsonResponse
@@ -993,9 +1008,11 @@ def table_booking_payment(request, booking_id):
 
     return render(request, 'booking_payment.html', context)
 
+
+from django.shortcuts import get_object_or_404
 @csrf_exempt
 def paymenthandler(request, booking_id=None, billing_id=None):
-    print(billing_id)
+    print("billing_id:", billing_id)
     if request.method == "POST":
         payment_id = request.POST.get('razorpay_payment_id', '')
         razorpay_order_id = request.POST.get('razorpay_order_id', '')
@@ -1017,17 +1034,27 @@ def paymenthandler(request, booking_id=None, billing_id=None):
         # Handle billing payment success, e.g., mark billing as paid
 
         if billing_id is not None:
-            billing = BillingInformation.objects.get(id=billing_id)
-            billing.status = True
-            cart_items.delete()
-            billing.save()
+            try:
+                # Check if the BillingInformation object exists before retrieving it
+                billing = BillingInformation.objects.get(id=billing_id)
+                billing.status = True
+                cart_items.delete()
+                billing.save()
+            except BillingInformation.DoesNotExist:
+                print(f"No BillingInformation found with id={billing_id}")
         elif booking_id is not None:
-            booking = TableBooking.objects.get(id=booking_id)
-            booking.status = True
-        
+            try:
+                # Check if the TableBooking object exists before retrieving it
+                booking = TableBooking.objects.get(id=booking_id)
+                booking.status = True
+                booking.save()
+            except TableBooking.DoesNotExist:
+                print(f"No TableBooking found with id={booking_id}")
+
         return redirect('/')  # Adjust the URL as needed
 
     return HttpResponseBadRequest()
+
 
 
 # @csrf_exempt
@@ -1585,3 +1612,306 @@ from .models import menus
 def pred_menu(request):
     pred_menus = menus.objects.all()
     return render(request, 'pred_menu.html',{'pred_menus': pred_menus})
+
+
+# views.py
+
+from django.shortcuts import render
+from .models import BillingInformation, Payment
+
+def orders_lists(request):
+    # Filter BillingInformation and Payment instances for the logged-in user
+    user = request.user
+    billing_info = BillingInformation.objects.filter(user=user)
+    payments = Payment.objects.filter(billing_info__user=user)
+    today = date.today()
+
+    context = {
+        'billing_info': billing_info,
+        'payments': payments,
+        'today' : today,
+    }
+    return render(request, 'orders_list.html', context)
+
+
+from django.shortcuts import get_object_or_404, redirect
+from django.utils import timezone
+from django.core.mail import send_mail
+from django.contrib.auth.decorators import login_required
+from .models import BillingInformation, Payment
+
+@login_required
+def cancel_order(request, order_id):
+    try:
+        # Ensure that the order exists and has the correct status
+        order = get_object_or_404(BillingInformation, id=order_id, status=1)
+        print(f"Found order: {order}")
+
+        payment = Payment.objects.filter(billing_info=order).first()
+
+        current_date = timezone.now().date()
+
+        if payment and payment.timestamp.date() == current_date:
+            # Set order status to canceled
+            order.status = 0
+            order.save()
+            print(f"Order {order_id} canceled successfully.")
+
+            # Retrieve the ordered items for the canceled order
+            ordered_items = order.menu.all()
+
+            # Send email to the logged-in user who made the order
+            user_email = request.user.email
+            subject = 'Order Cancellation and Refund Confirmation'
+            
+            # Modify the message to include refund details and ordered items
+            refund_amount = payment.amount  # Replace this with the actual refund amount
+            message = f"Dear customer,\n\nYour order with ID {order_id} has been canceled successfully. " \
+                      f"A refund of ₹{refund_amount:.2f} has been processed and will be credited to your account.\n\n" \
+                      "Ordered Items:\n"
+            
+            for item in ordered_items:
+                message += f"- {item.name}\n"
+
+            from_email = 'dineease1@gmail.com'  # Replace with your email
+            recipient_list = [user_email]
+
+            send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+    except BillingInformation.DoesNotExist:
+        print(f"Order {order_id} not found or already canceled.")
+        pass  # Handle the case where the order does not exist or is already canceled
+
+    return redirect('/orders_lists/')  # Redirect to the 'orders_lists' page
+
+
+
+# views.py
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
+from reportlab.pdfgen import canvas
+from .models import BillingInformation, Payment, menus
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import Table, TableStyle
+from reportlab.lib import colors
+
+def download_pdf(request, billing_info_id):
+    # Retrieve BillingInformation object
+    billing_info = get_object_or_404(BillingInformation, id=billing_info_id)
+
+    # Retrieve related Payment
+    payment = Payment.objects.filter(billing_info=billing_info).first()
+
+    # Retrieve related data
+    order_id = billing_info.id
+    date = payment.timestamp.strftime("%Y-%m-%d")
+    items = billing_info.menu.all()
+    amount = billing_info.amount
+    billing_address = f"{billing_info.address}, {billing_info.town}, {billing_info.zip_code}"
+    payment_status = payment.get_payment_status_display()
+
+    # Create PDF content using reportlab
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="order_{order_id}.pdf"'
+
+    p = canvas.Canvas(response)
+
+    # Calculate the width of the page and the width of the heading "DineEase"
+    page_width, page_height = p._pagesize
+    heading_width = p.stringWidth("DineEase", "Times-Italic", 30)
+
+    # Set font, size, and color for the hotel name
+    p.setFont("Times-Italic", 30)
+    p.setFillColorRGB(237 / 255, 204 / 255, 36 / 255)  # Set color to RGB (237, 204, 36)
+
+    # Add a line space before the heading
+    p.drawString((page_width - heading_width) / 2, 800, " ")
+
+    # Draw the centered hotel name
+    heading_x = (page_width - heading_width) / 2
+    p.drawString(heading_x, 820, "DineEase")
+
+    # Reset font, size, and color for the rest of the content
+    p.setFont("Helvetica", 12)
+    p.setFillColorRGB(0, 0, 0)  # Reset color to black
+
+    # Draw order ID
+    p.drawString(100, 780, f'Order ID: {order_id}')
+
+    # Draw date
+    p.drawString(100, 760, f'Ordered Date: {date}')
+
+   # Initialize the starting y-coordinate for menu item details
+    start_y = 740
+
+    # Iterate over the menu items and display additional details
+    for menu_item in items:
+        p.drawString(100, start_y, f'Item: {menu_item.name}')
+        p.drawString(120, start_y - 20, f'Category: {menu_item.category}')
+        p.drawString(120, start_y - 40, f'Submenu: {menu_item.submenu}')
+        p.drawString(120, start_y - 60, f'Sub Submenu: {menu_item.sub_submenu}')
+
+        # Update the y-coordinate for the next set of details
+        start_y -= 80  # Adjust as needed based on the spacing you want
+
+        # Add more details as needed
+
+    # Calculate the height of the details for the current order
+    order_details_height = 740 - start_y
+
+    # Reduce space after the details for the current order
+    start_y -= order_details_height + 5  # Adjust as needed
+
+    # Add less space before the table
+    p.drawString(100, start_y, " ")
+
+    # Additional details in a table
+    table_data = [['Serial No', 'Item', 'Category', 'Amount']]
+    for index, menu_item in enumerate(items, start=1):
+        table_data.append([str(index), menu_item.name, menu_item.category, str(menu_item.price)])
+
+    table = Table(table_data, colWidths=[60, 180, 100, 80])
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black)
+    ]))
+
+    # Draw the table on the canvas
+    table.wrapOn(p, page_width, page_height)
+    table.drawOn(p, 100, start_y)  # Adjust the coordinates as needed
+
+
+    # Add a line space before the amount, billing address, and payment status
+    p.drawString(100, start_y - 20, " ")
+
+    # Draw amount
+    p.drawString(100, start_y - 40, f'Total Amount: {amount}')
+
+    # Reduce space between amount and billing address
+    start_y -= 1  # Adjust as needed based on the spacing you want
+
+    # Draw Billing Address with line breaks
+    billing_address_lines = [
+        "Billing Address:",
+        f"          {billing_info.address},",
+        f"          {billing_info.town},",
+        f"          {billing_info.zip_code}"
+    ]
+
+    # Calculate the total height of the billing address block
+    billing_address_block_height = 60 + len(billing_address_lines) * 15  # Adjust as needed
+
+    # Adjust start_y to provide more separation between amount and billing address
+    start_y -= billing_address_block_height + 1  # Adjust as needed based on the spacing you want
+
+    for line in billing_address_lines:
+        p.drawString(100, start_y, line)
+        start_y -= 15  # Adjust as needed based on the spacing you want
+
+    # Add a line space before the delivered date
+    start_y -= 5  # Adjust as needed based on the spacing you want
+
+    # Draw delivered date
+    p.drawString(100, start_y, f'Delivered Date: {date}')
+
+    # Add more space between delivered date and payment status
+    start_y -= 20  # Adjust as needed based on the spacing you want
+
+    # Draw payment status
+    p.drawString(100, start_y, f'Payment Status: {payment_status}')
+
+    # Check if the status is cancelled and display "Current Status" accordingly
+    if billing_info.status == 0:
+        # Add more space between payment status and current status
+        start_y -= 20  # Adjust as needed based on the spacing you want
+        p.drawString(100, start_y, "Current Status: Cancelled")
+
+
+    p.showPage()
+    p.save()
+
+    return response
+
+
+# views.py
+
+from django.http import HttpResponse
+from reportlab.pdfgen import canvas
+from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
+
+def download_bill(request, booking_id):
+    booking = get_object_or_404(TableBooking, id=booking_id)
+
+    # You can customize the PDF content based on your needs.
+    # Here, I'm rendering a simple template with booking details.
+    pdf_content = render_to_string('templates/table_bill.html', {'booking': booking})
+
+    # Create a PDF response
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="booking_bill.pdf"'
+
+    # Create the PDF and write to the response
+    p = canvas.Canvas(response)
+    p.drawString(100, 800, pdf_content)  # You can customize the drawing logic based on your template
+    p.showPage()
+    p.save()
+
+    return response
+
+
+from django.shortcuts import render, get_object_or_404
+from .models import BillingInformation
+
+def review(request, order_id):
+    billing_info = get_object_or_404(BillingInformation, id=order_id)
+    menu_items = billing_info.menu.all()
+
+    return render(request, 'review.html', {'billing_info': billing_info, 'menu_items': menu_items})
+
+
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Review, menus
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def add_review(request):
+    if request.method == 'POST':
+        menu_item_id = request.POST.get('menu_items')
+
+        # Check if a review for this order already exists
+        existing_review = Review.objects.filter(user=request.user, menu_items=menu_item_id).first()
+
+        if existing_review:
+            messages.warning(request, 'Review for this order already submitted!')
+            return redirect('orders_lists')  # Redirect to orders_lists or wherever you want
+
+        rating = request.POST.get('rating')
+        comment = request.POST.get('comment')
+
+        # Validate rating here if needed
+
+        # Create and save the Review instance
+        review = Review(
+            user=request.user,
+            rating=rating,
+            comment=comment,
+        )
+        review.save()
+
+        # Add the selected menu item to the ManyToManyField using the menu_item_id
+        review.menu_items.add(menu_item_id)
+
+        messages.success(request, 'Review submitted successfully!')
+        return redirect('orders_lists')  # Redirect to a success page or wherever you want
+
+    # Render the form template for GET requests
+    menu_items = menus.objects.all()
+    return render(request, 'review.html', {'menu_items': menu_items})
+
