@@ -1894,6 +1894,6 @@ def add_review(request):
         review = Review.objects.create(user=user, billing_information=billing_info, rating=rating, comment=comment)
         
         # Redirect the user to a thank you page or any other appropriate page
-        return redirect('orders_lists')  # Replace 'thank_you_page' with the appropriate URL name
+        return redirect('orders_lists')  # Replace 'orders_lists' with the appropriate URL name
 
     return render(request, 'review.html')
