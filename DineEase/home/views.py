@@ -1237,6 +1237,50 @@ def employee_count(request):
     print("Active Employee Count:", active_emp)
     return render(request, 'admin_dashboard/emp-list.html', {'emp_count': emp_count,'active_emp':active_emp,})
 
+from django.shortcuts import render
+from .models import menus, Stock
+
+def stock_view(request):
+    menu_items_with_stock = []
+    for stock_item in Stock.objects.all():
+        menu_item = stock_item.menu_item
+        menu_items_with_stock.append({
+            'menu_item': menu_item,
+            'quantity': stock_item.stock_quantity,
+        })
+
+    return render(request, 'admin_dashboard/stock.html', {'menu_items_with_stock': menu_items_with_stock})
+
+
+from django.shortcuts import render, redirect
+from .models import menus, Stock
+from django.contrib import messages
+
+def save_stock(request):
+    success_count = 0
+    total_items = 0
+    
+    if request.method == 'POST':
+        for menu_item in menus.objects.all():
+            stock_quantity = request.POST.get(f"stock_quantity_{menu_item.id}")
+            if stock_quantity is not None:
+                total_items += 1
+                stock, created = Stock.objects.get_or_create(menu_item=menu_item)
+                stock.stock_quantity = stock_quantity
+                stock.save()
+                success_count += 1
+        if success_count > 0:
+            messages.success(request, f'{success_count} out of {total_items} items have had their stock updated.')
+        else:
+            messages.warning(request, 'No items were updated.')
+        return redirect('stock_view')
+    else:
+        return redirect('stock_view')
+
+
+
+
+
 def emp_profile(request):
     emp_list= Employee.objects.all()
     user = request.user
@@ -1620,6 +1664,8 @@ def pred_menu(request):
 
 from django.shortcuts import render
 from .models import BillingInformation, Payment
+from datetime import date
+
 
 def orders_lists(request):
     # Filter BillingInformation and Payment instances for the logged-in user
@@ -1898,3 +1944,5 @@ def add_review(request):
         return redirect('orders_lists')  # Replace 'orders_lists' with the appropriate URL name
 
     return render(request, 'review.html')
+
+

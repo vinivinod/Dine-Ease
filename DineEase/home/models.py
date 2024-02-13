@@ -362,3 +362,10 @@ class Review(models.Model):
     def __str__(self):
         return f"Review by {self.user.name} on {self.timestamp}"
     
+
+class Stock(models.Model):
+    menu_item = models.OneToOneField(menus, on_delete=models.CASCADE, related_name='stock')
+    stock_quantity = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.menu_item.name} Stock: {self.stock_quantity}"

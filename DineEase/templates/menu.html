@@ -488,7 +488,7 @@
                           <p>{{ menu_item.desc }}</p>
                           <div class="options">
                             <h6>Rs. {{ menu_item.price }}</h6>
-                            <p>{{ menu_item.avg_rating }} / 5 rating</p>
+                            {% comment %} <p>{{ menu_item.avg_rating }} / 5 rating</p> {% endcomment %}
                               <div class="button-container">
                                   {% comment %} <span class="wishlist-icon" data-item-id="{{ menu_item.id }}">
                                   <i class="fa fa-heart"></i>

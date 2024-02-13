@@ -346,7 +346,7 @@
                               {% endfor %}
                           </td>
                           <td>
-                            {% if info.status == 1 and info.timestamp.date == current_date %}
+                            {% if info.status == 1 %}
                               <form method="post" action="{% url 'cancel_order' info.id %}"
                                   onsubmit="return confirmCancellation('{{ info.id }}')">
                                   {% csrf_token %}
@@ -368,8 +368,11 @@
                               </form>
                           </td>
                           <td>
-                            <a href="{% url 'review' order_id=info.id %}" class="btn btn-success">Review</a>
-                          </td>
+                            {% if info.status == 1 %}
+                                <!-- Show the review button only for status 1 -->
+                                <a href="{% url 'review' order_id=info.id %}" class="btn btn-success">Review</a>
+                            {% endif %}
+                        </td>
                       </tr>
                   {% endfor %}
               </tbody>
