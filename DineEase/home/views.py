@@ -1251,33 +1251,47 @@ def stock_view(request):
 
     return render(request, 'admin_dashboard/stock.html', {'menu_items_with_stock': menu_items_with_stock})
 
-
 from django.shortcuts import render, redirect
 from .models import menus, Stock
-from django.contrib import messages
 
-def save_stock(request):
-    success_count = 0
-    total_items = 0
-    
+def add_stock(request):
     if request.method == 'POST':
-        for menu_item in menus.objects.all():
-            stock_quantity = request.POST.get(f"stock_quantity_{menu_item.id}")
-            if stock_quantity is not None:
-                total_items += 1
-                stock, created = Stock.objects.get_or_create(menu_item=menu_item)
-                stock.stock_quantity = stock_quantity
-                stock.save()
-                success_count += 1
-        if success_count > 0:
-            messages.success(request, f'{success_count} out of {total_items} items have had their stock updated.')
-        else:
-            messages.warning(request, 'No items were updated.')
+        # Retrieve data from the POST request
+        menu_id = request.POST.get('menu')
+        stock_quantity = request.POST.get('stock')
+        
+        # Retrieve the corresponding menu item from the menus model
+        menu_item = menus.objects.get(id=menu_id)
+        
+        # Create a new Stock object and save it to the database
+        stock_item = Stock(menu_item=menu_item, stock_quantity=stock_quantity)
+        stock_item.save()
+
+        # Redirect to the stock view
         return redirect('stock_view')
     else:
-        return redirect('stock_view')
+        # Retrieve all menu items from the menus model
+        menus_list = menus.objects.all()
+        return render(request, 'admin_dashboard/add_stock.html', {'menus': menus_list})
 
 
+# views.py
+from django.shortcuts import render, redirect
+from .models import menus, Stock
+
+def edit_stock(request, menu_id):
+    menu_item = menus.objects.get(id=menu_id)
+    stock_item = Stock.objects.get(menu_item=menu_item)
+    
+    if request.method == 'POST':
+        # Handle form submission to update stock information
+        stock_item.stock_quantity = request.POST.get('stock')
+        stock_item.save()
+        
+        return redirect('stock_view')  # Redirect to stock page after saving changes
+    else:
+        # Render the form with pre-populated data
+        return render(request, 'admin_dashboard/edit_stock.html', {'menu': menu_item, 'stock': stock_item.stock_quantity})
 
 
 

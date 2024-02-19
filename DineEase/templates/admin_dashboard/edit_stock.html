@@ -512,50 +512,60 @@
 							<p class="breadcrumbs"><span><a href="index.html">Home</a></span>
 								<span><i class="mdi mdi-chevron-right"></i></span>Stock</p>
 						</div>
+						
 					</div>
 					<div class="row">
 						<div class="col-12">
 							<div class="card card-default">
 								<div class="card-body">
-									<div class="table-responsive">
-										<table id="responsive-data-table" class="table" style="width:100%">
-											<thead>
-												<tr>
-													<th>ID</th> 
-													<th>Photo</th>
-													<th>Item name</th>
-													<th>Quantity</th>
-													<th>Action</th>
-												</tr>
-											</thead>
-											<tbody>
-												{% for item in menu_items_with_stock %}
-												<tr>
-													<td>#{{ item.menu_item.id }}</td> 
-													{% if item.menu_item.img %}
-														<td><img src="{{ item.menu_item.img.url }}" alt="Product Image" style="width: 50px;"></td>
-													{% else %}
-														<td>No image available</td>
-													{% endif %}
-													<td>{{ item.menu_item.name }}</td>
-													<td>{{ item.quantity }}</td>
-													<td>
-														<button type="button" class="btn btn-outline-success">Edit</button>
-													</td>
-												</tr>
-												{% endfor %}
-											</tbody>
-										</table>
-									</div>
-
-									</div>
-								</div>
+                                    <div class="row">
+                                        <div class="col-lg-8">
+                                            <div class="ec-vendor-upload-detail">
+												<form method="post" action="{% url 'edit_stock' menu.id %}">
+													{% csrf_token %}
+													<div class="col-md-6">
+														<label for="menu">Menu</label>
+														<select class="form-control" name="menu" id="menu" disabled>
+															<option value="{{ menu.id }}">{{ menu.name }}</option>
+														</select>
+													</div><br>
+													<div class="col-md-6">
+														<label for="stock">Stock</label>
+														<input type="text" class="form-control" name="stock" id="stock" placeholder="Enter stock" value="{{ stock }}">
+													</div><br>
+													<div class="col-md-12">
+														<!-- Button to submit the form -->
+														<button type="submit" class="btn btn-primary">Save Stock</button>
+													</div>
+												</form>
+											</div>											
+                                            
+                                        </div>
+                                    </div>
+                                </div>
 							</div>
 						</div>
 					</div>
 				</div> <!-- End Content -->
 			</div> <!-- End Content Wrapper -->
 
+            <script>
+                document.querySelectorAll('.btn-edit').forEach(function(button) {
+                    button.addEventListener('click', function() {
+                        var row = this.closest('tr');
+                        var quantityText = row.querySelector('.quantity');
+                        var quantityInput = row.querySelector('.edit-quantity');
+                        var saveButton = row.querySelector('.btn-save');
+        
+                        quantityText.style.display = 'none';
+                        quantityInput.style.display = 'inline-block';
+                        saveButton.style.display = 'inline-block';
+                        this.style.display = 'none';
+                    });
+                });
+        
+                // Add JavaScript for the "Save" button here...
+            </script>
 
 			<!-- Footer -->
 			<footer class="footer mt-auto">
