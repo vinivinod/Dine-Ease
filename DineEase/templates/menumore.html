@@ -154,6 +154,26 @@
   .add-to-table-button {
     margin-left: 5px;
   }
+  @keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}
+.out-of-stock-message-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.out-of-stock-message {
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 10px;
+  border-radius: 5px;
+  color: red;
+  font-weight: bold;
+}
+
   </style>
   
 
@@ -459,37 +479,48 @@
       <div class="filters-content">
         <div class="row grid">
        
-    {% for Menu in Menus %}
-    {% if Menu.active %}
-    <div class="col-sm-6 col-lg-4 all pasta">
-        <div class="box" style="height: 420px;">
-        <div>
-            <div class="img-box" >
-                <img src="{{ Menu.img.url }}" alt="" >
-            </div>
-            <div class="detail-box">
-                <h5>
-                    {{ Menu.name }}
-                </h5>
-                <p>
-                {{ Menu.desc }}  
-                </p>
-                <div class="options">
-                    <h6>
-                    Rs. {{ Menu.price }}
-                    </h6>
-                    <div class="button-container">
-                      <a href="{% url 'add_to_cart' Menu.id %}">
-                        <i class="fa fa-cart-plus" aria-hidden="true" style="color: black;"></i>
-                    </a>
-                    </div> 
-                </div>
-            </div>
-          </div>
-        </div>
-    </div>
-    {% endif%}
-    {% endfor %}
+          {% for Menu in Menus %}
+          {% if Menu.active %}
+              <div class="col-sm-6 col-lg-4 all pasta">
+                  <div class="box" style="height: 440px; {% if Menu.stock.stock_quantity == 0 %}filter: blur(0.5px);{% endif %}">
+                      <div>
+                        <div class="img-box" >
+                          <img src="{{ Menu.img.url }}" alt="" >
+                          {% if Menu.stock.stock_quantity == 0 %}
+                              <div class="out-of-stock-message-container">
+                                  <div class="out-of-stock-message" style="font-size: 20px;">
+                                      Out of Stock
+                                  </div>
+                              </div>
+                          {% endif %}
+                      </div>
+                          {% with stock=Menu.stock.stock_quantity %}
+                            {% if stock > 0 and stock <= 5 %}
+                            <div role="alert" style="color: #ed0e0e; font-size: 20px; font-weight: bold; display: flex; justify-content: center; align-items: center; height: 100%; animation: blink 1s infinite;">
+                                    {{ stock }} more left
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                          <div class="detail-box">
+                              <h5>{{ Menu.name }}</h5>
+                              <p>{{ Menu.desc }}</p>
+                              <div class="options">
+                                  <h6>Rs. {{ Menu.price }}</h6>
+                                  <div class="button-container">
+                                      {% if Menu.stock.stock_quantity > 0 %}
+                                          <a href="{% url 'add_to_cart' Menu.id %}">
+                                              <i class="fa fa-cart-plus" aria-hidden="true" style="color: black;"></i>
+                                          </a>
+                                      {% endif %}
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          {% endif %}
+      {% endfor %}
+      
     </div>
       </div>
       <div class="container">

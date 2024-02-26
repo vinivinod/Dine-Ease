@@ -22,7 +22,7 @@ from home.views import index,menu,about,menumore,add_reservation,booking_confirm
 from home.views import billing_payment,table_booking_payment,paymenthandler,cart,add_to_cart,view_cart,remove_from_cart,update_cart_item_quantity,checkout,display_cart_items,order_summary
 from home.views import admin_login,admin_index,add_menu,user_list,ad_MenuList,menu_list,menu_edit,delete_menu_item,employee_count,empLeave_list,order_list,payment_counts,ad_booking_lists,stock_view,edit_stock,add_stock
 from home.views import emp_index,emp_add,emp_profile,emp_list,emp_edit,products_by_category,filtered_menus,emp_registration,save_employee_details,employee_profile,delete_emp,change_pswrd,orderlist_emp,history_orders
-from home.views import apply_leave,leave_list,approve_leave,emp_booking_lists
+from home.views import apply_leave,leave_list,approve_leave,emp_booking_lists,check_stock_and_create_notification,notification_detail
 from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
 from django.conf import settings
@@ -36,6 +36,8 @@ urlpatterns = [
 
     path('',index,name=''),
     path('menu/',menu,name='menu'),
+    path('check_stock_and_create_notification/', check_stock_and_create_notification, name='check_stock_and_create_notification'),
+    path('notification/<int:notification_id>/', notification_detail, name='notification_detail'),
     path('about/',about, name='about'),
     # path('book/',book,name='book'),
     path('menumore/',menumore, name='menumore'),

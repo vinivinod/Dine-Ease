@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import menus,hmenus,CustomUser,Reservation,tables,TimeSlot,Employee,BillingInformation,Payment,AddToCart,LeaveApplication,TableBooking,Review,Stock
+from .models import menus,hmenus,CustomUser,Reservation,tables,TimeSlot,Employee,BillingInformation,Payment,AddToCart,LeaveApplication,TableBooking,Review,Stock,Notification
 # Register your models here.
 admin.site.register(menus)
 admin.site.register(hmenus)
@@ -15,6 +15,7 @@ admin.site.register(LeaveApplication)
 admin.site.register(TableBooking)
 admin.site.register(Review)
 admin.site.register(Stock)
+admin.site.register(Notification)
 
 class menusAdmin(admin.ModelAdmin):
     list_display=('name','desc','price')

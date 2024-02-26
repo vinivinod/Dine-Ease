@@ -168,6 +168,27 @@
 .wishlist-icon.active i {
     color: red;
 }
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+  100% { opacity: 1; }
+}
+.out-of-stock-message-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.out-of-stock-message {
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 10px;
+  border-radius: 5px;
+  color: red;
+  font-weight: bold;
+  font-size: 24px; /* Adjust the font size here */
+}
+
 
 </style>
 
@@ -475,38 +496,51 @@
 
     <div class="filters-content">
       <div class="row grid">
-          {% for menu_item in menu_items %}
-          {% if menu_item.active %}
-          <div class="col-sm-6 col-lg-4 all {{ menu_item.category }}">
-              <div class="box" style="height: 420px;">
-                  <div>
-                      <div class="img-box">
-                          <img src="{{ menu_item.img.url }}" alt="">
-                      </div>
-                      <div class="detail-box">
-                          <h5>{{ menu_item.name }}</h5>
-                          <p>{{ menu_item.desc }}</p>
-                          <div class="options">
-                            <h6>Rs. {{ menu_item.price }}</h6>
-                            {% comment %} <p>{{ menu_item.avg_rating }} / 5 rating</p> {% endcomment %}
-                              <div class="button-container">
-                                  {% comment %} <span class="wishlist-icon" data-item-id="{{ menu_item.id }}">
-                                  <i class="fa fa-heart"></i>
-                                  </span>  &ensp; {% endcomment %}
-                                  &ensp;
-                                  <a href="{% url 'add_to_cart' menu_item.id %}">
-                                    <i class="fa fa-cart-plus" aria-hidden="true" style="color: black;"></i> 
-                                </a>                                
+        {% for menu_item in menu_items %}
+        {% if menu_item.active %}
+            {% with stock=menu_item.stock.stock_quantity %}
+                <div class="col-sm-6 col-lg-4 all {{ menu_item.category }}">
+                    <div class="box" style="height: 450px; {% if stock == 0 %}filter: blur(0.5px);{% endif %}">
+                        <div>
+                            <div class="img-box">
+                                <img src="{{ menu_item.img.url }}" alt="">
+                                {% if stock == 0 %}
+                                <div class="out-of-stock-message-container">
+                                  <div class="out-of-stock-message" style="font-size: 20px;">
+                                      Out of Stock
+                                  </div>
                               </div>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-          {% endif %}
-          {% endfor %}
+                                {% endif %}
+                            </div>
+                            {% if stock > 0 and stock <= 5 %}
+                                  <div role="alert" style="color: #ed0e0e; font-size: 20px; font-weight: bold; display: flex; justify-content: center; align-items: center; height: 100%; animation: blink 1s infinite;">
+                                      {{ stock }} more left
+                                  </div>
+                              {% endif %}
+                            <div class="detail-box">
+                                <h5>{{ menu_item.name }}</h5>
+                                <p>{{ menu_item.desc }}</p>
+                                <div class="options">
+                                    <h6>Rs. {{ menu_item.price }}</h6>
+                                    <div class="button-container">
+                                        {% if stock > 0 %}
+                                            <a href="{% url 'add_to_cart' menu_item.id %}">
+                                                <i class="fa fa-cart-plus" aria-hidden="true" style="color: black;"></i>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endwith %}
+        {% endif %}
+    {% endfor %}
+    
       </div>
   </div>
+  
   
       <div class="container">
         {% block content %}{% endblock %}

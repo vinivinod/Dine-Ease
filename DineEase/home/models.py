@@ -369,3 +369,21 @@ class Stock(models.Model):
 
     def __str__(self):
         return f"{self.menu_item.name} Stock: {self.stock_quantity}"
+    
+
+class Notification(models.Model):
+    NOTIFICATION_TYPES = [
+        ('out_of_stock', 'Out of Stock'),
+        ('stock_decrease', 'Stock Decrease'),
+        # Add more notification types as needed
+    ]
+
+    recipient = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
+    menu_item = models.ForeignKey(menus, on_delete=models.CASCADE, null=True, blank=True)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+    notification_type = models.CharField(max_length=50, choices=NOTIFICATION_TYPES)
+
+    def __str__(self):
+        return f"{self.get_notification_type_display()}: {self.message}"

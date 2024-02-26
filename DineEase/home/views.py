@@ -27,14 +27,69 @@ User=get_user_model()
 def index(request):
     return render(request,'index.html')
 
+# from django.shortcuts import render
+# from .models import menus  # Import your "menus" model
+# def menu(request):
+#     # Fetch all menu items from the database
+#     all_menu_items = menus.objects.all()
+#     # Display the first 9 menu items
+#     menu_items = all_menu_items[:9]
+#     return render(request, 'menu.html', {'menu_items': menu_items})
+
 from django.shortcuts import render
-from .models import menus  # Import your "menus" model
+from .models import menus, Notification
+
 def menu(request):
     # Fetch all menu items from the database
     all_menu_items = menus.objects.all()
     # Display the first 9 menu items
     menu_items = all_menu_items[:9]
-    return render(request, 'menu.html', {'menu_items': menu_items})
+
+    # Check for notifications
+    notifications = Notification.objects.filter(notification_type='out_of_stock')
+
+    return render(request, 'menu.html', {'menu_items': menu_items, 'notifications': notifications})
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from .models import Stock, Notification
+from django.contrib.auth import get_user_model
+
+@receiver(post_save, sender=Stock)
+def check_stock_and_create_notification(sender, instance, created, **kwargs):
+    print("Stock object saved:", instance)  # Debug statement to check if Stock object is being saved
+
+    if instance.stock_quantity == 0:
+        existing_notification = Notification.objects.filter(
+            menu_item=instance.menu_item,
+            notification_type='out_of_stock'
+        ).exists()
+
+        if not existing_notification:
+            default_recipient = get_user_model().objects.first()  # Change this to your logic
+
+            # Create notification
+            notification = Notification.objects.create(
+                recipient=default_recipient,
+                menu_item=instance.menu_item,
+                message=f"{instance.menu_item.name} is out of stock",
+                notification_type='out_of_stock'
+            )
+
+            print("Notification created:", notification)  # Debug statement to check if notification is created
+    else:
+        print("Stock quantity is not zero. No notification created.")
+
+from django.shortcuts import render, get_object_or_404
+from .models import Notification
+
+def notification_detail(request, notification_id):
+    notification = get_object_or_404(Notification, id=notification_id)
+    if not notification.is_read:
+        notification.is_read = True
+        notification.save()
+    notifications = Notification.objects.filter(notification_type='out_of_stock')
+    return render(request, 'admin_dashboard/notification_detail.html', {'notification': notification, 'notifications': notifications})
 
 
 def about(request):
@@ -551,8 +606,17 @@ def booking_list(request):
 
 def admin_login(request):
     return render(request,'LoginVal.html')
+
+from django.shortcuts import render
+from .models import Notification
+
 def admin_index(request):
-    return render(request,'admin_dashboard/index.html')
+    # Fetch notifications
+    notifications = Notification.objects.filter(notification_type='out_of_stock')
+
+    # Render the admin index page with notifications
+    return render(request, 'admin_dashboard/index.html', {'notifications': notifications})
+
 def ad_MenuAdd(request):
     return render(request,'admin_dashboard/product-add.html')
 def ad_MenuList(request):
@@ -787,27 +851,33 @@ def add_to_cart(request, menu_id):
 #     }
 #     return render(request, 'cart.html', context)
 
-@login_required(login_url='http://127.0.0.1:8000/')
+
+from django.core.exceptions import ObjectDoesNotExist
+
 def cart(request):
     cart_items = AddToCart.objects.filter(user=request.user)
     at_least_one_item_with_status_1 = any(item.status == 1 for item in cart_items)
     total_price = sum(item.menu.price * item.quantity for item in cart_items if item.status)
     total_items = sum(item.quantity for item in cart_items)
 
-    max_quantity = 10
-    quantity_range = range(1, max_quantity + 1)
-
     for item in cart_items:
+        try:
+            stock = Stock.objects.get(menu_item=item.menu)
+            item.max_quantity = stock.stock_quantity
+            item.quantity_range = range(1, stock.stock_quantity + 1)
+        except ObjectDoesNotExist:
+            # Handle the case when Stock object does not exist for the menu item
+            item.max_quantity = 0
+            item.quantity_range = range(1, 1)  # Set a default range
         item.product_total = item.menu.price * item.quantity
 
     context = {
-        'cart_items':cart_items,
-        'total_items':total_items,
-        'total_price':total_price,
-        'quantity_range': quantity_range, 
+        'cart_items': cart_items,
+        'total_items': total_items,
+        'total_price': total_price,
         'at_least_one_item_with_status_1': at_least_one_item_with_status_1,
     }
-    return render(request,'cart.html',context)
+    return render(request, 'cart.html', context)
 
 
 from django.shortcuts import redirect
@@ -1034,25 +1104,43 @@ def paymenthandler(request, booking_id=None, billing_id=None):
         payment.save()
         # Handle billing payment success, e.g., mark billing as paid
 
-        if billing_id is not None:
-            try:
-                # Check if the BillingInformation object exists before retrieving it
-                billing = BillingInformation.objects.get(id=billing_id)
-                billing.status = True
-                cart_items.delete()
-                billing.save()
-            except BillingInformation.DoesNotExist:
-                print(f"No BillingInformation found with id={billing_id}")
-        elif booking_id is not None:
-            try:
-                # Check if the TableBooking object exists before retrieving it
-                booking = TableBooking.objects.get(id=booking_id)
-                booking.status = True
-                booking.save()
-            except TableBooking.DoesNotExist:
-                print(f"No TableBooking found with id={booking_id}")
+        # Check if the payment is successful
+        if result is True:
+            # Handle billing payment success, e.g., mark billing as paid
+            if billing_id is not None:
+                try:
+                    # Check if the BillingInformation object exists before retrieving it
+                    billing = BillingInformation.objects.get(id=billing_id)
+                    billing.status = True
+                    billing.save()
+                    # Reduce stock only if payment is successful
+                    for cart_item in cart_items:
+                        menu = cart_item.menu
+                        stock = Stock.objects.get(menu_item=menu)
+                        if stock.stock_quantity >= cart_item.quantity:
+                            stock.stock_quantity -= cart_item.quantity
+                            stock.save()
+                            cart_item.delete()
+                        else:
+                            # Handle insufficient stock scenario
+                            return HttpResponseBadRequest("Insufficient stock for one or more items in your cart.")
+                except BillingInformation.DoesNotExist:
+                    print(f"No BillingInformation found with id={billing_id}")
+            elif booking_id is not None:
+                try:
+                    # Check if the TableBooking object exists before retrieving it
+                    booking = TableBooking.objects.get(id=booking_id)
+                    booking.status = True
+                    booking.save()
+                except TableBooking.DoesNotExist:
+                    print(f"No TableBooking found with id={booking_id}")
+            
+            return redirect('/')  # Adjust the URL as needed
+        else:
+            # Handle payment failure
+            # Redirect to payment failure page or handle as needed
+            return HttpResponseBadRequest("Payment verification failed")
 
-        return redirect('/')  # Adjust the URL as needed
 
     return HttpResponseBadRequest()
 
