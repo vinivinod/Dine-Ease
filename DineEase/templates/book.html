@@ -280,20 +280,11 @@
                           </optgroup>
                       </select>
             </div>
-            {% comment %} <h3>Select Menu Items:</h3>
-            <div class="menu-items">
-                {% for menu_item in menu_items %}
-                <div class="menu-item">
-                    <label for="menu_item_{{ menu_item.id }}">
-                        <input type="checkbox" id="menu_item_{{ menu_item.id }}" name="menu_items" value="{{ menu_item.id }}" class="menu-item-checkbox">
-                        {{ menu_item.name }}&ensp;
-                        ₹ {{ menu_item.price }}
-                    </label>
-                    <input type="number" name="menu_item_quantity_{{ menu_item.id }}" value="1" min="1" class="menu-item-quantity">
-                </div>
-                {% endfor %}
-            </div> {% endcomment %}
-  
+            <div>
+              <h3>Selected Menu Items:</h3>
+              <textarea id="selected-menu-items" rows="4" cols="63" readonly></textarea>
+          </div>
+          
             <div class="btn_box">
                 <button type="submit" id="btnBook" class="btn btn-primary">Book Now</button>
             </div>
@@ -315,7 +306,15 @@
                                 {{ menu_item.name }}&ensp;
                                 ₹{{ menu_item.price }}&ensp;
                             </label>
-                            <input type="number" name="menu_item_quantity_{{ menu_item.id }}" value="1" min="1" max="20" class="menu-item-quantity" oninput="this.value = Math.max(parseInt(this.value) || 0, 0); this.value = Math.min(this.value, 20);">
+                            {% with stock=menu_item.stock %}
+                                {% if stock and stock.stock_quantity == 0 %}
+                                    <input type="number" name="menu_item_quantity_{{ menu_item.id }}" value="0" min="0" max="{{ stock.stock_quantity }}" class="menu-item-quantity" oninput="this.value = Math.max(parseInt(this.value) || 0, 0); this.value = Math.min(this.value, {{ stock.stock_quantity }});">
+                                {% elif stock %}
+                                    <input type="number" name="menu_item_quantity_{{ menu_item.id }}" value="1" min="1" max="{{ stock.stock_quantity }}" class="menu-item-quantity" oninput="this.value = Math.max(parseInt(this.value) || 0, 0); this.value = Math.min(this.value, {{ stock.stock_quantity }});">
+                                {% else %}
+                                    <input type="number" name="menu_item_quantity_{{ menu_item.id }}" value="0" min="0" max="0" class="menu-item-quantity" readonly>
+                                {% endif %}
+                            {% endwith %}
                         </div>
                     {% endfor %}
                 </div>
@@ -483,8 +482,36 @@
       });
   });
 
-
 </script>
+<script>
+  // Get all the checkboxes representing menu items
+  const menuCheckboxes = document.querySelectorAll('.menu-item-checkbox');
+
+  // Add event listener to each checkbox
+  menuCheckboxes.forEach(function(checkbox) {
+      checkbox.addEventListener('change', function() {
+          updateSelectedMenuItems();
+      });
+  });
+
+  // Function to update the selected menu items in the textarea
+  function updateSelectedMenuItems() {
+      const selectedItems = [];
+      menuCheckboxes.forEach(function(checkbox) {
+          if (checkbox.checked) {
+              const menuItemId = checkbox.value;
+              const menuItemName = document.querySelector('label[for="' + checkbox.id + '"]').textContent.trim();
+              const menuItemRate = document.querySelector('label[for="' + checkbox.id + '"]').nextElementSibling.textContent.trim();
+              const quantity = document.querySelector('input[name="menu_item_quantity_' + menuItemId + '"]').value;
+              selectedItems.push(`${menuItemName} ${menuItemRate} - Quantity: ${quantity}`);
+          }
+      });
+      document.getElementById('selected-menu-items').value = selectedItems.join('\n');
+  }
+</script>
+
+
+
 
 
 {% comment %} <script>
