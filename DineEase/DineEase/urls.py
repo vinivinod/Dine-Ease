@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path,include
 from home.views import userlogin,register,loggout,login_page
 
-from home.views import index,menu,about,menumore,add_reservation,booking_confirm,predict_image,pred_menu,booking_list,orders_lists,cancel_booking,download_pdf,download_bill,cancel_order,review,add_review
+from home.views import index,menu,about,menumore,add_reservation,booking_confirm,predict_image,pred_menu,booking_list,orders_lists,cancel_booking,download_pdf,download_bill,cancel_order,review,add_review,catering_booking
 from home.views import billing_payment,table_booking_payment,paymenthandler,cart,add_to_cart,view_cart,remove_from_cart,update_cart_item_quantity,checkout,display_cart_items,order_summary
 from home.views import admin_login,admin_index,add_menu,user_list,ad_MenuList,menu_list,menu_edit,delete_menu_item,employee_count,empLeave_list,order_list,payment_counts,ad_booking_lists,stock_view,edit_stock,add_stock
 from home.views import emp_index,emp_add,emp_profile,emp_list,emp_edit,products_by_category,filtered_menus,emp_registration,save_employee_details,employee_profile,delete_emp,change_pswrd,orderlist_emp,history_orders
@@ -63,6 +63,7 @@ urlpatterns = [
     # path('previous_reservations/', previous_reservations, name='previous_reservations'),
     #  path('approve_reservation/<str:reservation_id>/', approve_reservation, name='approve_reservation'),
     # path('book_table/', book_table, name='book_table'),
+    path('catering-booking/', catering_booking, name='catering_booking'),
     path('cart/',cart, name='cart'),
     path('add_to_cart/<int:menu_id>/',add_to_cart,name='add_to_cart'),
     path('remove/<int:item_id>/', remove_from_cart, name='remove_from_cart'),

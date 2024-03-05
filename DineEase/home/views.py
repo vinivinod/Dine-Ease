@@ -459,6 +459,11 @@ def expired():
         # Delete the expired booking
         # booking.delete()
 
+from django.shortcuts import render
+
+def catering_booking(request):
+    return render(request, 'catering_booking.html')
+
 
 from django.shortcuts import get_object_or_404, redirect
 from .models import TableBooking
