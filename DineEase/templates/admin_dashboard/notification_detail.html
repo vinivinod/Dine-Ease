@@ -41,7 +41,33 @@
 			border-radius: 50%;
 			text-align: center;
 		}		
-		
+		.ec-content-wrapper {
+			background-color: #f9f9f9;
+			border: 1px solid #ccc;
+			border-radius: 5px;
+			padding: 20px;
+			margin: 20px 0;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+		}
+	
+		.content {
+			font-family: Arial, sans-serif;
+			color: #333;
+		}
+	
+		h1 {
+			font-size: 24px;
+			margin-bottom: 15px;
+			color: #007bff;
+		}
+	
+		p {
+			margin-bottom: 10px;
+		}
+	
+		strong {
+			font-weight: bold;
+		}
 	</style>
 </head>
 
@@ -417,12 +443,11 @@
 				<div class="content">
 					<!-- Top Statistics -->
 					<h1>Notification Detail</h1>
-                    <div>
-                        <p><strong>Menu Item:</strong> {{ notification.menu_item.name }}</p>
-                        <p><strong>Message:</strong> {{ notification.message }}</p>
-                        <p><strong>Timestamp:</strong> {{ notification.timestamp }}</p>
-                    </div>
-
+					<div>
+						<p><strong>Menu Item:</strong> {{ notification.menu_item.name }}</p>
+						<p><strong>Message:</strong> {{ notification.message }}</p>
+						<p><strong>Timestamp:</strong> {{ notification.timestamp }}</p>
+					</div>
 				</div> <!-- End Content -->
 			</div> <!-- End Content Wrapper -->
 
