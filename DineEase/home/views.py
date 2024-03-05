@@ -464,6 +464,32 @@ from django.shortcuts import render
 def catering_booking(request):
     return render(request, 'catering_booking.html')
 
+from django.shortcuts import render
+from .models import CateringMenu
+
+def catering_booking(request):
+    veg_starters = CateringMenu.objects.filter(category='Veg', subcategory='Starters').values_list('name', flat=True)
+    veg_main_courses = CateringMenu.objects.filter(category='Veg', subcategory='Main Course').values_list('name', flat=True)
+    veg_desserts = CateringMenu.objects.filter(category='Veg', subcategory='Desserts').values_list('name', flat=True)
+    veg_drinks = CateringMenu.objects.filter(category='Veg', subcategory='Drinks').values_list('name', flat=True)
+
+    non_veg_starters = CateringMenu.objects.filter(category='Non-Veg', subcategory='Starters').values_list('name', flat=True)
+    non_veg_main_courses = CateringMenu.objects.filter(category='Non-Veg', subcategory='Main Course').values_list('name', flat=True)
+    non_veg_desserts = CateringMenu.objects.filter(category='Non-Veg', subcategory='Desserts').values_list('name', flat=True)
+    non_veg_drinks = CateringMenu.objects.filter(category='Non-Veg', subcategory='Drinks').values_list('name', flat=True)
+
+    context = {
+        'veg_starters': veg_starters,
+        'veg_main_courses': veg_main_courses,
+        'veg_desserts': veg_desserts,
+        'veg_drinks': veg_drinks,
+        'non_veg_starters': non_veg_starters,
+        'non_veg_main_courses': non_veg_main_courses,
+        'non_veg_desserts': non_veg_desserts,
+        'non_veg_drinks': non_veg_drinks,
+    }
+    return render(request, 'catering_booking.html', context)
+
 
 from django.shortcuts import get_object_or_404, redirect
 from .models import TableBooking

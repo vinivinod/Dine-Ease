@@ -136,7 +136,9 @@ input[type="submit"] {
 input[type="submit"]:hover {
     background-color: #45a049;
 }
-
+.error-message {
+    color: red;
+}
   </style>
 </head>
 
@@ -280,18 +282,19 @@ input[type="submit"]:hover {
             <label for="date">Date:</label>
             <input type="date" id="date" name="date" required>
             
-            <label for="time">Time:</label>
+            <label for="time">Starting Time:</label>
             <input type="time" id="time" name="time" required>
     
             <label for="persons">Number of Persons:</label>
-            <input type="number" id="persons" name="persons" required>
+            <input type="number" id="persons" name="persons" min="1" required>
+            <div id="personsError" class="error-message"></div>
     
             <label for="menu">Menu:</label>
             <select id="menu" name="menu" required>
                 <option value="">Select Menu</option>
                 <option value="Vegetarian">Vegetarian</option>
                 <option value="Non-Vegetarian">Non-Vegetarian</option>
-            </select>
+            </select><br><br>
     
             <label for="starters">Starters:</label>
             <input type="text" id="starters" name="starters">
@@ -417,18 +420,29 @@ input[type="submit"]:hover {
     }
 
     
-    function validateForm() {
-        var timeInput = document.getElementById("time").value;
-        var time = new Date("2000-01-01T" + timeInput);
-        var hours = time.getHours();
+    document.getElementById("time").addEventListener("change", function() {
+        var timeInput = this.value;
+        var hour = parseInt(timeInput.split(":")[0]);
 
-        if (hours < 9 || hours > 22) { // 22 represents 11:00 PM
-            alert("Please select a time between 9am and 11pm.");
-            return false;
+        if (hour < 9 || hour > 20) {
+            alert("Please select a time between 9am and 9pm.");
+            this.value = ''; // Clear the input field
         }
-        
-        return true;
-    }
+    });
+
+    var personsInput = document.getElementById("persons");
+        var personsError = document.getElementById("personsError");
+
+        personsInput.addEventListener("input", function() {
+            var value = parseInt(this.value);
+
+            if (isNaN(value) || value < 0) {
+                personsError.textContent = "Please enter a valid positive number of persons.";
+                this.value = ''; // Clear the input field
+            } else {
+                personsError.textContent = "";
+            }
+        });
 
 </script>
   <!-- jQery -->

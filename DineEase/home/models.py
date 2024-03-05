@@ -142,6 +142,28 @@ class menus(models.Model):
     def __str__(self):
         return self.name
 
+from django.db import models
+
+class CateringMenu(models.Model):
+    CATEGORY_CHOICES = [
+        ('Veg', 'Vegetarian'),
+        ('Non-Veg', 'Non-Vegetarian'),
+    ]
+
+    SUBCATEGORY_CHOICES = [
+        ('Starters', 'Starters'),
+        ('Main Course', 'Main Course'),
+        ('Desserts', 'Desserts'),
+        ('Drinks', 'Drinks'),
+    ]
+
+    name = models.CharField(max_length=100)
+    category = models.CharField(max_length=10, choices=CATEGORY_CHOICES)
+    subcategory = models.CharField(max_length=20, choices=SUBCATEGORY_CHOICES)
+
+    def __str__(self):
+        return self.name
+
 # from django.db import models
 
 # class Cart(models.Model):
