@@ -536,9 +536,11 @@
                                                         </select>
                                                     </div><br>
                                                     <div class="col-md-6">
-                                                        <label for="stock">Stock</label>
-                                                        <input type="text" class="form-control" name="stock" id="stock" placeholder="Enter stock">
-                                                    </div><br>
+														<label for="stock">Stock</label>
+														<input type="text" class="form-control" name="stock" id="stock" placeholder="Enter stock" oninput="validateStock(this)">
+														<div id="stockError" style="color: red;"></div>
+													</div><br>
+													
                                                     <div class="col-md-12">
                                                         <!-- Button to submit the form -->
                                                         <button type="submit" class="btn btn-primary">Save Stock</button>
@@ -585,6 +587,46 @@
 
 	<!-- custom js -->
 	<script src="{% static 'assets/js/custom.js' %}"></script>
+	<script>
+		{% comment %} const stockInput = document.getElementById("stock");
+	
+		stockInput.addEventListener("input", function() {
+			const inputValue = parseFloat(stockInput.value);
+			if (isNaN(inputValue) || inputValue < 0) {
+				document.getElementById("stockError").textContent = "Please enter a positive number.";
+				stockInput.classList.add("is-invalid");
+			} else {
+				document.getElementById("stockError").textContent = "";
+				stockInput.classList.remove("is-invalid");
+			}
+		}); {% endcomment %}
+
+		function validateStock(input) {
+			var stockValue = input.value.trim();
+			var errorDiv = document.getElementById("stockError");
+			var isValid = true;
+		
+			// Check if the input is a positive number
+			if (!/^\d+$/.test(stockValue) || parseInt(stockValue) <= 0) {
+				isValid = false;
+				errorDiv.textContent = "Please enter a positive number for stock.";
+			}
+			// Check if the input is within the range of 0 to 100
+			else if (parseInt(stockValue) > 100) {
+				isValid = false;
+				errorDiv.textContent = "Stock cannot exceed 100.";
+			} else {
+				errorDiv.textContent = "";
+			}
+		
+			// If the input is not valid, clear the input value
+			if (!isValid) {
+				input.value = "";
+			}
+		}
+		
+	</script>
+
 </body>
 
 
