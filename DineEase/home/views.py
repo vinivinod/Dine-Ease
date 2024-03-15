@@ -368,6 +368,7 @@ from django.utils.dateparse import parse_date, parse_time
 
 from django.db import transaction  # Import transaction module
 from django.shortcuts import render, redirect
+from itertools import groupby
 from .models import TableBooking
 @login_required
 def add_reservation(request):
@@ -383,6 +384,8 @@ def add_reservation(request):
         table_name = request.POST.get("table_name")
         start_time_str = request.POST.get("start_time")
         end_time_str = request.POST.get("end_time")
+        selected_menu_items = request.POST.getlist("selected_menu_items")
+
 
         date = parse_date(date_str)
         start_time = parse_time(start_time_str)
@@ -440,13 +443,21 @@ def add_reservation(request):
             # Redirect to the booking summary page with the ID of the saved booking
             return redirect('booking_confirm', booking_id=post.id)
 
-    menu_items = menus.objects.filter(active=True)
+    # Fetch distinct categories
+    categories = menus.objects.values_list('category', flat=True).distinct()
+
+    # Create a dictionary to hold category name and its corresponding menu items
+    categorized_menu_items = {}
+
+    # Fetch all menu items for each category
+    for category in categories:
+        menu_items = menus.objects.filter(active=True, category=category)
+        categorized_menu_items[category] = menu_items
 
     return render(request, "book.html", {
         "error_message": error_message,
-        "menu_items": menu_items,
+        "categorized_menu_items": categorized_menu_items,
     })
-
 
 def expired():
     # Check for expired bookings and make slots available
@@ -1370,14 +1381,19 @@ def stock_view(request):
 
     return render(request, 'admin_dashboard/stock.html', {'menu_items_with_stock': menu_items_with_stock})
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from .models import menus, Stock
 
 def add_stock(request):
     if request.method == 'POST':
-        # Retrieve data from the POST request
+        # Process the form submission to add stock
         menu_id = request.POST.get('menu')
         stock_quantity = request.POST.get('stock')
+        
+        # Check if a stock entry already exists for the selected menu item
+        if Stock.objects.filter(menu_item_id=menu_id).exists():
+            # If a stock entry already exists, redirect with a message indicating the entry exists
+            return redirect('stock_view')  # Adjust this to redirect to the appropriate view or template
         
         # Retrieve the corresponding menu item from the menus model
         menu_item = menus.objects.get(id=menu_id)
@@ -1387,10 +1403,10 @@ def add_stock(request):
         stock_item.save()
 
         # Redirect to the stock view
-        return redirect('stock_view')
+        return redirect('stock_view')  # Adjust this to redirect to the appropriate view or template
     else:
-        # Retrieve all menu items from the menus model
-        menus_list = menus.objects.all()
+        # Retrieve menu items that do not have associated stock entries
+        menus_list = menus.objects.exclude(stock__isnull=False)
         return render(request, 'admin_dashboard/add_stock.html', {'menus': menus_list})
 
 

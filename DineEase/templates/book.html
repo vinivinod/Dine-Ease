@@ -84,6 +84,66 @@
 }
 
 /* Additional styles as needed */
+.menu-categories {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.menu-category {
+  margin-bottom: 20px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.menu-item-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  margin-right: 20px;
+}
+
+.menu-item-details {
+  flex: 1;
+}
+
+.menu-item-details h4 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.menu-item-details p {
+  margin: 5px 0;
+}
+
+.menu-item-checkbox {
+  margin-right: 5px;
+}
+
+.menu-item-label {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.menu-item-quantity {
+  width: 50px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+.menu-categories {
+  max-height: 500px; /* Set the maximum height for the menu-categories */
+  max-width: 800px;
+  overflow-y: auto; /* Enable vertical scrolling */
+  overflow-x: auto;
+}
+
 
 
   </style>
@@ -291,8 +351,8 @@
             </div>
             <div>
               <h3>Selected Menu Items:</h3>
-              <textarea id="selected-menu-items" rows="4" cols="63" readonly></textarea>
-          </div>
+              <textarea name="selected_menu_items" id="selected-menu-items" rows="4" cols="63" readonly></textarea>
+            </div>
           
             <div class="btn_box">
                 <button type="submit" id="btnBook" class="btn btn-primary">Book Now</button>
@@ -306,26 +366,34 @@
           </div> {% endcomment %}
           <div class="col-md-6">
             <h3>Select Menu Items:</h3>
-            <div class="menu-items" style="height: 380px; width: 650px; overflow-y: auto;">
-              <div class="menu-items-grid">
-                  {% for menu_item in menu_items %}
-                      {% with stock=menu_item.stock %}
-                          {% if stock and stock.stock_quantity > 0 %}
-                              <div class="menu-item">
-                                  <label for="menu_item_{{ menu_item.id }}" class="menu-item-label">
-                                      <input type="checkbox" id="menu_item_{{ menu_item.id }}" name="menu_items" value="{{ menu_item.id }}" class="menu-item-checkbox">
-                                      {{ menu_item.name }}&ensp;
-                                      ₹{{ menu_item.price }}&ensp;
-                                  </label>
+            <div class="menu-categories">
+              <div class="menu-categories-grid">
+                  {% for category, items in categorized_menu_items.items %}
+                  <div class="menu-category">
+                      <h3>{{ category }}</h3>
+                      <div class="menu-items-grid">
+                          {% for menu_item in items %}
+                          {% with stock=menu_item.stock %}
+                          {% if stock %}
+                          <div class="menu-item">
+                              <img src="{{ menu_item.img.url }}" alt="{{ menu_item.name }}" class="menu-item-image">
+                              <div class="menu-item-details">
+                                  <h4>{{ menu_item.name }}</h4>
+                                  <p>₹{{ menu_item.price }}</p>
+                                  <input type="checkbox" id="menu_item_{{ menu_item.id }}" name="menu_items" value="{{ menu_item.id }}" class="menu-item-checkbox" onclick="updateSelectedMenuItems(this)">
                                   <input type="number" name="menu_item_quantity_{{ menu_item.id }}" value="1" min="1" max="{{ stock.stock_quantity }}" class="menu-item-quantity" oninput="this.value = Math.max(parseInt(this.value) || 0, 0); this.value = Math.min(this.value, {{ stock.stock_quantity }});">
                               </div>
+                          </div>
                           {% endif %}
-                      {% endwith %}
+                          {% endwith %}
+                          {% endfor %}
+                      </div>
+                  </div>
                   {% endfor %}
               </div>
           </div>
-          
         </div>
+        
       </div>
       <br>
       </div>
@@ -732,26 +800,47 @@
     }
 });
 
-document.getElementById("reservationForm").addEventListener("submit", function (event) {
-  var form = event.target;
-  var fields = form.querySelectorAll("input, select");
-  var emptyFields = [];
+function updateSelectedMenuItems(checkbox) {
+  var menuItemId = checkbox.value;
+  var menuItemContainer = checkbox.closest('.menu-item');
+  var menuItemName = menuItemContainer.querySelector('h4').textContent;
+  var menuItemPrice = menuItemContainer.querySelector('p').textContent;
+  var menuItemQuantity = menuItemContainer.querySelector('.menu-item-quantity').value;
+  
+  if (checkbox.checked) {
+      var existingItems = document.getElementById('selected-menu-items').value;
+      var newItem = menuItemName + ' - ' + menuItemPrice + ' x ' + menuItemQuantity;
+      if (existingItems.trim() === '') {
+          document.getElementById('selected-menu-items').value = newItem;
+      } else {
+          document.getElementById('selected-menu-items').value = existingItems + '\n' + newItem;
+      }
+  } else {
+      var regex = new RegExp(menuItemName + ' - ' + menuItemPrice + ' x ' + menuItemQuantity + '\n?', 'g');
+      document.getElementById('selected-menu-items').value = document.getElementById('selected-menu-items').value.replace(regex, '');
+  }
+}
 
-  fields.forEach(function (field) {
-      if (field.value.trim() === "") {
-          emptyFields.push(field);
+// Add event listeners to quantity input fields
+var quantityInputs = document.querySelectorAll('.menu-item-quantity');
+quantityInputs.forEach(function(input) {
+  input.addEventListener('input', function() {
+      var menuItemId = this.name.replace('menu_item_quantity_', '');
+      var menuItemContainer = this.closest('.menu-item');
+      var menuItemName = menuItemContainer.querySelector('h4').textContent;
+      var menuItemPrice = menuItemContainer.querySelector('p').textContent;
+      var newQuantity = this.value;
+
+      var existingItems = document.getElementById('selected-menu-items').value;
+      var regex = new RegExp(menuItemName + ' - ' + menuItemPrice + ' x \\d+', 'g');
+      var newItem = menuItemName + ' - ' + menuItemPrice + ' x ' + newQuantity;
+      if (existingItems.trim() === '') {
+          document.getElementById('selected-menu-items').value = newItem;
+      } else {
+          document.getElementById('selected-menu-items').value = existingItems.replace(regex, newItem);
       }
   });
-
-  if (emptyFields.length > 0) {
-      event.preventDefault(); // Prevent form submission
-      var errorMessage = "Please fill in all required fields.";
-      document.getElementById("error_message").textContent = errorMessage;
-  }
 });
-
-
-
 
   </script>
 
