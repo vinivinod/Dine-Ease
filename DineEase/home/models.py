@@ -146,23 +146,29 @@ from django.db import models
 
 class CateringMenu(models.Model):
     CATEGORY_CHOICES = [
-        ('Veg', 'Vegetarian'),
-        ('Non-Veg', 'Non-Vegetarian'),
-    ]
-
-    SUBCATEGORY_CHOICES = [
-        ('Starters', 'Starters'),
-        ('Main Course', 'Main Course'),
-        ('Desserts', 'Desserts'),
+        ('Veg Starter', 'Vegetarian Starter'),
+        ('Non-Veg Starter', 'Non-Vegetarian Starter'),
+        ('Veg-Main Course', 'Vegetarian Main Course'),
+        ('Non-Veg Main Course', 'Non-Vegetarian Main Course'),
+        ('Desert', 'Desert'),
         ('Drinks', 'Drinks'),
     ]
 
+
     name = models.CharField(max_length=100)
-    category = models.CharField(max_length=10, choices=CATEGORY_CHOICES)
-    subcategory = models.CharField(max_length=20, choices=SUBCATEGORY_CHOICES)
+    category = models.CharField(max_length=100, choices=CATEGORY_CHOICES)
+    
 
     def __str__(self):
         return self.name
+
+from django.db import models
+
+class Catering(models.Model):
+    date = models.DateField()
+    number_of_persons = models.IntegerField()
+    menu_items = models.ManyToManyField(menus, related_name='catering')
+
 
 # from django.db import models
 

@@ -479,27 +479,45 @@ from django.shortcuts import render
 from .models import CateringMenu
 
 def catering_booking(request):
-    veg_starters = CateringMenu.objects.filter(category='Veg', subcategory='Starters').values_list('name', flat=True)
-    veg_main_courses = CateringMenu.objects.filter(category='Veg', subcategory='Main Course').values_list('name', flat=True)
-    veg_desserts = CateringMenu.objects.filter(category='Veg', subcategory='Desserts').values_list('name', flat=True)
-    veg_drinks = CateringMenu.objects.filter(category='Veg', subcategory='Drinks').values_list('name', flat=True)
+    categories = CateringMenu.CATEGORY_CHOICES
+    menu_items_by_category = {}
 
-    non_veg_starters = CateringMenu.objects.filter(category='Non-Veg', subcategory='Starters').values_list('name', flat=True)
-    non_veg_main_courses = CateringMenu.objects.filter(category='Non-Veg', subcategory='Main Course').values_list('name', flat=True)
-    non_veg_desserts = CateringMenu.objects.filter(category='Non-Veg', subcategory='Desserts').values_list('name', flat=True)
-    non_veg_drinks = CateringMenu.objects.filter(category='Non-Veg', subcategory='Drinks').values_list('name', flat=True)
+    for category, _ in categories:
+        menu_items = CateringMenu.objects.filter(category=category).values_list('name', flat=True)
+        menu_items_by_category[category] = menu_items
 
     context = {
-        'veg_starters': veg_starters,
-        'veg_main_courses': veg_main_courses,
-        'veg_desserts': veg_desserts,
-        'veg_drinks': veg_drinks,
-        'non_veg_starters': non_veg_starters,
-        'non_veg_main_courses': non_veg_main_courses,
-        'non_veg_desserts': non_veg_desserts,
-        'non_veg_drinks': non_veg_drinks,
+        'menu_items_by_category': menu_items_by_category,
     }
     return render(request, 'catering_booking.html', context)
+
+from django.shortcuts import render, redirect
+from .models import Catering
+
+def save_catering(request):
+    if request.method == 'POST':
+        date = request.POST.get('date')
+        number_of_persons = request.POST.get('persons')
+        menu_items_selected = request.POST.getlist('menu[]')
+
+        # Join the selected menu items into a single string separated by commas
+        menu_items_string = ', '.join(menu_items_selected)
+
+        # Create the Catering object and save it to the database
+        catering = Catering.objects.create(date=date, number_of_persons=number_of_persons, menu_items=menu_items_string)
+
+        # Optionally, you can redirect to a success page or render a template
+        return redirect('catering_details', catering_id=catering.pk)
+
+    return render(request, 'catering_booking.html')
+
+
+from django.shortcuts import render, get_object_or_404
+from .models import Catering
+
+def catering_details(request, catering_id):
+    catering = get_object_or_404(Catering, pk=catering_id)
+    return render(request, 'catering_details.html', {'catering': catering})
 
 
 from django.shortcuts import get_object_or_404, redirect
@@ -1817,17 +1835,19 @@ from datetime import date
 
 
 def orders_lists(request):
-    # Filter BillingInformation and Payment instances for the logged-in user
     user = request.user
     billing_info = BillingInformation.objects.filter(user=user)
     payments = Payment.objects.filter(billing_info__user=user)
-    # Get the current date
     current_date = date.today()
+
+    # Get a list of order IDs for which reviews have been submitted by the user
+    reviewed_orders = Review.objects.filter(user=user).values_list('billing_information__id', flat=True)
 
     context = {
         'billing_info': billing_info,
         'payments': payments,
         'current_date': current_date,
+        'reviewed_orders': reviewed_orders,  # Pass the list of reviewed order IDs to the template
     }
     return render(request, 'orders_list.html', context)
 

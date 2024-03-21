@@ -347,18 +347,23 @@
                           </td>
                           <td>
                             {% if info.status == 1 %}
-                              <form method="post" action="{% url 'cancel_order' info.id %}"
-                                  onsubmit="return confirmCancellation('{{ info.id }}')">
-                                  {% csrf_token %}
-                                  <button type="submit" class="btn btn-danger"
-                                      style="background-color: #ff6347; color: #fff; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer;">Cancel</button>
-                              </form>
-                              {% else %}
-                              {% if info.status == 1 %}
-                                
-                              {% else %}
-                                Cancelled
-                              {% endif %}
+                                {% if info.date == current_date %}
+                                    <form method="post" action="{% url 'cancel_order' info.id %}"
+                                          onsubmit="return confirmCancellation('{{ info.id }}')">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger"
+                                                style="background-color: #ff6347; color: #fff; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer;">Cancel</button>
+                                    </form>
+                                {% else %}
+                                    <!-- Show a message indicating that the order is not for the current date -->
+                                    
+                                {% endif %}
+                            {% else %}
+                                {% if info.status == 1 %}
+                                    <!-- Whatever logic you want to put for status 1 -->
+                                {% else %}
+                                    Cancelled
+                                {% endif %}
                             {% endif %}
                         </td>
                           <td>
@@ -369,8 +374,12 @@
                           </td>
                           <td>
                             {% if info.status == 1 %}
-                                <!-- Show the review button only for status 1 -->
-                                <a href="{% url 'review' order_id=info.id %}" class="btn btn-success">Review</a>
+                                <!-- Show the review button only if the order has not been reviewed -->
+                                {% if info.id not in reviewed_orders %}
+                                    <a href="{% url 'review' order_id=info.id %}" class="btn btn-success" id="review_btn">Review</a>
+                                {% else %}
+                                    Submitted
+                                {% endif %}
                             {% endif %}
                         </td>
                       </tr>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catering Booking Details</title>
+</head>
+<body>
+    <h1>Catering Booking Details</h1>
+    <p><strong>Date:</strong> {{ catering.date }}</p>
+    <p><strong>Number of Persons:</strong> {{ catering.number_of_persons }}</p>
+    <p><strong>Menu Items:</strong></p>
+    <ul>
+        {% for menu_item in catering.menu_items.all %}
+            <li>{{ menu_item }}</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'home' %}">Back to Home</a>
+</body>
+</html>

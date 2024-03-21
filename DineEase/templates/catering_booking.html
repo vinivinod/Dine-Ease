@@ -94,7 +94,7 @@ h2 {
 }
 
 form {
-    max-width: 400px;
+    max-width: 600px;
     margin: 0 auto;
 }
 
@@ -138,6 +138,41 @@ input[type="submit"]:hover {
 }
 .error-message {
     color: red;
+}
+.menu-container {
+  display: flex;
+  justify-content: space-around;
+  width: 800px; /* Adjust width as needed */
+  height: auto; /* Adjust height as needed */
+}
+
+.menu-column {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.menu-column label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+.container {
+  width: 100%;
+  margin: auto;
+  padding: 20px;
+}
+label {
+  display: inline-block;
+  margin-bottom: 10px;
+  margin-right: 20px;
 }
   </style>
 </head>
@@ -277,38 +312,29 @@ input[type="submit"]:hover {
   <!-- book section -->
   <section class="book_section layout_padding">
     <div class="container">
-        <h2>Catering Booking Form</h2>
-        <form action="#" method="post" onsubmit="return validateForm()">
-            <label for="date">Date:</label>
-            <input type="date" id="date" name="date" required>
-            
-            {% comment %} <label for="time">Starting Time:</label>
-            <input type="time" id="time" name="time" required> {% endcomment %}
+      <h2>Catering Booking</h2>
+      <form action="{% url 'save_catering' %}" method="post">
+        {% csrf_token %}
+        <label for="date">Date:</label>
+        <input type="date" id="date" name="date" required>
+        <br>
+        <label for="persons">Number of Persons:</label>
+        <input type="number" id="persons" name="persons" min="1" required>
+        <br>
+        <label style="font-size: 20px; font-weight: bold;">Menu:</label><br>
+        {% for category, items in menu_items_by_category.items %}
+            <label>{{ category }}:</label><br>
+            {% for item in items %}
+                <label><input type="checkbox" name="menu[]" value="{{ item }}"> {{ item }}</label>
+            {% endfor %}
+            <br><br>
+        {% endfor %}
+        <br>
+        <input type="submit" value="Proceed">
+    </form>
     
-            <label for="persons">Number of Persons:</label>
-            <input type="text" id="persons" name="persons" required>
-            <div id="personsError" class="error-message"></div>
-                  
-            <label for="menu">Menu:</label>
-            <select id="menu" name="menu" required>
-                <option value="">Select Menu</option>
-                <option value="Vegetarian">Vegetarian</option>
-                <option value="Non-Vegetarian">Non-Vegetarian</option>
-            </select><br><br>
-    
-            <label for="starters">Starters:</label>
-            <input type="text" id="starters" name="starters">
-    
-            <label for="main-course">Main Course:</label>
-            <input type="text" id="main-course" name="main-course">
-    
-            <label for="dessert">Dessert:</label>
-            <input type="text" id="dessert" name="dessert">
-    
-            <label for="drinks">Drinks:</label>
-            <input type="text" id="drinks" name="drinks">
-    
-            <input type="submit" value="Submit">
+  </div>
+            {% comment %} <input type="submit" value="Submit"> {% endcomment %}
         </form>
         </div>
           {% comment %} <div class="map_container">
