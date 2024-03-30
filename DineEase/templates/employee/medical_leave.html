@@ -3,7 +3,7 @@
 <html lang="en" dir="ltr">
 
 
-<!-- Mirrored from andit.co/projects/html/andshop/andshop-dashboard/product-list.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 17 Aug 2023 06:53:26 GMT -->
+<!-- Mirrored from andit.co/projects/html/andshop/andshop-dashboard/product-add.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 17 Aug 2023 06:52:43 GMT -->
 <head>
 	<meta charset="utf-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -17,26 +17,152 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800&amp;family=Poppins:wght@300;400;500;600;700;800;900&amp;family=Roboto:wght@400;500;700;900&amp;display=swap" rel="stylesheet">
 
-	<link href="../../../../cdn.jsdelivr.net/npm/%40mdi/font%404.4.95/css/materialdesignicons.min.html" rel="stylesheet" />
 	<link href="{% static 'assets/css/materialdesignicons.min.css' %}" rel="stylesheet" />
-
 
 	<!-- PLUGINS CSS STYLE -->
 	<link href="{% static 'assets/plugins/simplebar/simplebar.css' %}" rel="stylesheet" />
-
-	<!-- No Extra plugin used -->
-
-	<link href="{% static 'assets/plugins/data-tables/datatables.bootstrap5.min.css' %}" rel='stylesheet'>
-	<link href="{% static 'assets/plugins/data-tables/responsive.datatables.min.css' %}" rel='stylesheet'>
 
 	<!-- custom css -->
 	<link id="{% static 'style.css' %}" rel="stylesheet" href="{% static 'assets/css/style.css' %}" />
 
 	<!-- FAVICON -->
 	<link href="{% static 'assets/img/favicon.png' %}" rel="shortcut icon" />
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            {% comment %} background-color:#8dd0f7; {% endcomment %}
+            color: black;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .header p {
+            {% comment %} background-color: #8dd0f7; {% endcomment %}
+            color: black;
+            text-align: left;
+            padding: 5px 0;
+            margin: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .form-group:last-child {
+            margin-right: 0;
+        }
+
+        .form-group col-md-3 label {
+            color:black;
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group select,
+        .form-group textarea {
+            width: 90px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .form-group select {
+            color:black;
+            height: 40px;
+            width: 200px;
+        }
+
+        .form-group  textarea {
+            color:black;
+            height: 50px;
+            width: 200px;
+        }
+
+        .custom-input {
+            width: 150px; /* Adjust the width as needed */
+            height: 40px; /* Adjust the height as needed */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: #f7f7f7;
+            color: #333;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.2s ease-in-out;
+        }
+        
+        .custom-input:focus {
+            border-color: #007BFF; /* Highlight the border when focused */
+            outline: none;
+        }
+        
+
+        .btn-apply {
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 40px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+		.text-danger {
+			color: red;
+		}
+    </style>
+
 </head>
 
-<body id="body">
+<body class="ec-header-fixed ec-sidebar-fixed ec-sidebar-dark ec-header-light" id="body">
 
 	<!-- WRAPPER -->
 	<div class="wrapper">
@@ -46,8 +172,8 @@
 			<div id="sidebar" class="sidebar ec-sidebar-footer">
 
 				<div class="ec-brand">
-					<a href="{% url 'admin_index' %}">
-						<img class="ec-brand-icon" src="{% static 'assets/img/logo/favicon.png' %}" alt="" />
+					<a href="index.html">
+						{% comment %} <img class="ec-brand-icon" src="{% static 'assets/img/logo/favicon.png' %}" alt="" /> {% endcomment %}
 						<span class="ec-brand-name text-truncate">DineEase</span>
 					</a>
 				</div>
@@ -83,28 +209,36 @@
 						</li>
 
 						<!-- Leave -->
-						<li class="has-sub active">
+						<li class="has-sub">
 							<a class="sidenav-item-link" href="{% url 'leave_list' %}">
 								<i class="mdi mdi-receipt"></i>
 								<span class="nav-text">Leave</span> 
 							</a>
 						</li>
 
+                        <!-- Leave -->
+						<li class="has-sub active">
+							<a class="sidenav-item-link" href="{% url 'leave_list' %}">
+								<i class="mdi mdi-receipt"></i>
+								<span class="nav-text">Medical Leave</span> 
+							</a>
+						</li>
+
 						<!-- Vendors -->
-						{% comment %} <li class="has-sub">
+						{% comment %}<li class="has-sub">
 							<a class="sidenav-item-link" href="javascript:void(0)">
 								<i class="mdi mdi-briefcase-outline"></i>
 								<span class="nav-text">Reservation</span> <b class="caret"></b>
 							</a>
 							<div class="collapse">
 								<ul class="sub-menu" id="vendors" data-parent="#sidebar-menu">
-									<li class="">
+									 <li class="">
 										<a class="sidenav-item-link" href="vendor-card.html">
 											<span class="nav-text">Vendor Grid</span>
 										</a>
-									</li> 
+									</li> {% endcomment %}
 
-									<li class="">
+									{% comment %}<li class="">
 										<a class="sidenav-item-link" href="{% url 'res_list' %}">
 											<span class="nav-text">Recent</span>
 										</a>
@@ -113,15 +247,15 @@
 										<a class="sidenav-item-link" href="{% url 'previous_reservations' %}">
 											<span class="nav-text">History</span>
 										</a>
-									</li> 
-									<li class="">
+									</li>
+									 <li class="">
 										<a class="sidenav-item-link" href="add-vendor.html">
 											<span class="nav-text">Add Vendors</span>
 										</a>
-									</li> 
+									</li>  
 								</ul>
 							</div>
-						</li>  {% endcomment %}
+						</li> {% endcomment %}
 
 						<!-- Users -->
 						{% comment %} <li class="has-sub">
@@ -131,7 +265,7 @@
 							</a>
 							<div class="collapse">
 								<ul class="sub-menu" id="users" data-parent="#sidebar-menu">
-									 <li>
+									<li>
 										<a class="sidenav-item-link" href="user-card.html">
 											<span class="nav-text">User Grid</span>
 										</a>
@@ -183,7 +317,7 @@
 							</a>
 							<div class="collapse show">
 								<ul class="sub-menu" id="products" data-parent="#sidebar-menu">
-									<li class="">
+									<li class="active">
 										<a class="sidenav-item-link" href="{% url 'apply_leave' %}">
 											<span class="nav-text">Apply Leave</span>
 										</a>
@@ -193,24 +327,26 @@
 											<span class="nav-text">Medical Leave</span>
 										</a>
 									</li>
-									<li class="active">
-										<a class="sidenav-item-link" href="{% url 'leave_list' %}">
-											<span class="nav-text">leave Taken</span>
-										</a>
-									</li>
-									 <li class="">
+									<li class="">
+                                        <a class="sidenav-item-link" href="{% url 'leave_list' %}">
+                                            <span class="nav-text">Leave Taken</span>
+                                        </a>
+                                    </li>
+                                    
+								 <li class="">
 										<a class="sidenav-item-link" href="product-detail.html">
 											<span class="nav-text">Product Detail</span>
 										</a>
-									</li> {
+									</li> 
 								</ul>
 							</div>
 						</li> 
-						<li class="active">
-							<a class="sidenav-item-link" href="{% url 'leave_list' %}" id="listLeave" name="leavelist">
-								<span class="nav-text">leave Taken</span>
+						<li class="">
+							<a class="sidenav-item-link" href="{% url 'leave_list' %}">
+								<span class="nav-text">Leave Taken</span>
 							</a>
 						</li>{% endcomment %}
+
 
 						<!-- Employees-->
 						{% comment %} <li class="has-sub">
@@ -293,14 +429,14 @@
 									</li>
 								</ul>
 							</div>
-						</li> -->
+						</li>
 						<!-- Setting -->
 						<!-- <li>
 							<a class="sidenav-item-link" href="setting.html">
 								<i class="mdi mdi-cogs"></i>
 								<span class="nav-text">Setting</span>
 							</a>
-						</li> -->
+						</li> --> 
 						<!-- Authentication --> 
 						<!-- <li class="has-sub">
 							<a class="sidenav-item-link" href="javascript:void(0)">
@@ -581,90 +717,84 @@
 				<div class="content">
 					<div class="breadcrumb-wrapper d-flex align-items-center justify-content-between">
 						<div>
-							<h1 id="leaveh">Leave Taken</h1>
-							<p class="breadcrumbs"><span><a href="">Leave</a></span>
-								<span><i class="mdi mdi-chevron-right"></i></span>Leave Taken</p>
+							<h1 id="applyh">Apply Leave</h1>
+							<p class="breadcrumbs"><span><a href="emp_leave.html">Leave</a></span>
+								<span><i class="mdi mdi-chevron-right"></i></span>Apply Leave</p>
 						</div>
-						<div>
-							<a href="{% url 'apply_leave' %}" class="btn btn-primary" id="leaveAppl"> Apply Leave</a>
-						</div>
+						 <div>
+							<a href="{% url 'leave_list' %}" class="btn btn-primary"> View All
+							</a>
+						</div> 
 					</div>
 					<div class="row">
 						<div class="col-12">
-							<div class="card card-default">
-								<div class="card-body">
-									<div class="table-responsive">
-                                        <table id="responsive-data-table" class="table" style="width:100%">
-                                            <thead>
-                                                <tr>
-                                                    <th>ID</th> 
-                                                    <th>Date</th>
-                                                    <th>Duration</th>
-                                                    <th>Reason</th>
-                                                    <th>Status</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {% for leave in leave_applications %}
-                                                <tr>
-                                                    <td>#{{ leave.id }}</td> 
-                                                    <td>{{ leave.date }}</td>
-                                                    <td>{{ leave.duration }}</td>
-                                                    <td>{{ leave.reason }}</td>
-                                                    <td>{{ leave.status }}</td>
-                                                </tr>
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
-                                        
-									</div>
-									
-												
-									</div>
-								</div>
-							</div>
-						</div>
-						<br><br>
-						<div>
-							<h1 id="leaveh" style="font-size:24px;">Medical Leave</h1><br>
-							<p class="breadcrumbs"><span><a href="">Leave</a></span>
-								<span><i class="mdi mdi-chevron-right"></i></span>Medical Leave</p>
-						</div><br>
-						<div class="col-12">
-							<div class="card card-default">
-								<div class="card-body">
-									<div class="table-responsive">
-                                        <table id="responsive-data-table" class="table" style="width:100%">
-											<thead>
-												<tr>
-													<th>ID</th> 
-													<th>From Date</th>
-													<th>To Date</th>
-													<th>Reason</th>
-													<th>Status</th>
-												</tr>
-											</thead>
-											<tbody>
-												{% for leave in medical_leave_applications %}
-												<tr>
-													<td>#{{ leave.id }}</td> 
-													<td>{{ leave.leaveFromDate }}</td>
-													<td>{{ leave.leaveToDate }}</td>
-													<td>{{ leave.reason }}</td>
-													<td>{{ leave.status }}</td>
-												</tr>
-												{% endfor %}
-											</tbody>
-										</table>										
-									</div>			
-									</div>
-								</div>
-							</div>
+                            <div class="header">
+							{% if request.user.role == 2 %}
+                                <p>Employee Name: {{ request.user.name }}</p>
+                                <p>Employee Email: {{ request.user.email }}</p>
+                            {% endif %}
+                            </div>
+                            <div class="container">
+                                <div class="row">
+                                    <form id="leaveForm" method="post" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <div class="form-row">
+                                            <div class="form-group col-md-3">
+                                                <label for="leaveFromDate">From Date:</label>
+                                                <input type="date" id="leaveFromDate" name="leaveFromDate" class="form-control custom-input" required>
+                                            </div>
+                                            <div class="form-group col-md-3">
+                                                <label for="leaveToDate">To Date:</label>
+                                                <input type="date" id="leaveToDate" name="leaveToDate" class="form-control custom-input" required>
+                                            </div>
+                                            <div class="form-group col-md-3">
+                                                <label for="leaveReason">Reason:</label>
+                                                <textarea id="leaveReason" name="leaveReason" class="form-control" required></textarea>
+                                                <span id="reasonError" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="medicalCertificate">Medical Certificate (PDF):</label>
+                                                <input type="file" id="medicalCertificate" name="medicalCertificate" class="form-control-file">
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-2">
+                                                <button type="submit" class="btn btn-apply" id="applyButton">Apply</button>
+                                            </div>
+                                        </div>
+                                    </form>                              
+                                </div>
+                            </div>
+                        
+                            {% comment %} <div class="container">
+                                <h2>Leave History</h2>
+                                <table>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Reason</th>
+                                        <th>Status</th>
+                                    </tr>
+                                    <tr>
+                                        <td>2023-01-15</td>
+                                        <td>Full Day</td>
+                                        <td>Vacation</td>
+                                        <td>Approved</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2023-01-20</td>
+                                        <td>Half Day (Morning)</td>
+                                        <td>Doctor's appointment</td>
+                                        <td>Pending</td>
+                                    </tr>
+                                </table>
+                            </div> {% endcomment %}
 						</div>
 					</div>
 				</div> <!-- End Content -->
 			</div> <!-- End Content Wrapper -->
-
 
 			<!-- Footer -->
 			<footer class="footer mt-auto">
@@ -681,23 +811,60 @@
 	<!-- Common Javascript -->
 	<script src="{% static 'assets/plugins/jquery/jquery-3.5.1.min.js' %}"></script>
 	<script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+	<script src="{% static 'assets/plugins/tags-input/bootstrap-tagsinput.js' %}"></script>
 	<script src="{% static 'assets/plugins/simplebar/simplebar.min.js' %}"></script>
 	<script src="{% static 'assets/plugins/jquery-zoom/jquery.zoom.min.js' %}"></script>
 	<script src="{% static 'assets/plugins/slick/slick.min.js' %}"></script>
-
-	<!-- Datatables -->
-	<script src="{% static 'assets/plugins/data-tables/jquery.datatables.min.js' %}"></script>
-	<script src="{% static 'assets/plugins/data-tables/datatables.bootstrap5.min.js' %}"></script>
-	<script src="{% static 'assets/plugins/data-tables/datatables.responsive.min.js' %}"></script>
 
 	<!-- Option Switcher -->
 	<script src="{% static 'assets/plugins/options-sidebar/optionswitcher.js' %}"></script>
 
 	<!-- custom js -->
 	<script src="{% static 'assets/js/custom.js' %}"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Get form elements
+            var leaveFromDate = document.getElementById("leaveFromDate");
+            var leaveToDate = document.getElementById("leaveToDate");
+            var medicalCertificate = document.getElementById("medicalCertificate");
+        
+            // Calculate dates
+            var today = new Date();
+            var monthBeforeToday = new Date(today);
+            monthBeforeToday.setMonth(today.getMonth() - 1);
+            var weekBeforeToday = new Date(today);
+            weekBeforeToday.setDate(today.getDate() - 7);
+            var weekAfterToday = new Date(today);
+            weekAfterToday.setDate(today.getDate() + 7);
+        
+            // Set min and max dates for From Date
+            leaveFromDate.setAttribute("min", formatDate(monthBeforeToday));
+            leaveFromDate.setAttribute("max", formatDate(weekBeforeToday));
+        
+            // Set min and max dates for To Date
+            leaveToDate.setAttribute("min", formatDate(monthBeforeToday));
+            leaveToDate.setAttribute("max", formatDate(weekAfterToday));
+        
+            // Add event listener to Medical Certificate input
+            document.getElementById('medicalCertificate').addEventListener("change", function() {
+                this.setAttribute("accept", "application/pdf"); // Set accept attribute to filter only PDF files
+            });
+
+
+            // Utility function to format date as yyyy-mm-dd
+            function formatDate(date) {
+                var month = date.getMonth() + 1;
+                var day = date.getDate();
+                return date.getFullYear() + "-" + (month < 10 ? "0" : "") + month + "-" + (day < 10 ? "0" : "") + day;
+            }
+        });
+        
+
+	</script>
+    
 </body>
 
 
-
-<!-- Mirrored from andit.co/projects/html/andshop/andshop-dashboard/product-list.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 17 Aug 2023 06:53:29 GMT -->
+<!-- Mirrored from andit.co/projects/html/andshop/andshop-dashboard/product-add.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 17 Aug 2023 06:53:03 GMT -->
 </html>

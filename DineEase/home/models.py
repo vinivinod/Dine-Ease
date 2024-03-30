@@ -167,7 +167,7 @@ from django.db import models
 class Catering(models.Model):
     date = models.DateField()
     number_of_persons = models.IntegerField()
-    menu_items = models.ManyToManyField(menus, related_name='catering')
+    menu_items = models.ManyToManyField(CateringMenu, related_name='catering')
 
 
 # from django.db import models
@@ -372,6 +372,17 @@ class LeaveApplication(models.Model):
 
     def __str__(self):
         return f"Leave Application for {self.user.username} on {self.date}"
+
+class MedicalLeave(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
+    leaveFromDate = models.DateField()
+    leaveToDate = models.DateField()
+    reason = models.TextField(null=True)
+    medicalCertificate = models.FileField(upload_to='medical_certificates', null=True, blank=True)
+    status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('approved', 'Approved'), ('rejected', 'Rejected')])
+
+    def __str__(self):
+        return f'{self.user.username} - Leave Application: {self.leaveFromDate} to {self.leaveToDate}'
 
     
 class PredictedImage(models.Model):

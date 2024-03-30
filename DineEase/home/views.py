@@ -7,7 +7,7 @@ from django.shortcuts import render,redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages,auth
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from .models import Employee, menus,hmenus,CustomUser,AddToCart,Payment
 from django.contrib.auth import get_user_model
@@ -492,7 +492,7 @@ def catering_booking(request):
     return render(request, 'catering_booking.html', context)
 
 from django.shortcuts import render, redirect
-from .models import Catering
+from .models import Catering, CateringMenu
 
 def save_catering(request):
     if request.method == 'POST':
@@ -500,14 +500,17 @@ def save_catering(request):
         number_of_persons = request.POST.get('persons')
         menu_items_selected = request.POST.getlist('menu[]')
 
-        # Join the selected menu items into a single string separated by commas
-        menu_items_string = ', '.join(menu_items_selected)
+        # Create the Catering object
+        catering = Catering.objects.create(date=date, number_of_persons=number_of_persons)
 
-        # Create the Catering object and save it to the database
-        catering = Catering.objects.create(date=date, number_of_persons=number_of_persons, menu_items=menu_items_string)
+        # Retrieve CateringMenu objects based on the selected menu items
+        menu_items = CateringMenu.objects.filter(name__in=menu_items_selected)
 
-        # Optionally, you can redirect to a success page or render a template
-        return redirect('catering_details', catering_id=catering.pk)
+        # Associate the menu items with the catering
+        catering.menu_items.set(menu_items)
+
+        # Redirect to a success page or render a template
+        return redirect('catering_details', catering_id=catering.id)
 
     return render(request, 'catering_booking.html')
 
@@ -1604,6 +1607,45 @@ def delete_emp(request, emp_id):
 def change_pswrd(request):
     return render(request,'employee/change_pswrd.html')
 
+from django.contrib.auth import update_session_auth_hash
+from django.contrib import messages
+from django.shortcuts import redirect, render
+
+def change_password(request):
+    if request.method == 'POST':
+        # Check if the user is authenticated
+        if request.user.is_authenticated:
+            # Get the current user
+            user = request.user
+
+            # Get the old password, new password, and confirm new password from the form
+            old_password = request.POST.get('old_password')
+            new_password1 = request.POST.get('new_password1')
+            new_password2 = request.POST.get('new_password2')
+
+            # Check if the old password is correct
+            if user.check_password(old_password):
+                # Check if the new passwords match
+                if new_password1 == new_password2:
+                    # Set the new password
+                    user.set_password(new_password1)
+                    user.save()
+                    # Update the session to prevent logging out
+                    update_session_auth_hash(request, user)
+                    messages.success(request, 'Your password was successfully updated!')
+                    return redirect('login')  # Redirect to the login page after successful password change
+                else:
+                    messages.error(request, 'New passwords do not match!')
+            else:
+                messages.error(request, 'Incorrect old password!')
+        else:
+            return redirect('login')  # Redirect to the login page if the user is not authenticated
+
+    # If not a POST request or if there were errors, return the password change form
+    return render(request, 'employee/index.html')
+
+
+
 from django.shortcuts import render, redirect
 from .models import LeaveApplication
 
@@ -1634,19 +1676,53 @@ def apply_leave(request):
 
     return render(request, 'employee/emp_leave.html')  # Render your leave application form template
 
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import MedicalLeave
+
+def medical_leave(request):
+    if request.method == 'POST':
+        leave_from_date = request.POST.get('leaveFromDate')
+        leave_to_date = request.POST.get('leaveToDate')
+        reason = request.POST.get('leaveReason')  # Corrected: 'leaveReason' instead of 'reason'
+        medical_certificate = request.FILES.get('medicalCertificate')
+        status = 'pending'  # Set initial status to 'pending'
+
+        if request.user.is_authenticated:
+            user = request.user
+            leave_application = MedicalLeave(
+                user=user,
+                leaveFromDate=leave_from_date,
+                leaveToDate=leave_to_date,
+                reason=reason,
+                medicalCertificate=medical_certificate,
+                status=status
+            )
+            leave_application.save()
+
+            messages.success(request, 'Leave application submitted successfully.')
+            return redirect('leave_list')  # Redirect to home page or any other page after successful submission
+        else:
+            messages.error(request, 'You need to be logged in to apply for leave.')
+            return redirect('login')  # Redirect to login page if user is not logged in
+
+    return render(request, 'employee/medical_leave.html')
+
 
 from django.shortcuts import render
-from .models import LeaveApplication
+from .models import LeaveApplication,MedicalLeave
 
 def leave_list(request):
     if request.user.is_authenticated:
         # Filter the leave applications for the currently logged-in user
         leave_applications = LeaveApplication.objects.filter(user=request.user)
+        medical_leave_applications = MedicalLeave.objects.filter(user=request.user)
     else:
         # If the user is not logged in, provide an empty queryset
         leave_applications = LeaveApplication.objects.none()
+        medical_leave_applications = MedicalLeave.objects.none()
     
-    return render(request, 'employee/leave_list.html', {'leave_applications': leave_applications})
+    return render(request, 'employee/leave_list.html', {'leave_applications': leave_applications, 'medical_leave_applications':medical_leave_applications})
 
 from django.shortcuts import redirect, get_object_or_404
 from .models import LeaveApplication
