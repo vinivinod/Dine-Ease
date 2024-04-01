@@ -1774,13 +1774,13 @@ from django.shortcuts import render, redirect
 from .forms import ImageUploadForm
 from .models import PredictedImage
 import os
-import tensorflow as tf
+# import tensorflow as tf
 import numpy as np
 from PIL import Image
 from django.conf import settings
 
 # Load the saved model
-loaded_model = tf.keras.models.load_model("models\your_model (1).h5")
+# loaded_model = tf.keras.models.load_model("models\your_model (1).h5")
 
 # Function to preprocess and predict an image with a threshold
 def predict_food(image_path, model, threshold=0.3):
