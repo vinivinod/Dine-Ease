@@ -159,7 +159,7 @@
                       <!-- Add more options as needed -->
                   </div>
                 </li>
-                {% comment %} <li class="nav-item dropdown">
+                <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     History
                   </a>
@@ -169,13 +169,13 @@
       
                       <!-- Add more options as needed -->
                   </div>
-                </li> {% endcomment %}
-                <li class="nav-item">
+                </li> 
+                {% comment %} <li class="nav-item">
                   <a class="nav-link" href="{% url 'booking_list' %}">Bookings </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'orders_lists' %}" id="orders">Orders </a>
-              </li> 
+              </li>  {% endcomment %}
                 <li class="nav-item">
                 <a class="nav-link" href="{% url 'loggout' %}">Logout</a>
                  </li>
@@ -192,9 +192,9 @@
             </ul>
             
             <div class="user_option">
-              {% comment %} <a href="" class="user_link">
-                <i class="fa fa-bell" aria-hidden="true"></i>
-              </a> {% endcomment %}
+              <a href="" class="user_link">
+                <i class="fa fa-bell" aria-hidden="true" ></i>
+              </a> 
 
               <a class="cart_link" href="{% url 'cart' %}" id="homecart">
                 <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 456.029 456.029" style="enable-background:new 0 0 456.029 456.029;" xml:space="preserve">

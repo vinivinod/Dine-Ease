@@ -154,10 +154,9 @@ class CateringMenu(models.Model):
         ('Drinks', 'Drinks'),
     ]
 
-
     name = models.CharField(max_length=100)
     category = models.CharField(max_length=100, choices=CATEGORY_CHOICES)
-    
+    price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
     def __str__(self):
         return self.name
@@ -168,6 +167,8 @@ class Catering(models.Model):
     date = models.DateField()
     number_of_persons = models.IntegerField()
     menu_items = models.ManyToManyField(CateringMenu, related_name='catering')
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    amount_to_pay = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
 
 # from django.db import models
@@ -414,11 +415,13 @@ class Notification(models.Model):
     NOTIFICATION_TYPES = [
         ('out_of_stock', 'Out of Stock'),
         ('stock_decrease', 'Stock Decrease'),
+        
         # Add more notification types as needed
     ]
 
     recipient = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
     menu_item = models.ForeignKey(menus, on_delete=models.CASCADE, null=True, blank=True)
+    
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)

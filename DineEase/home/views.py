@@ -479,29 +479,57 @@ from django.shortcuts import render
 from .models import CateringMenu
 
 def catering_booking(request):
-    categories = CateringMenu.CATEGORY_CHOICES
-    menu_items_by_category = {}
+    if request.method == 'POST':
+        selected_menu_items = request.POST.getlist('menu[]')
+        number_of_persons = request.POST.get('persons')
+        
+        context = {
+            'selected_menu_items': selected_menu_items,
+            'number_of_persons': number_of_persons,
+        }
+        return render(request, 'catering_booking.html', context)
+    else:
+        categories = CateringMenu.CATEGORY_CHOICES
+        menu_items_by_category = {}
+    
+        for category, _ in categories:
+            menu_items_with_prices = CateringMenu.objects.filter(category=category).values_list('name', 'price')
+            menu_items_by_category[category] = menu_items_with_prices
+    
+        context = {
+            'menu_items_by_category': menu_items_by_category,
+        }
+        return render(request, 'catering_booking.html', context)
 
-    for category, _ in categories:
-        menu_items = CateringMenu.objects.filter(category=category).values_list('name', flat=True)
-        menu_items_by_category[category] = menu_items
-
-    context = {
-        'menu_items_by_category': menu_items_by_category,
-    }
-    return render(request, 'catering_booking.html', context)
 
 from django.shortcuts import render, redirect
 from .models import Catering, CateringMenu
+from django.db.models import Sum
+
+from django.db.models import Sum
 
 def save_catering(request):
     if request.method == 'POST':
         date = request.POST.get('date')
-        number_of_persons = request.POST.get('persons')
+        number_of_persons = int(request.POST.get('persons'))
         menu_items_selected = request.POST.getlist('menu[]')
 
+        # Retrieve the prices of the selected menu items
+        selected_menu_prices = CateringMenu.objects.filter(name__in=menu_items_selected).values_list('price', flat=True)
+
+        # Calculate the total amount
+        total_amount = sum(selected_menu_prices) * number_of_persons
+
+        # Calculate 40% of the total amount
+        amount_to_pay = (total_amount * 40) /100
+
         # Create the Catering object
-        catering = Catering.objects.create(date=date, number_of_persons=number_of_persons)
+        catering = Catering.objects.create(
+            date=date,
+            number_of_persons=number_of_persons,
+            total_amount=total_amount,
+            amount_to_pay=amount_to_pay
+        )
 
         # Retrieve CateringMenu objects based on the selected menu items
         menu_items = CateringMenu.objects.filter(name__in=menu_items_selected)
@@ -515,12 +543,27 @@ def save_catering(request):
     return render(request, 'catering_booking.html')
 
 
+
 from django.shortcuts import render, get_object_or_404
 from .models import Catering
 
+from decimal import Decimal
+
 def catering_details(request, catering_id):
     catering = get_object_or_404(Catering, pk=catering_id)
-    return render(request, 'catering_details.html', {'catering': catering})
+    
+    # Calculate the total price for each menu item
+    menu_items_with_total_price = []
+    for menu_item in catering.menu_items.all():
+        total_price = menu_item.price * catering.number_of_persons
+        menu_items_with_total_price.append((menu_item, total_price))
+
+    context = {
+        'catering': catering,
+        'menu_items_with_total_price': menu_items_with_total_price,
+    }
+    
+    return render(request, 'catering_details.html', context)
 
 
 from django.shortcuts import get_object_or_404, redirect
@@ -1752,6 +1795,41 @@ def orderlist_emp(request):
     }
 
     return render(request, 'employee/orders-emp.html', context)
+
+# from django.core.mail import send_mail
+# from django.contrib.auth import get_user_model
+# from .models import BillingInformation
+# from django.shortcuts import render
+# from django.http import JsonResponse
+
+# def notify(request):
+#     if request.method == 'POST':
+#         email = request.POST.get('email')
+#         status = request.POST.get('status')
+        
+#         if status == 'Ready To Deliver':
+#             subject = "Your Order is Ready for Delivery"
+#             message = "Dear customer,\n\nYour order is now ready for delivery. Thank you for choosing our service.\n\nBest regards,\nThe DineEase Team"
+#         elif status == 'Order Delivered':
+#             subject = "Your Order has been Delivered"
+#             message = "Dear customer,\n\nWe are pleased to inform you that your order has been successfully delivered. We hope you enjoyed your meal!\n\nBest regards,\nThe DineEase Team"
+#         else:
+#             return JsonResponse({'error': 'Invalid status provided'}, status=400)
+        
+#         # Fetch billing information associated with the provided email
+#         billing_info = BillingInformation.objects.filter(user__email=email).first()
+        
+#         # Check if billing information exists
+#         if billing_info:
+#             # Send email to the user
+#             sender_email = "dineease1@gmail.com"  # Update with your sender email address
+#             send_mail(subject, message, sender_email, [email])
+#             return JsonResponse({'message': 'Email sent successfully'}, status=200)
+#         else:
+#             return JsonResponse({'error': 'No billing information found for the provided email'}, status=404)
+#     else:
+#         return JsonResponse({'error': 'Method not allowed'}, status=405)
+
 
 
 from datetime import date, timedelta

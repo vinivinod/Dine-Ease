@@ -608,59 +608,59 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {% for billing in billings_info %}
-                                                <tr>
-                                                    <td>{{ billing.id }}</td>
-                                                    <td>{{ billing.user.name }}</td>
+												{% for billing in billings_info %}
+												<tr>
+													<td>{{ billing.id }}</td>
+													<td>{{ billing.user.name }}</td>
 													<td>{{ billing.user.email }}</td>
-                                                    <td>
-                                                        {% for menu in billing.menu.all %}
-                                                            {{ menu.name }}<br>
-                                                        {% empty %}
-                                                            No menu ordered
-                                                        {% endfor %}
-                                                    </td>
-                                                    <td>{{ billing.amount }}</td>
-                                                    <td>
-                                                        {% with matching_payments=billing.payment_set.all %}
-                                                            {% if matching_payments %}
-                                                                {{ matching_payments.0.get_payment_status_display }}
-                                                            {% else %}
-                                                                Payment not found
-                                                            {% endif %}
-                                                        {% endwith %}
-                                                    </td>
-                                                    <td>
-                                                        {% for payment in billing.payment_set.all %}
-                                                            {{ payment.timestamp|date:"Y-m-d" }}<br>
-                                                            {{ payment.timestamp|time:"H:i:s" }}<br>
-                                                        {% endfor %}
-                                                    </td>
-                                                    {% comment %} <td>
-                                                        <!-- Add a styled button to approve the order -->
-                                                        <button id="approve_{{ billing.id }}" class="approve-button" style="background-color: #4CAF50; color: white; border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 4px;">Approve</button>
-                                                    </td> {% endcomment %}
-                                                    <td>
-														<div class="btn-group mb-1">
-															<button type="button" class="btn btn-outline-success">Info</button>
-															<button type="button" class="btn btn-outline-success dropdown-toggle dropdown-toggle-split"
-																data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
-																<span class="sr-only">Info</span>
+													<td>
+														{% for menu in billing.menu.all %}
+															{{ menu.name }}<br>
+														{% empty %}
+															No menu ordered
+														{% endfor %}
+													</td>
+													<td>{{ billing.amount }}</td>
+													<td>
+														{% with matching_payments=billing.payment_set.all %}
+															{% if matching_payments %}
+																{{ matching_payments.0.get_payment_status_display }}
+															{% else %}
+																Payment not found
+															{% endif %}
+														{% endwith %}
+													</td>
+													<td>
+														{% for payment in billing.payment_set.all %}
+															{{ payment.timestamp|date:"Y-m-d" }}<br>
+															{{ payment.timestamp|time:"H:i:s" }}<br>
+														{% endfor %}
+													</td>
+													<td>
+														<div class="dropdown mb-1">
+															<button id="dropdownMenuButton" type="button" class="btn btn-outline-success dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+															  Info
 															</button>
 															<div class="dropdown-menu">
-																<a class="dropdown-item" href="{% url '' %}">Ready To Deliver</a>
-																<a class="dropdown-item" href="{% url '' %}">Order Delivered</a>
+															  <a class="dropdown-item" href="#" onclick="updateText(this)">Order Getting Ready</a>
+															  <a class="dropdown-item" href="#" onclick="updateText(this)">Ready To Deliver</a>
 															</div>
-														</div>
+														  </div>
 													</td>
-                                                </tr>
-                                                {% empty %}
-                                                <tr>
-                                                    <td colspan="5">No billing information available</td>
-                                                </tr>
-                                                {% endfor %}
-
-                                            </tbody>
+													<td>
+														<form action=" " method="post">
+															{% csrf_token %}
+															<button type="submit" class="btn btn-outline-info">Notify</button>
+														</form>
+													</td>
+												</tr>
+												{% empty %}
+												<tr>
+													<td colspan="5">No billing information available</td>
+												</tr>
+												{% endfor %}
+											</tbody>
+											
 										</table>
 									</div>
 									</div>
@@ -690,6 +690,14 @@
 	<script src="{% static 'assets/plugins/simplebar/simplebar.min.js' %}"></script>
 	<script src="{% static 'assets/plugins/jquery-zoom/jquery.zoom.min.js' %}"></script>
 	<script src="{% static 'assets/plugins/slick/slick.min.js' %}"></script>
+
+	<script>
+		function updateText(element) {
+		  var selectedItem = element.textContent.trim();
+		  document.getElementById('dropdownMenuButton').textContent = selectedItem;
+		}
+	  </script>
+	  
 
 	<!-- Datatables -->
 	<script src="{% static 'assets/plugins/data-tables/jquery.datatables.min.js' %}"></script>

@@ -221,11 +221,12 @@
         <p><strong>Number of Persons:</strong> {{ catering.number_of_persons }}</p>
         <p><strong>Menu Items:</strong></p>
         <ul>
-            {% for menu_item in catering.menu_items.all %}
-                <li style="padding-left: 20px;">{{ menu_item }}</li>
-            {% endfor %}
-        </ul>
-        
+          {% for menu_item, total_price in menu_items_with_total_price %}
+              <li style="padding-left: 20px;">{{ menu_item.name }} - ₹{{ total_price }}</li>
+          {% endfor %}
+      </ul>
+        <p><strong>Total Amount:</strong> ₹{{ catering.total_amount }}</p>
+        <p><strong>Amount to Pay:</strong> ₹{{ catering.amount_to_pay }}</p>
         <div>
             <a href="{% url 'catering_booking' %}" class="btn">Back to Home</a>
             <a href="{% url 'catering_booking' %}" class="btn">Proceed to Payment</a>
