@@ -326,7 +326,9 @@ label {
             <label for="date">Date:</label>
             <input type="date" id="date" name="date" required><br>
             <label for="persons">Number of Persons:</label>
-            <input type="number" id="persons" name="persons" min="1" required><br>
+            <input type="number" id="persons" name="persons" min="50" max="2000" required><br>
+            <span id="persons-error" style="color: red; display: none;">Number of persons must be between 50 and 2000.</span><br>
+
             <label style="font-size: 20px; font-weight: bold;">Menu:</label><br>
             {% for category, items_with_prices in menu_items_by_category.items %}
                 <label>{{ category }}:</label><br>
@@ -465,7 +467,20 @@ label {
       return true; // Allow form submission
   }
 
-    
+  document.addEventListener("DOMContentLoaded", function() {
+    var personsInput = document.getElementById("persons");
+    var errorSpan = document.getElementById("persons-error");
+
+    personsInput.addEventListener("input", function() {
+        var value = parseInt(personsInput.value);
+        if (value >= 50 && value <= 2000) {
+            errorSpan.style.display = "none";
+        } else {
+            errorSpan.style.display = "inline";
+        }
+    });
+});
+
     document.getElementById("time").addEventListener("change", function() {
         var timeInput = this.value;
         var hour = parseInt(timeInput.split(":")[0]);
