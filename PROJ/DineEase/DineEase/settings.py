@@ -95,9 +95,9 @@ WSGI_APPLICATION = 'DineEase.wsgi.application'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
-DATABASES = {
-    'default': dj_database_url.parse("postgres://dineease_user:SghT15dl9NWeDUkvE0Wt9NZrQIzxyKTx@dpg-co448dn79t8c738ugsq0-a.singapore-postgres.render.com/dineease")
-}
+# DATABASES = {
+#     'default': dj_database_url.parse("postgres://dineease_user:SghT15dl9NWeDUkvE0Wt9NZrQIzxyKTx@dpg-co448dn79t8c738ugsq0-a.singapore-postgres.render.com/dineease")
+# }
 
 
 # Password validation
